@@ -68,8 +68,7 @@ function toggleGlitch() {
         let top = Math.random() * 80 + 10;
         let left = Math.random() * 80 + 10;
         let rotate = Math.random() * 30 - 15;
-        let delay = Math.random() * 0.5; // 错开一点点起始时间
-        // 直接注入带随机延迟的动画元素
+        let delay = Math.random() * 0.5; 
         html += `<div class="glitch-text-piece" style="top: ${top}%; left: ${left}%; transform: rotate(${rotate}deg); animation-delay: ${delay}s, ${delay + 1.5}s;">${snippet}</div>`;
     }
     container.innerHTML = html; 
@@ -164,6 +163,9 @@ function animateRadarLines(group, textGroup) {
   const targets = [];
   const cx = 150, cy = 140;
   
+  // 核心修复：一开始把整个数据组隐藏，防止闪现满格
+  group.style.opacity = 0;
+
   circles.forEach(c => {
     const tx = parseFloat(c.getAttribute('data-tx'));
     const ty = parseFloat(c.getAttribute('data-ty'));
@@ -172,7 +174,8 @@ function animateRadarLines(group, textGroup) {
   });
 
   const maxDistance = Math.hypot(90, 0); 
-  const speed = maxDistance / 1500; 
+  // 核心修复：速度加快！从 1500 改为 800
+  const speed = maxDistance / 800; 
   
   let maxTime = 0;
   targets.forEach(t => {
@@ -181,8 +184,13 @@ function animateRadarLines(group, textGroup) {
   });
 
   const startTime = performance.now();
+  
+  // 把点先放到中心
   circles.forEach(c => { c.setAttribute('cx', cx); c.setAttribute('cy', cy); });
   poly.setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy}`);
+
+  // 重置好后，立马显示出来
+  group.style.opacity = 1;
 
   function update(now) {
     const elapsed = now - startTime;
@@ -235,7 +243,8 @@ function renderRadarChart(stats) {
     circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
   }
   
-  svg += '<g class="radar-anim-group">';
+  // 核心修复：在这里加上 style="opacity: 0;"，隐藏满格的初始状态
+  svg += '<g class="radar-anim-group" style="opacity: 0;">';
   svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
