@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchInterval, activeGlitchTimer;
+let glitchTimer, waitTimer, seizureTimer;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -42,22 +42,23 @@ function switchView(viewId) {
   document.getElementById(viewId).classList.add('active');
   window.scrollTo(0, 0);
   if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode');
+    document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearInterval(glitchInterval);
-    clearTimeout(activeGlitchTimer);
+    clearTimeout(glitchTimer);
+    clearTimeout(waitTimer);
+    clearTimeout(seizureTimer);
+    document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
 
-// 生成极度重叠的深渊乱码（参考图1的密集感）
+// 极其密集的深渊乱码生成器（彻底看不清原字）
 function makeZalgo(text) {
-    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ'];
-    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖'];
+    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
+    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
     const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛'];
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        // 核心：每个字叠加十几二十层，彻底让原字不可读
         for(let j=0; j<Math.floor(Math.random() * 10) + 15; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
@@ -67,35 +68,45 @@ function makeZalgo(text) {
     return result;
 }
 
-// 触发抽搐与乱码（仅限底层文字，绝不生成浮动层遮挡）
-function triggerGlitch() {
+// 核心：循环故障
+function triggerSeizure() {
   if (!isGlitchMode) return;
   
-  // 加上一个轻微的全局闪屏类（如果你 css 里有的话）
+  // 1. 全局模糊抽搐
   document.body.classList.add('seizure-active');
-  // 让底层字变乱码
+  // 2. 浮现全屏《金缕曲》
+  const container = document.getElementById('glitch-matrix');
+  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+  container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
+  
+  // 3. 底层文字异变为极密乱码
   renderDataUI(true);
   
-  // 1.5秒后恢复
-  clearTimeout(activeGlitchTimer);
-  activeGlitchTimer = setTimeout(() => {
+  // 4. 停留 2 秒后消失，底层恢复
+  clearTimeout(seizureTimer);
+  seizureTimer = setTimeout(() => {
     if (!isGlitchMode) return;
     document.body.classList.remove('seizure-active');
+    container.innerHTML = '';
     renderDataUI(false);
-  }, 1500);
+    
+    // 5. 等 4 秒后再次触发
+    waitTimer = setTimeout(triggerSeizure, 4000);
+  }, 2000);
 }
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
+  clearTimeout(glitchTimer);
+  clearTimeout(waitTimer);
+  clearTimeout(seizureTimer);
+  document.getElementById('glitch-matrix').innerHTML = '';
+
   if (isGlitchMode) {
-    triggerGlitch(); // 进入时立刻来一下
-    // 每 4 秒循环一次
-    glitchInterval = setInterval(triggerGlitch, 4000);
+    triggerSeizure();
   } else {
-    clearInterval(glitchInterval);
-    clearTimeout(activeGlitchTimer);
     document.body.classList.remove('seizure-active');
     renderDataUI(false);
   }
@@ -146,8 +157,10 @@ function showProfile(id, isToggle) {
     currentActiveId = id;
     document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearInterval(glitchInterval);
-    clearTimeout(activeGlitchTimer);
+    clearTimeout(glitchTimer);
+    clearTimeout(waitTimer);
+    clearTimeout(seizureTimer);
+    document.getElementById('glitch-matrix').innerHTML = '';
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
