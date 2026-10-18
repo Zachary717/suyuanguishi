@@ -15,7 +15,7 @@ const ocDatabase = [
     timeline: [
       { time: "出生", event: "父母的拍卖行蒸蒸日上，没有多余的精力能够分给他。被送往农村奶奶家抚养。" },
       { time: "6岁", event: "在村中落水高烧五日不退。被原行逸所救，拜入门下。" },
-      { time: "目前", event: "21岁，在广东就读民俗学专业。" }
+      { time: "21岁", event: "在广东就读民俗学专业。" }
     ],
     relations: [
       { name: "原行逸", id: "yuanxingyi", desc: "名义上的师父。随时可以讨要法器的哆啦x梦。" },
@@ -38,7 +38,8 @@ const ocDatabase = [
     personality: "随心所欲，慵懒随性。与时俱进的非传统意义老古董。",
     timeline: [
       { time: "出生", event: "江浙沪富商之子。" },
-      { time: "过去", event: "道观接收难民，师兄弟参军死伤无数，道观覆灭后独自逃亡。" },
+      { time: "过去", event: "道观接收难民，师兄弟参军死伤无数，道观覆灭后独自逃亡。" }, 
+      { time: "-", event: "-" },
       { time: "现代", event: "喝茶遛鸟捞徒弟。" }
     ],
     relations: [
@@ -60,8 +61,8 @@ const ocDatabase = [
     personality: "说话之乎者也，行为习惯相当原始。是一个脱离人的视角的存在。情感反应、语言系统、认知方式都和正常人不一样。像野兽。读经但不往脑子里去，只惦念成仙。",
     timeline: [
       { time: "6岁", event: "旅游大巴侧翻坠河，从河中爬出，大脑受创失忆。" },
-      { time: "过去", event: "被老道士带回道观。无法忍受清规戒律，半夜遁逃。" },
-      { time: "过去", event: "搭救叶瑶。" },
+      { time: "-", event: "被老道士带回道观。无法忍受清规戒律，半夜遁逃。" },
+      { time: "-", event: "搭救叶瑶。" },
       { time: "26岁", event: "自刎。" }
     ],
     relations: [
@@ -84,7 +85,7 @@ const ocDatabase = [
     timeline: [
       { time: "出生", event: "贵州贫困农村女孩。" },
       { time: "14岁", event: "送入精神卫生所。对电子设备产生PTSD。" },
-      { time: "过去", event: "逃入山中被叶阮收留。" },
+      { time: "-", event: "逃入山中被叶阮收留。" },
       { time: "17岁", event: "自杀。为叶阮入药。" }
     ],
     relations: [
