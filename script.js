@@ -19,7 +19,7 @@ window.onload = function() {
     const warning = document.createElement('div');
     warning.className = 'epilepsy-warning';
     // 【修改这里】将警告改为中文
-    warning.innerHTML = '警告：光敏性癫痫患者请勿点击';
+    warning.innerHTML = '光敏性癫痫患者请勿点击';
     btn.parentNode.insertBefore(warning, btn);
     
     const observerBtn = new MutationObserver(() => {
