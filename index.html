@@ -1,69 +1,59 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>俗缘诡事</title>
-    
-    <!-- 字体引入 -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-    
-    <!-- CSS 引入（只在这里放一次，并加上防缓存版本号） -->
-    <link rel="stylesheet" href="style.css?v=100">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>俗缘诡事</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=100">
 </head>
 <body>
 
-    <!-- 满屏乱码层 -->
-    <div class="glitch-overlay">
-        <div class="matrix-container" id="glitch-matrix"></div>
-    </div>
+<div class="glitch-overlay">
+    <div class="matrix-container" id="glitch-matrix"></div>
+</div>
 
-    <!-- 首页视图 -->
-    <div id="view-main" class="view active">
-        <header class="main-header">
-            <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
-        </header>
-        <div class="directory-wrap">
-            <div class="dir-header">Character Index / 人物卷宗</div>
-            <div id="dir-list"></div>
-        </div>
+<div id="view-main" class="view active">
+    <header class="main-header"><img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'"></header>
+    <div class="directory-wrap">
+        <div class="dir-header">Character Index / 人物卷宗</div>
+        <div id="dir-list"></div>
     </div>
+</div>
 
-    <!-- 角色详情视图 -->
-    <div id="view-profile" class="view">
-        <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
-        <div class="nav-top">
-            <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
-            <div class="id-tag" id="p-top-id"></div>
-        </div>
-        <div class="profile-wrap">
-            <div class="hero-section">
-                <div class="avatar-box" id="p-avatar-box"></div>
-                <div class="hero-text">
-                    <h1 class="p-name" id="p-name"></h1>
-                    <div class="p-title" id="p-title"></div>
-                </div>
+<div id="view-profile" class="view">
+    <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
+    <div class="nav-top">
+        <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
+        <div class="id-tag" id="p-top-id"></div>
+    </div>
+    <div class="profile-wrap">
+        <div class="hero-section">
+            <div class="avatar-box" id="p-avatar-box"></div>
+            <div class="hero-text">
+                <h1 class="p-name" id="p-name"></h1>
+                <div class="p-title" id="p-title"></div>
             </div>
-            <div class="content-grid">
-                <div>
-                    <div class="sec-title">PROFILE <span>基础卷宗</span></div>
-                    <div class="info-list" id="p-info-list"></div>
-                    <div class="sec-title" style="margin-top:60px;">STATS <span>命理六维</span></div>
-                    <div class="stats-container" id="p-stats"></div>
-                </div>
-                <div>
-                    <div class="sec-title">TIMELINE <span>生平轨迹</span></div>
-                    <div class="timeline" id="p-timeline"></div>
-                    <div class="sec-title" style="margin-top:60px;">RELATIONS <span>人际羁绊</span></div>
-                    <div class="relations-list" id="p-relations"></div>
-                </div>
-            </div>
-            <footer>SUYUAN GUISHI</footer>
         </div>
+        <div class="content-grid">
+            <div>
+                <div class="sec-title">PROFILE <span>基础卷宗</span></div>
+                <div class="info-list" id="p-info-list"></div>
+                <div class="sec-title" style="margin-top:60px;">STATS <span>命理六维</span></div>
+                <div class="stats-container" id="p-stats"></div>
+            </div>
+            <div>
+                <div class="sec-title">TIMELINE <span>生平轨迹</span></div>
+                <div class="timeline" id="p-timeline"></div>
+                <div class="sec-title" style="margin-top:60px;">RELATIONS <span>人际羁绊</span></div>
+                <div class="relations-list" id="p-relations"></div>
+            </div>
+        </div>
+        <footer>SUYUAN GUISHI</footer>
     </div>
+</div>
 
-    <!-- JS 引入（放在最底部，保证页面加载完再执行） -->
-    <script src="data.js?v=100"></script>
-    <script src="script.js?v=100"></script>
+<script src="data.js?v=100"></script>
+<script src="script.js?v=100"></script>
 </body>
 </html>
