@@ -6,210 +6,226 @@
 <title>俗缘诡事 · 角色档案库</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<!-- 引入纤细优雅的英文体，以及标准宋体 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #f2efe9; 
-    --bg2: #fbfaf7; 
-    --line: rgba(51, 48, 46, 0.15);
-    --paper: #2b2927; 
-    --muted: #7a756e; 
-    --cinnabar: #c9423b; 
-    --gold: #a87e3f; 
-    --jade: #3d7369;
+    /* 极简宣纸底色 */
+    --bg: #f7f6f1; 
+    --paper: #1a1a1a; /* 墨黑色 */
+    --muted: #888888; 
+    --cinnabar: #b84040; /* 朱砂红 */
+    --jade: #4a6255; /* 黛绿 */
+    --line: rgba(26, 26, 26, 0.15);
     
     --serif: "Noto Serif SC", "Songti SC", serif;
-    --kai: "Ma Shan Zheng", "KaiTi", serif; 
+    --eng: "Oswald", sans-serif;
     --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   
   body{
     background-color: var(--bg); 
-    color:var(--paper); font-family:var(--sans);
-    line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    color:var(--paper); font-family:var(--serif);
+    line-height: 2; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+    /* 极淡的纸张肌理 */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
   }
   
-  .view { display: none; opacity: 0; transition: opacity .4s ease; position: relative; z-index: 1; min-height: 100vh; }
+  .view { display: none; opacity: 0; transition: opacity .5s ease; position: relative; z-index: 1; min-height: 100vh; }
   .view.active { display: block; opacity: 1; }
 
-  /* =========================================
-     背景图：完整大图模式
-     采用 cover 铺满屏幕，并固定不随页面滚动
-     ========================================= */
-     
-  /* 1. 首页背景 */
-  #view-main { 
-    padding-bottom: 60px; 
-    background-image: linear-gradient(rgba(242, 239, 233, 0.85), rgba(242, 239, 233, 0.85)), url('bg-index.jpg');
-    background-size: cover;       /* 强制铺满屏幕，不拉伸变形 */
-    background-position: center;  /* 居中显示，重要图案放中间 */
-    background-attachment: fixed; /* 背景固定，不随文字滑动 */
-  }
+  /* ---------------- 主页面（目录） ---------------- */
+  #view-main { padding: 80px 40px; }
   
-  /* 2. 详情页背景 */
-  #view-profile { 
-    padding-bottom: 60px; 
-    background-image: linear-gradient(rgba(242, 239, 233, 0.9), rgba(242, 239, 233, 0.9)), url('bg-detail.jpg');
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed;
-  }
-
-  /* ---------------- 主页面 ---------------- */
   .main-header {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 60px 20px 40px 20px;
-    border-bottom: 2px solid var(--paper);
-    margin-bottom: 30px;
+    text-align: center; margin-bottom: 80px; position: relative;
   }
   
   .home-title-img {
-    max-width: 90vw; max-height: 180px; object-fit: contain; 
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    max-width: 80vw; max-height: 150px; object-fit: contain; 
   }
 
-  .directory-section { padding: 20px 20px 0 20px; }
+  /* 目录：极简书页感 */
+  .directory-wrap { max-width: 900px; margin: 0 auto; }
   
   .dir-header { 
-    text-align: center; margin-bottom: 30px; 
-    font-family: var(--serif); font-size: 18px; 
-    letter-spacing: .4em; color: var(--paper); 
-    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-family: var(--eng); font-size: 14px; letter-spacing: .4em; 
+    color: var(--muted); margin-bottom: 40px; text-transform: uppercase;
+    display: flex; align-items: center; gap: 20px;
   }
-  .dir-header::before, .dir-header::after { content: "◆"; font-size: 10px; color: var(--gold); }
+  .dir-header::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
-  
-  .card {
-    background: rgba(251, 250, 247, 0.95); padding: 24px; cursor: pointer;
-    transition: .3s; position: relative; 
-    border: 1px solid var(--paper);
-    outline: 1px solid var(--line); outline-offset: -4px; 
-    backdrop-filter: blur(4px);
+  /* 列表式卡片，去除阴影和框 */
+  .list-item {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding: 30px 10px; border-bottom: 1px solid var(--line);
+    cursor: pointer; transition: .4s; position: relative;
   }
-  .card:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(43, 41, 39, 0.08); }
-  
-  .card-name { 
-    font-family: var(--kai); font-size: 32px; font-weight: normal; 
-    letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); 
-    border-bottom: 1px dashed var(--line); padding-bottom: 8px;
+  .list-item::before { /* 悬浮时左侧出现的红点 */
+    content: "◆"; position: absolute; left: -20px; color: var(--cinnabar); 
+    font-size: 10px; opacity: 0; transition: .4s; top: 35px;
   }
-  .card-title { font-size: 13px; color: var(--jade); letter-spacing: .05em; font-family: var(--serif); }
+  .list-item:hover { padding-left: 30px; background: rgba(255,255,255,0.4); }
+  .list-item:hover::before { opacity: 1; }
+  
+  .item-left { display: flex; align-items: baseline; gap: 30px; }
+  .item-index { font-family: var(--eng); font-size: 16px; color: var(--muted); width: 30px; }
+  .item-name { 
+    font-size: 36px; font-weight: 900; letter-spacing: .1em; color: var(--paper); 
+    transition: .4s;
+  }
+  .list-item:hover .item-name { color: var(--cinnabar); }
+  
+  .item-title { 
+    font-size: 13px; color: var(--jade); letter-spacing: .1em; 
+    text-align: right; max-width: 50%;
+  }
 
   /* ---------------- 详情页 ---------------- */
+  #view-profile { padding-bottom: 100px; background: var(--bg); }
   .nav-top {
-    position: sticky; top: 0; z-index: 50; 
-    background: rgba(242, 239, 233, 0.85);
-    backdrop-filter: blur(10px); border-bottom: 1px solid var(--paper);
-    padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50; 
+    padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+    mix-blend-mode: difference; /* 滚动时文字反色，极简高级感 */
   }
-  .back-btn { font-size: 14px; color: var(--paper); cursor: pointer; letter-spacing: .1em; font-weight: 600; font-family: var(--serif);}
-  
-  .profile-wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
-  
-  .hero-section {
-    display: grid; grid-template-columns: 280px 1fr; gap: 40px;
-    border-bottom: 2px solid var(--paper); padding-bottom: 40px; margin-bottom: 40px;
-    position: relative; align-items: flex-end;
-  }
+  .back-btn { font-family: var(--eng); font-size: 14px; color: #fff; cursor: pointer; letter-spacing: .2em; font-weight: 200;}
+  .nav-top .id-tag { font-family: var(--eng); font-size: 12px; color: #fff; letter-spacing: .1em; }
 
+  .profile-wrap { max-width: 1000px; margin: 0 auto; padding: 120px 30px 40px 30px; }
+  
+  /* 头部：错落排版 */
+  .hero-section {
+    position: relative; margin-bottom: 100px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  
   .avatar-box {
-    width: 100%; aspect-ratio: 3/4; 
-    background: #f7f5f0; 
-    position: relative; 
-    border: 1px solid var(--paper); padding: 8px;
-    box-shadow: 4px 4px 15px rgba(0,0,0,0.1);
+    width: 300px; aspect-ratio: 3/4; 
+    background: transparent; position: relative; 
+    /* 图片做轻微做旧和错位效果 */
+    box-shadow: 20px 20px 0px rgba(74, 98, 85, 0.1);
   }
   .avatar-box img { 
     width: 100%; height: 100%; object-fit: cover; 
+    filter: grayscale(20%) contrast(110%);
   }
   .avatar-box .empty-text { 
     display: flex; height: 100%; align-items: center; justify-content: center; 
-    color: var(--muted); font-family: var(--serif); background: #f4f1ea;
+    color: var(--muted); border: 1px solid var(--line);
   }
 
-  .hero-text { display: flex; flex-direction: column; padding-bottom: 10px;}
+  .hero-text { 
+    display: flex; flex-direction: column; align-items: flex-end; text-align: right; 
+    padding-bottom: 20px; position: relative;
+  }
   
   .p-name { 
-    font-family: var(--kai); font-size: clamp(56px, 9vw, 80px); font-weight: normal; 
-    letter-spacing: .1em; color: var(--paper); line-height: 1.1; margin-bottom: 10px;
+    font-size: clamp(60px, 10vw, 100px); font-weight: 900; 
+    letter-spacing: .15em; color: var(--paper); line-height: 1; 
+    margin-bottom: 20px; position: relative;
+  }
+  
+  /* 名字后面的红色印章点缀 */
+  .p-name::after {
+    content: "錄"; position: absolute; right: -40px; bottom: 10px;
+    width: 30px; height: 30px; border: 1px solid var(--cinnabar); color: var(--cinnabar);
+    font-size: 14px; display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); transform: rotate(5deg); opacity: 0.8;
   }
   
   .p-title { 
-    font-family: var(--serif); font-size: 15px; color: var(--jade); 
-    letter-spacing: .1em; 
+    font-size: 14px; color: var(--jade); letter-spacing: .3em; 
+    border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px;
+  }
+  
+  .p-quote {
+    font-size: 13px; color: var(--muted); letter-spacing: .1em;
+    writing-mode: vertical-rl; position: absolute; left: -60px; top: 20px;
+    border-right: 1px solid var(--line); padding-right: 15px;
   }
 
-  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-  .full-width { grid-column: 1 / -1; }
+  /* 网格内容区：大量留白 */
+  .content-grid { 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px 60px; 
+  }
 
   .sec-title {
-    font-family: var(--serif); font-size: 18px; color: var(--paper); font-weight: 900;
-    display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 24px;
-    letter-spacing: .3em;
+    font-family: var(--eng); font-size: 24px; font-weight: 200; color: var(--paper);
+    letter-spacing: .2em; margin-bottom: 30px;
+    display: flex; align-items: center; gap: 15px;
   }
-  .sec-title::before, .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .sec-title::before { content: ""; width: 20px; height: 1px; background: var(--cinnabar); }
+  .sec-title span { font-size: 12px; color: var(--muted); font-family: var(--serif); letter-spacing: .3em; }
 
-  .info-box {
-    background: rgba(251, 250, 247, 0.85); border: 1px solid var(--line); padding: 24px;
-    outline: 1px solid var(--line); outline-offset: -4px;
-    backdrop-filter: blur(5px);
+  /* 基础信息：去框，极简横排 */
+  .info-list { display: flex; flex-direction: column; }
+  .info-item { 
+    display: flex; padding: 15px 0; border-bottom: 1px dashed var(--line); 
+    align-items: baseline;
   }
-  .info-item { display: flex; border-bottom: 1px dashed var(--line); padding: 12px 0; }
-  .info-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .info-item .k { width: 80px; color: var(--muted); font-size: 13px; font-family: var(--serif); flex-shrink: 0;}
-  .info-item .v { font-family: var(--serif); font-size: 15px; color: var(--paper); font-weight: 600; }
+  .info-item:last-child { border-bottom: none; }
+  .info-item .k { width: 80px; color: var(--muted); font-size: 13px; letter-spacing: .1em; flex-shrink: 0;}
+  .info-item .v { font-size: 15px; color: var(--paper); font-weight: 600; letter-spacing: .05em; }
 
-  .stats-box { 
-    background: rgba(251, 250, 247, 0.85); border: 1px solid var(--line); padding: 20px;
-    outline: 1px solid var(--line); outline-offset: -4px;
-    display: flex; justify-content: center; backdrop-filter: blur(5px);
+  /* 雷达图：如印章般悬浮 */
+  .stats-container { padding: 20px 0; display: flex; justify-content: flex-start; }
+
+  /* 生平轨迹：极细线 */
+  .timeline { position: relative; padding-left: 20px; }
+  .timeline::before { 
+    content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; 
+    width: 1px; background: var(--line); 
   }
-
-  .text-box { 
-    background: rgba(242, 239, 233, 0.6); padding: 20px; border-radius: 4px;
-    font-family: var(--serif); font-size: 15px; color: var(--paper); line-height: 2.2; text-align: justify;
-    text-indent: 2em; 
-  }
-
-  .timeline { padding-left: 10px; margin-top: 10px; border-left: 2px solid var(--line); }
-  .tl-item { position: relative; margin-bottom: 24px; padding-left: 20px; }
+  .tl-item { position: relative; margin-bottom: 40px; }
   .tl-item:last-child { margin-bottom: 0; }
   .tl-item::before { 
-    content: ""; position: absolute; left: -7px; top: 6px; 
-    width: 10px; height: 10px; background: var(--bg); border: 2px solid var(--jade); border-radius: 50%; 
+    content: ""; position: absolute; left: -24px; top: 8px; 
+    width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--jade); 
+    background: var(--bg);
   }
-  .tl-time { 
-    font-family: var(--kai); font-size: 20px; font-weight: normal; 
-    color: var(--cinnabar); letter-spacing: .1em; margin-bottom: 4px; 
-  }
-  .tl-event { font-size: 14.5px; color: var(--paper); font-family: var(--serif); }
+  .tl-time { font-family: var(--eng); font-size: 16px; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: 5px; }
+  .tl-event { font-size: 14px; color: var(--muted); line-height: 1.8; }
 
-  .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-  .rel-card {
-    background: rgba(251, 250, 247, 0.85); border: 1px dashed var(--paper);
-    padding: 16px; position: relative; transition: .3s;
-    backdrop-filter: blur(5px);
+  /* 关系：去框，用线分割 */
+  .relations-list { display: flex; flex-direction: column; gap: 0; }
+  .rel-item {
+    padding: 20px 0; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 20px; transition: .3s;
   }
-  .rel-card.has-link { cursor: pointer; }
-  .rel-card.has-link:hover { background: #fff; border-style: solid; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-  .rel-card.no-link { opacity: 0.6; background: transparent; }
-  .rel-name { 
-    font-family: var(--kai); font-size: 22px; font-weight: normal; 
-    color: var(--paper); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 6px;
+  .rel-item:last-child { border-bottom: none; }
+  .rel-item.has-link { cursor: pointer; }
+  .rel-item.has-link:hover .rel-name { color: var(--cinnabar); padding-left: 10px;}
+  
+  .rel-name { font-size: 18px; font-weight: 600; color: var(--paper); transition: .3s; min-width: 80px;}
+  .rel-desc { font-size: 13px; color: var(--muted); flex: 1;}
+  .rel-item.has-link::after { content: "→"; color: var(--line); transition: .3s;}
+  .rel-item.has-link:hover::after { color: var(--cinnabar); }
+
+  footer { 
+    margin-top: 120px; text-align: center; font-family: var(--eng); 
+    font-size: 12px; letter-spacing: .5em; color: var(--muted); 
+    display: flex; align-items: center; justify-content: center; gap: 20px;
   }
-  .rel-card.has-link .rel-name::after { content: "→"; color: var(--gold); font-family: var(--sans); }
-  .rel-desc { font-size: 13px; color: var(--muted); line-height: 1.6; font-family: var(--serif); }
+  footer::before, footer::after { content: ""; width: 50px; height: 1px; background: var(--line); }
 
-  footer { padding: 40px 0; text-align: center; font-size: 14px; letter-spacing: .5em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 50px; font-family: var(--kai); }
-
+  /* 手机端适配：堆叠，但保持留白 */
   @media (max-width: 768px) {
-    .hero-section { grid-template-columns: 1fr; gap: 20px; text-align: center; align-items: center;}
-    .avatar-box { max-width: 240px; margin: 0 auto; }
-    .hero-text { align-items: center; }
-    .content-grid { grid-template-columns: 1fr; gap: 40px; }
-    .info-item .k { width: 70px; }
+    #view-main { padding: 50px 20px; }
+    .main-header { margin-bottom: 40px; }
+    .list-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .item-name { font-size: 28px; }
+    .item-title { text-align: left; max-width: 100%; }
+    
+    .profile-wrap { padding-top: 80px; }
+    .hero-section { flex-direction: column; align-items: flex-start; gap: 30px; margin-bottom: 60px; }
+    .avatar-box { width: 100%; max-width: 280px; box-shadow: 10px 10px 0 rgba(74,98,85,0.1); }
+    .hero-text { align-items: flex-start; text-align: left; padding-bottom: 0; }
+    .p-quote { position: relative; left: 0; top: 0; writing-mode: horizontal-tb; border-right: none; border-left: 1px solid var(--line); padding-left: 10px; margin-top: 10px; }
+    .p-name::after { right: -30px; bottom: 0; }
+    
+    .content-grid { grid-template-columns: 1fr; gap: 50px; }
+    .rel-item { flex-direction: column; gap: 5px; }
   }
 </style>
 </head>
@@ -221,56 +237,57 @@
     <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
   </header>
 
-  <div class="directory-section">
-    <div class="dir-header">人 物 索 引</div>
-    <div class="grid" id="dir-grid"></div>
+  <div class="directory-wrap">
+    <div class="dir-header">Character Index / 人物卷宗</div>
+    <div id="dir-list"></div>
   </div>
 </div>
 
 <!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
+  <!-- 反色导航 -->
   <div class="nav-top">
-    <div class="back-btn" onclick="switchView('view-main')">← 返回卷宗</div>
-    <div style="font-size:12px; color:var(--muted); letter-spacing:.1em; font-family:var(--serif)" id="p-top-id">档案号</div>
+    <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
+    <div class="id-tag" id="p-top-id"></div>
   </div>
   
   <div class="profile-wrap">
     
+    <!-- 错落错位的艺术头部 -->
     <div class="hero-section">
       <div class="avatar-box" id="p-avatar-box"></div>
       
       <div class="hero-text">
+        <div class="p-quote" id="p-quote"></div>
         <h1 class="p-name" id="p-name"></h1>
         <div class="p-title" id="p-title"></div>
       </div>
     </div>
 
+    <!-- 内容网格 -->
     <div class="content-grid">
       
+      <!-- 左列 -->
       <div>
-        <div class="sec-title">基础卷宗</div>
-        <div class="info-box" id="p-info-grid"></div>
+        <div class="sec-title">PROFILE <span>基础卷宗</span></div>
+        <div class="info-list" id="p-info-list"></div>
         
-        <div class="sec-title" style="margin-top: 40px;">命理六维</div>
-        <div class="stats-box" id="p-stats"></div>
+        <div class="sec-title" style="margin-top: 60px;">STATS <span>命理六维</span></div>
+        <div class="stats-container" id="p-stats"></div>
       </div>
 
+      <!-- 右列 -->
       <div>
-        <div class="sec-title">性格侧写</div>
-        <div class="text-box" id="p-personality"></div>
-
-        <div class="sec-title" style="margin-top: 40px;">生平轨迹</div>
+        <div class="sec-title">TIMELINE <span>生平轨迹</span></div>
         <div class="timeline" id="p-timeline"></div>
-      </div>
 
-      <div class="full-width">
-        <div class="sec-title">人际羁绊</div>
-        <div class="relations-grid" id="p-relations"></div>
+        <div class="sec-title" style="margin-top: 60px;">RELATIONS <span>人际羁绊</span></div>
+        <div class="relations-list" id="p-relations"></div>
       </div>
 
     </div>
     
-    <footer>俗缘诡事 · 秘档库</footer>
+    <footer>SUYUAN GUISHI</footer>
   </div>
 </div>
 
@@ -278,21 +295,28 @@
 
 <script>
   function renderDirectory() {
-    const grid = document.getElementById('dir-grid');
+    const list = document.getElementById('dir-list');
     if (typeof ocDatabase === 'undefined') {
-      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #c9423b; padding: 40px; border: 1px dashed #c9423b; font-family:var(--serif); background:rgba(255,255,255,0.8)"><h3>卷宗加载失败</h3><p>未找到 data.js 文件</p></div>`;
+      list.innerHTML = `<div style="text-align: center; color: #b84040; padding: 40px; border-bottom: 1px solid #b84040;">卷宗加载失败，未找到 data.js</div>`;
       return;
     }
-    grid.innerHTML = '';
-    ocDatabase.forEach(oc => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.onclick = function() { showProfile(oc.id); };
-      card.innerHTML = `
-        <div class="card-name">${oc.name}</div>
-        <div class="card-title">${oc.title}</div>
+    list.innerHTML = '';
+    ocDatabase.forEach((oc, index) => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.onclick = function() { showProfile(oc.id); };
+      
+      // 生成序号，比如 01, 02
+      const num = String(index + 1).padStart(2, '0');
+      
+      item.innerHTML = `
+        <div class="item-left">
+          <span class="item-index">${num}</span>
+          <span class="item-name">${oc.name}</span>
+        </div>
+        <div class="item-title">${oc.title}</div>
       `;
-      grid.appendChild(card);
+      list.appendChild(item);
     });
   }
 
@@ -303,14 +327,14 @@
   }
 
   function renderRadarChart(stats, containerId) {
-    const width = 300, height = 260;
-    const cx = width / 2, cy = height / 2 + 10;
-    const r = 80; 
+    const width = 300, height = 280;
+    const cx = width / 2, cy = height / 2;
+    const r = 90; 
     const keys = Object.keys(stats); 
     const n = keys.length; 
     const maxVal = 6; 
     
-    let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:300px; overflow:visible;">`;
+    let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:350px; overflow:visible;">`;
     
     for (let level = 1; level <= maxVal; level++) {
       let points = [];
@@ -321,15 +345,16 @@
         let y = cy + currentR * Math.sin(angle);
         points.push(`${x},${y}`);
       }
-      let strokeColor = level === maxVal ? "rgba(51, 48, 46, 0.3)" : "rgba(51, 48, 46, 0.08)";
-      svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" />`;
+      // 极细的虚线框
+      let strokeColor = level === maxVal ? "rgba(26, 26, 26, 0.2)" : "rgba(26, 26, 26, 0.05)";
+      svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="${level === maxVal ? '0' : '2 2'}" />`;
     }
     
     for (let i = 0; i < n; i++) {
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
       let x = cx + r * Math.cos(angle);
       let y = cy + r * Math.sin(angle);
-      svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(51, 48, 46, 0.1)" stroke-width="1" />`;
+      svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(26, 26, 26, 0.08)" stroke-width="1" />`;
     }
     
     let dataPoints = [];
@@ -342,7 +367,8 @@
       dataPoints.push(`${x},${y}`);
     }
     
-    svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(61, 115, 105, 0.08)" stroke="#555555" stroke-width="1.5" stroke-linejoin="round" />`;
+    // 极淡的墨绿填充，深绿描边
+    svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(74, 98, 85, 0.1)" stroke="#4a6255" stroke-width="1.5" stroke-linejoin="round" />`;
     
     for (let i = 0; i < n; i++) {
       let key = keys[i];
@@ -352,9 +378,9 @@
       let x = cx + currentR * Math.cos(angle);
       let y = cy + currentR * Math.sin(angle);
       
-      svg += `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#555555" stroke-width="1.5" />`;
+      svg += `<circle cx="${x}" cy="${y}" r="2.5" fill="#f7f6f1" stroke="#b84040" stroke-width="1.5" />`;
       
-      let labelR = r + 20;
+      let labelR = r + 25;
       let lx = cx + labelR * Math.cos(angle);
       let ly = cy + labelR * Math.sin(angle);
       
@@ -362,8 +388,8 @@
       if (Math.cos(angle) > 0.1) textAnchor = "start";
       else if (Math.cos(angle) < -0.1) textAnchor = "end";
       
-      svg += `<text x="${lx}" y="${ly}" fill="#2b2927" font-size="13" font-family="Noto Serif SC, serif" font-weight="bold" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
-      svg += `<text x="${lx}" y="${ly + 15}" fill="#7a756e" font-size="11" font-family="Noto Serif SC, serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
+      svg += `<text x="${lx}" y="${ly}" fill="#1a1a1a" font-size="13" font-family="Noto Serif SC, serif" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
+      svg += `<text x="${lx}" y="${ly + 16}" fill="#888" font-size="11" font-family="Oswald, sans-serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
     }
     
     svg += `</svg>`;
@@ -374,43 +400,48 @@
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
+    // 图片渲染
     const avatarBox = document.getElementById('p-avatar-box');
     if (oc.avatar) {
       avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
       const imgEl = avatarBox.querySelector('img');
       imgEl.onerror = function() {
         this.style.display = 'none';
-        avatarBox.innerHTML = `<div class="empty-text">暂无画像</div>`;
+        avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`;
       };
     } else {
-      avatarBox.innerHTML = `<div class="empty-text">暂无画像</div>`;
+      avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`;
     }
 
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
-    document.getElementById('p-top-id').textContent = `档案：${oc.id.toUpperCase()}`;
+    
+    const quoteStr = oc.personality ? oc.personality.split('。')[0] + '。' : '档案缺失';
+    document.getElementById('p-quote').textContent = quoteStr;
+    document.getElementById('p-top-id').textContent = `ID: ${oc.id.toUpperCase()}`;
 
-    const infoGrid = document.getElementById('p-info-grid');
-    infoGrid.innerHTML = '';
+    // 基础信息
+    const infoList = document.getElementById('p-info-list');
+    infoList.innerHTML = '';
     oc.basic.forEach(b => {
-      infoGrid.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
+      infoList.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
     });
 
-    document.getElementById('p-personality').textContent = oc.personality || '暂无记录';
-
+    // 时间线
     const timelineBox = document.getElementById('p-timeline');
     timelineBox.innerHTML = '';
     oc.timeline.forEach(item => {
       timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`;
     });
 
+    // 关系
     const relationsBox = document.getElementById('p-relations');
     relationsBox.innerHTML = '';
     if (oc.relations && oc.relations.length > 0) {
       oc.relations.forEach(rel => {
         const exists = ocDatabase.find(o => o.id === rel.id);
         const hasLink = exists && rel.id !== '';
-        const cardClass = hasLink ? 'rel-card has-link' : 'rel-card no-link';
+        const cardClass = hasLink ? 'rel-item has-link' : 'rel-item no-link';
         
         const relCard = document.createElement('div');
         relCard.className = cardClass;
@@ -421,7 +452,7 @@
         relationsBox.appendChild(relCard);
       });
     } else {
-      relationsBox.innerHTML = '<div class="text-box">暂无记录</div>';
+      relationsBox.innerHTML = '<div class="tl-event">暂无记录</div>';
     }
 
     renderRadarChart(oc.stats, 'p-stats');
