@@ -2,7 +2,7 @@ const ocDatabase = [
   {
     id: "liangqing",
     name: "梁 青",
-    avatar: "liangqing.jpg", 
+    avatar: "liangqing.jpg",
     title: "民俗学专业大学生 / 半吊子风水师",
     basic: [
       { k: "性别", v: "男" },
@@ -28,18 +28,17 @@ const ocDatabase = [
     id: "yuanxingyi",
     name: "原行逸",
     avatar: "yuanxingyi.jpg",
-    title: "人仙 / 还俗散人 ",
+    title: "人仙 / 还俗散人",
     basic: [
       { k: "性别", v: "男" },
       { k: "年龄", v: "106" },
-      { k: "身高", v: "182cm" },   
+      { k: "身高", v: "182cm" },
       { k: "原名", v: "许天成" }
     ],
     personality: "随心所欲，慵懒随性。与时俱进的非传统意义老古董。",
     timeline: [
       { time: "出生", event: "江浙沪富商之子。" },
-      { time: "-", event: "道观接收难民，师兄弟参军死伤无数，道观覆灭后独自逃亡。" },
-      { time: "-", event: "-" },
+      { time: "过去", event: "道观接收难民，师兄弟参军死伤无数，道观覆灭后独自逃亡。" },
       { time: "现代", event: "喝茶遛鸟捞徒弟。" }
     ],
     relations: [
@@ -54,16 +53,15 @@ const ocDatabase = [
     avatar: "yeruan.jpg",
     title: "山中妖道",
     basic: [
-      { k: "性别", v: "男" },    
+      { k: "性别", v: "男" },
       { k: "享年", v: "26" },
       { k: "身高", v: "约190cm" }
     ],
     personality: "说话之乎者也，行为习惯相当原始。是一个脱离人的视角的存在。情感反应、语言系统、认知方式都和正常人不一样。像野兽。读经但不往脑子里去，只惦念成仙。",
     timeline: [
       { time: "6岁", event: "旅游大巴侧翻坠河，从河中爬出，大脑受创失忆。" },
-      { time: "-", event: "被老道士带回道观。无法忍受清规戒律，半夜遁逃。" },
-      { time: "-", event: "-" },
-      { time: "-", event: "搭救叶瑶。" },
+      { time: "过去", event: "被老道士带回道观。无法忍受清规戒律，半夜遁逃。" },
+      { time: "过去", event: "搭救叶瑶。" },
       { time: "26岁", event: "自刎。" }
     ],
     relations: [
@@ -77,17 +75,16 @@ const ocDatabase = [
     avatar: "yeyao.jpg",
     title: "苗医",
     basic: [
-      { k: "性别", v: "女" },   
+      { k: "性别", v: "女" },
       { k: "享年", v: "17" },
       { k: "身高", v: "156cm" },
       { k: "原名", v: "李招娣" }
     ],
-    personality: "-",
+    personality: "无记录",
     timeline: [
       { time: "出生", event: "贵州贫困农村女孩。" },
-      { time: "-", event: "-" },
       { time: "14岁", event: "送入精神卫生所。对电子设备产生PTSD。" },
-      { time: "-", event: "逃入山中被叶阮收留。" },
+      { time: "过去", event: "逃入山中被叶阮收留。" },
       { time: "17岁", event: "自杀。为叶阮入药。" }
     ],
     relations: [
@@ -104,9 +101,9 @@ const ocDatabase = [
     basic: [
       { k: "性别", v: "女" }
     ],
-    personality: "-",
+    personality: "无记录",
     timeline: [
-      { time: "-", event: "-" }
+      { time: "过去", event: "无记录" }
     ],
     relations: [
       { name: "原行逸", id: "yuanxingyi", desc: "莫逆之交。" }
@@ -123,9 +120,9 @@ const ocDatabase = [
       { k: "年龄", v: "24" },
       { k: "身高", v: "172cm" }
     ],
-    personality: "-",
+    personality: "无记录",
     timeline: [
-      { time: "-", event: "-" }
+      { time: "过去", event: "无记录" }
     ],
     relations: [
       { name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" }
@@ -142,12 +139,9 @@ const ocDatabase = [
       { k: "年龄", v: "21" },
       { k: "身高", v: "168cm" }
     ],
-    personality: "-",
+    personality: "无记录",
     timeline: [
-      { time: "-", event: "-" },
-      { time: "-", event: "-" },
-      { time: "-", event: "-" },
-      { time: "-", event: "-" }
+      { time: "过去", event: "无记录" }
     ],
     relations: [
       { name: "梁青", id: "liangqing", desc: "倒霉没用但好玩的前男友。" }
