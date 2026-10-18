@@ -85,16 +85,14 @@ const ocDatabase = [
     ],
     stats: { 力量: 3, 敏捷: 4, 体质: 2, 智力: 5, 意志: 3, 幸运: 4 },
     mutated_basic: [
-      { k: "状态", v: "已死亡 / 异变" },
-      { k: "形态", v: "虫化地缚灵" },
-      { k: "执念", v: "让叶阮活过来。" }
+      { k: "状态", v: "已逝" },
+      { k: "执念", v: "我们 要一起活下去" }
     ],
     mutated_timeline: [
-      { time: "17岁", event: "割腕自杀，被叶阮吃掉。" },
-      { time: "死后", event: "化为怨灵，盘踞槐吟山。" }
+      { time: "死后", event: "盘踞槐吟山，掠魂夺魄。" }
     ],
     mutated_relations: [
-      { name: "叶阮", desc: "不可触碰的执念。" }
+      { name: "叶阮", desc: "我爱你。" }
     ]
   },
   {
