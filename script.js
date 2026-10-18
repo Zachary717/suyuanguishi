@@ -61,30 +61,10 @@ function toggleGlitch() {
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let glitchChars = "█▓▒░#@%$&*!?<>";
+    let fullText = poem.repeat(30);
     
-    // 洗牌：打碎文字并掺入乱码
-    let glitchText = "";
-    for(let i=0; i<300; i++) {
-        let char = poem[Math.floor(Math.random() * poem.length)];
-        if(Math.random() > 0.8) {
-            char = glitchChars[Math.floor(Math.random() * glitchChars.length)];
-        }
-        glitchText += char;
-        if(Math.random() > 0.8) glitchText += " ";
-    }
-
-    // 将乱码文本复制多份填满
-    let fullText = glitchText.repeat(10);
-
-    // 生成三层叠加的乱码层
-    container.innerHTML = `
-      <div class="glitch-wrapper">
-        <div class="glitch-layer layer-3">${fullText}</div>
-        <div class="glitch-layer layer-2">${fullText}</div>
-        <div class="glitch-layer layer-1">${fullText}</div>
-      </div>
-    `;
+    // 核心：直接塞进去，强制重绘
+    container.innerHTML = `<div class="glitch-matrix">${fullText}</div>`;
   } else {
     container.innerHTML = '';
   }
