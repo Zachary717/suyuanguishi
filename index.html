@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>梁青 · 民俗档案</title>
+<title>俗缘诡事 · 角色档案库</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115; --bg2:#161920; --line:rgba(232,226,214,.12);
+    --bg:#090a0c; --bg2:#121419; --line:rgba(232,226,214,.1);
     --paper:#e8e2d6; --muted:#8b8f98;
-    --jade:#5ba39a; --cinnabar:#c03b36; --pink:#e78fb3;
+    --jade:#5ba39a; --cinnabar:#c03b36; --pink:#e78fb3; --gold:#c9a227;
     --serif:"Noto Serif SC","Songti SC",serif;
     --sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   }
@@ -19,182 +19,244 @@
   body{
     background:var(--bg); color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
   body::before{
     content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .wrap{max-width:1000px; margin:0 auto; padding:0 24px; position:relative; z-index:1}
   
-  .topbar{border-bottom:1px solid var(--line); padding:12px 0; font-size:11px; letter-spacing:.2em; color:var(--muted)}
-  .topbar .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+  .view{display:none; opacity:0; transition:opacity .5s ease; min-height:100vh; position:relative; z-index:1}
+  .view.active{display:block; opacity:1}
 
-  .hero{padding:60px 0; border-bottom:1px solid var(--line)}
-  .hero-grid{display:grid; grid-template-columns:260px 1fr; gap:40px; align-items:end}
-
-  .portrait{
-    position:relative; aspect-ratio:3/4; border:1px solid var(--line);
-    background:linear-gradient(180deg,#1a1e26,#0f1115); overflow:hidden;
+  /* 首页 */
+  #view-home{display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px}
+  .home-title{
+    font-family:var(--serif); font-size:clamp(50px, 12vw, 100px); font-weight:900;
+    letter-spacing:.2em; margin-bottom:20px; text-shadow:0 0 20px rgba(192,69,58,.3);
+    background:linear-gradient(180deg, #fff, #c9a227); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   }
-  .portrait::after{content:""; position:absolute; inset:8px; border:1px solid rgba(91,163,154,.2); pointer-events:none}
-  .portrait img{width:100%; height:100%; object-fit:cover; position:relative; z-index:2}
-  .portrait .ph{
-    position:absolute; inset:0; display:grid; place-content:center; text-align:center;
-    font-size:12px; letter-spacing:.2em; color:rgba(139,143,152,.6);
+  .home-subtitle{font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:60px}
+  .btn{
+    display:inline-block; padding:12px 36px; border:1px solid var(--cinnabar);
+    color:var(--cinnabar); font-family:var(--serif); font-size:16px; letter-spacing:.2em;
+    cursor:pointer; background:transparent; transition:.3s; text-decoration:none;
   }
+  .btn:hover{background:var(--cinnabar); color:var(--bg)}
 
-  .doc-line{display:flex; gap:16px; align-items:center; font-size:11px; letter-spacing:.15em; color:var(--muted); margin-bottom:20px; flex-wrap:wrap}
-  .stamp{border:2px solid var(--cinnabar); color:var(--cinnabar); font-weight:900; padding:1px 6px; transform:rotate(-6deg)}
+  /* 目录 */
+  #view-directory{padding:60px 24px}
+  .dir-header{text-align:center; margin-bottom:50px}
+  .dir-header h1{font-family:var(--serif); font-size:32px; letter-spacing:.2em; color:var(--paper)}
+  .dir-header p{font-size:12px; color:var(--muted); letter-spacing:.2em; margin-top:10px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:20px; max-width:1000px; margin:0 auto}
+  .card{
+    border:1px solid var(--line); background:var(--bg2); padding:24px; cursor:pointer;
+    transition:.3s; position:relative; overflow:hidden;
+  }
+  .card::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--jade); opacity:0; transition:.3s}
+  .card:hover{border-color:rgba(91,163,154,.4); transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.3)}
+  .card:hover::before{opacity:1}
+  .card-name{font-family:var(--serif); font-size:24px; font-weight:600; letter-spacing:.1em; margin-bottom:8px}
+  .card-title{font-size:12px; color:var(--jade); margin-bottom:16px; letter-spacing:.05em}
+  .card-tags{display:flex; flex-wrap:wrap; gap:6px}
+  .card-tags span{font-size:10px; border:1px solid var(--line); padding:2px 8px; border-radius:999px; color:var(--muted)}
+
+  /* 详情 */
+  #view-profile{padding-bottom:80px}
+  .nav-top{position:sticky; top:0; z-index:50; background:rgba(9,10,12,.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); padding:15px 24px; display:flex; justify-content:space-between; align-items:center}
+  .back-btn{font-size:13px; color:var(--muted); cursor:pointer; letter-spacing:.1em; display:flex; align-items:center; gap:6px}
+  .back-btn:hover{color:var(--paper)}
+  .profile-wrap{max-width:900px; margin:0 auto; padding:40px 24px}
+  .p-header{border-bottom:1px solid var(--line); padding-bottom:30px; margin-bottom:40px; position:relative}
+  .p-header::after{content:""; position:absolute; left:0; bottom:-1px; width:60px; height:2px; background:var(--cinnabar)}
+  .p-name{font-family:var(--serif); font-size:clamp(36px, 6vw, 54px); font-weight:900; letter-spacing:.15em; margin-bottom:10px}
+  .p-title{font-family:var(--serif); font-size:16px; color:var(--jade); letter-spacing:.1em; margin-bottom:16px}
+  .p-tags{display:flex; gap:8px; flex-wrap:wrap}
+  .p-tags span{font-size:11px; background:rgba(192,69,58,.1); color:var(--cinnabar); border:1px solid rgba(192,69,58,.3); padding:2px 10px; border-radius:999px}
+
+  .p-sec{margin-bottom:40px}
+  .p-sec h3{font-family:var(--serif); font-size:18px; letter-spacing:.1em; color:var(--gold); margin-bottom:20px; display:flex; align-items:center; gap:10px}
+  .p-sec h3::after{content:""; flex:1; height:1px; background:var(--line)}
   
-  h1{font-family:var(--serif); font-size:clamp(40px,6vw,60px); font-weight:900; letter-spacing:.15em; line-height:1.1; margin-bottom:12px}
-  .alias{font-family:var(--serif); font-size:15px; color:var(--jade); letter-spacing:.1em; margin-bottom:24px}
-  
-  .tags{display:flex; flex-wrap:wrap; gap:8px}
-  .tags span{
-    font-size:11px; letter-spacing:.1em; color:var(--paper);
-    border:1px solid rgba(231,143,179,.3); background:rgba(231,143,179,.08);
-    padding:4px 12px; border-radius:999px;
-  }
+  .info-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1px; background:var(--line); border:1px solid var(--line)}
+  .info-item{background:var(--bg2); padding:14px 18px}
+  .info-item .k{font-size:11px; color:var(--muted); letter-spacing:.1em; margin-bottom:4px; display:block}
+  .info-item .v{font-family:var(--serif); font-size:15px}
 
-  section{padding:60px 0; border-bottom:1px solid var(--line)}
-  .sec-title{display:flex; align-items:baseline; gap:16px; margin-bottom:32px}
-  .sec-title h2{font-family:var(--serif); font-size:20px; font-weight:600; letter-spacing:.15em}
-  .sec-title .rule{flex:1; height:1px; background:var(--line); transform:translateY(-3px)}
+  .p-text{font-size:14.5px; color:#c9c4b8; line-height:2; text-align:justify}
 
-  .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line)}
-  .fact{background:var(--bg2); padding:16px 20px}
-  .fact .k{display:block; font-size:11px; letter-spacing:.15em; color:var(--muted); margin-bottom:4px}
-  .fact .v{font-family:var(--serif); font-size:15px; color:#eee9de}
+  /* 时间线 */
+  .timeline{position:relative; padding-left:20px; margin-top:10px}
+  .timeline::before{content:""; position:absolute; left:4px; top:8px; bottom:8px; width:1px; background:linear-gradient(180deg, var(--gold), rgba(201,162,39,.1))}
+  .tl-item{position:relative; padding-bottom:28px; padding-left:24px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:""; position:absolute; left:-20px; top:7px; width:9px; height:9px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 4px rgba(201,162,39,.15)}
+  .tl-time{font-family:var(--serif); font-size:13px; font-weight:600; color:var(--gold); letter-spacing:.1em; margin-bottom:4px}
+  .tl-event{font-size:14px; color:#c9c4b8; line-height:1.9}
 
-  .prose p{margin-bottom:16px; color:#c9c4b8; font-size:14.5px; line-height:2}
-  .prose p:last-child{margin-bottom:0}
+  /* 六维图 */
+  .stats-box{border:1px solid var(--line); padding:24px; background:rgba(255,255,255,.01)}
+  .stat-row{display:flex; align-items:center; margin-bottom:12px; gap:16px}
+  .stat-row:last-child{margin-bottom:0}
+  .stat-label{width:40px; font-family:var(--serif); font-size:14px; color:var(--muted)}
+  .stat-bar-bg{flex:1; height:4px; background:rgba(232,226,214,.1); position:relative; border-radius:2px; overflow:hidden}
+  .stat-bar{position:absolute; left:0; top:0; bottom:0; background:var(--jade); border-radius:2px; transition:width 1s ease}
+  .stat-val{width:20px; font-family:ui-monospace,monospace; font-size:13px; color:var(--paper); text-align:right}
 
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:24px}
-  .box{border:1px solid var(--line); padding:24px; background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
-  .box h3{font-family:var(--serif); font-size:16px; color:var(--jade); margin-bottom:12px; letter-spacing:.1em}
-  .box p{font-size:14px; color:#a9a49a; margin-bottom:8px}
-
-  footer{padding:60px 0; text-align:center; font-size:11px; letter-spacing:.2em; color:var(--muted); line-height:2.2}
-
-  @media (max-width:768px){
-    .hero-grid{grid-template-columns:1fr; gap:30px}
-    .portrait{max-width:220px}
-    .grid-2{grid-template-columns:1fr}
-    section{padding:44px 0}
-  }
+  footer{padding:40px 0; text-align:center; font-size:11px; letter-spacing:.2em; color:var(--muted); border-top:1px solid var(--line); margin-top:40px}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="wrap">
-    <span>民俗学特别观察档案</span>
-    <span id="top-id"></span>
+<div id="view-home" class="view active">
+  <h1 class="home-title">俗缘诡事</h1>
+  <p class="home-subtitle">玄门异闻 · 尘世诡录</p>
+  <button class="btn" onclick="showDirectory()">启封档案</button>
+</div>
+
+<div id="view-directory" class="view">
+  <div class="dir-header">
+    <h1>人物索引</h1>
+    <p>档案卷宗 · 点击查阅</p>
+  </div>
+  <div class="grid" id="dir-grid"></div>
+</div>
+
+<div id="view-profile" class="view">
+  <div class="nav-top">
+    <div class="back-btn" onclick="showDirectory()">← 返回索引</div>
+    <div style="font-size:11px; color:var(--muted); letter-spacing:.1em" id="p-top-id">档案号</div>
+  </div>
+  <div class="profile-wrap">
+    <div class="p-header">
+      <h1 class="p-name" id="p-name"></h1>
+      <div class="p-title" id="p-title"></div>
+      <div class="p-tags" id="p-tags"></div>
+    </div>
+
+    <div class="p-sec">
+      <h3>基础信息</h3>
+      <div class="info-grid" id="p-info-grid"></div>
+    </div>
+
+    <div class="p-sec">
+      <h3>六维属性</h3>
+      <div class="stats-box" id="p-stats"></div>
+    </div>
+
+    <div class="p-sec">
+      <h3>外貌特征</h3>
+      <p class="p-text" id="p-appearance"></p>
+    </div>
+
+    <div class="p-sec">
+      <h3>性格侧写</h3>
+      <p class="p-text" id="p-personality"></p>
+    </div>
+
+    <div class="p-sec">
+      <h3>生平轨迹</h3>
+      <div class="timeline" id="p-timeline"></div>
+    </div>
+
+    <div class="p-sec">
+      <h3>人际羁绊</h3>
+      <p class="p-text" id="p-relations"></p>
+    </div>
+
+    <footer>
+      <p>俗缘诡事 · 档案库</p>
+    </footer>
   </div>
 </div>
 
-<header class="hero">
-  <div class="wrap hero-grid">
-    <div class="portrait">
-      <img id="oc-img" src="" alt="角色立绘" onerror="this.style.display='none'">
-      <div class="ph" id="ph-text">角色立绘</div>
-    </div>
-    <div>
-      <div class="doc-line">
-        <span id="security-level"></span>
-        <span class="stamp">机密</span>
-        <span>录入时间：近期</span>
-      </div>
-      <h1 id="oc-name"></h1>
-      <div class="alias" id="oc-title"></div>
-      <div class="tags" id="oc-tags"></div>
-    </div>
-  </div>
-</header>
-
-<section id="base">
-  <div class="wrap">
-    <div class="sec-title"><h2>基本信息</h2><span class="rule"></span></div>
-    <div class="facts" id="basic-facts"></div>
-  </div>
-</section>
-
-<section id="personality">
-  <div class="wrap">
-    <div class="sec-title"><h2>性格与喜好</h2><span class="rule"></span></div>
-    <div class="grid-2">
-      <div class="box">
-        <h3>性格侧写</h3>
-        <div class="prose" id="personality-text"></div>
-      </div>
-      <div class="box">
-        <h3>喜欢与讨厌</h3>
-        <p><strong style="color:var(--jade)">好感 / 偏好：</strong><span id="likes"></span></p>
-        <p style="margin-top:12px"><strong style="color:var(--cinnabar)">雷区 / 恐惧：</strong><span id="dislikes"></span></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="background">
-  <div class="wrap">
-    <div class="sec-title"><h2>生平纪实</h2><span class="rule"></span></div>
-    <div class="prose" id="background-text"></div>
-  </div>
-</section>
-
-<footer>
-  <p>档案编号：<span id="footer-id"></span></p>
-  <p>未经许可，禁止外传</p>
-</footer>
-
 <script src="data.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("top-id").textContent = ocData.archiveId;
-    document.getElementById("oc-name").textContent = ocData.name;
-    document.getElementById("oc-title").textContent = ocData.title;
-    document.getElementById("security-level").textContent = ocData.securityLevel;
-    document.getElementById("footer-id").textContent = ocData.archiveId;
+  function renderDirectory() {
+    const grid = document.getElementById('dir-grid');
+    grid.innerHTML = '';
+    ocDatabase.forEach(oc => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.onclick = () => showProfile(oc.id);
+      const tagsHtml = oc.tags.map(t => `<span>${t}</span>`).join('');
+      card.innerHTML = `
+        <div class="card-name">${oc.name}</div>
+        <div class="card-title">${oc.title}</div>
+        <div class="card-tags">${tagsHtml}</div>
+      `;
+      grid.appendChild(card);
+    });
+  }
 
-    if(ocData.tags) {
-      const tagsDiv = document.getElementById("oc-tags");
-      ocData.tags.forEach(tag => {
-        let span = document.createElement("span");
-        span.textContent = tag;
-        tagsDiv.appendChild(span);
-      });
-    }
+  function switchView(viewId) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+    window.scrollTo(0, 0);
+  }
 
-    if(ocData.image) {
-      let img = document.getElementById("oc-img");
-      img.src = ocData.image;
-      img.style.display = 'block';
-      document.getElementById("ph-text").style.display = 'none';
-    }
+  function showDirectory() {
+    switchView('view-directory');
+  }
 
-    const factsDiv = document.getElementById("basic-facts");
-    ocData.basicFacts.forEach(fact => {
-      let div = document.createElement("div");
-      div.className = "fact";
-      div.innerHTML = `<span class="k">${fact.k}</span><span class="v">${fact.v}</span>`;
-      factsDiv.appendChild(div);
+  function showProfile(id) {
+    const oc = ocDatabase.find(o => o.id === id);
+    if(!oc) return;
+
+    document.getElementById('p-name').textContent = oc.name;
+    document.getElementById('p-title').textContent = oc.title;
+    document.getElementById('p-top-id').textContent = `编号: ${oc.id.toUpperCase()}`;
+
+    document.getElementById('p-tags').innerHTML = oc.tags.map(t => `<span>${t}</span>`).join('');
+
+    const infoGrid = document.getElementById('p-info-grid');
+    infoGrid.innerHTML = '';
+    oc.basic.forEach(b => {
+      infoGrid.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
     });
 
-    const renderParagraphs = (containerId, textArray) => {
-      const container = document.getElementById(containerId);
-      textArray.forEach(text => {
-        let p = document.createElement("p");
-        p.textContent = text;
-        container.appendChild(p);
+    document.getElementById('p-appearance').textContent = oc.appearance || '暂无记录';
+    document.getElementById('p-personality').textContent = oc.personality || '暂无记录';
+    document.getElementById('p-relations').textContent = oc.relations || '暂无记录';
+
+    // 渲染时间线
+    const timelineBox = document.getElementById('p-timeline');
+    timelineBox.innerHTML = '';
+    if(oc.timeline && oc.timeline.length > 0) {
+      oc.timeline.forEach(item => {
+        timelineBox.innerHTML += `
+          <div class="tl-item">
+            <div class="tl-time">${item.time}</div>
+            <div class="tl-event">${item.event}</div>
+          </div>
+        `;
       });
-    };
+    } else {
+      timelineBox.innerHTML = '<p class="p-text">暂无生平记录。</p>';
+    }
 
-    renderParagraphs("personality-text", ocData.personality);
-    renderParagraphs("background-text", ocData.background);
+    // 渲染六维
+    const statsBox = document.getElementById('p-stats');
+    statsBox.innerHTML = '';
+    const maxStat = 6;
+    for (const [key, val] of Object.entries(oc.stats)) {
+      const percent = (val / maxStat) * 100;
+      const barColor = (key === '幸运' || key === '意志') ? 'var(--cinnabar)' : 'var(--jade)';
+      statsBox.innerHTML += `
+        <div class="stat-row">
+          <div class="stat-label">${key}</div>
+          <div class="stat-bar-bg"><div class="stat-bar" style="width:${percent}%; background:${barColor}"></div></div>
+          <div class="stat-val">${val}</div>
+        </div>
+      `;
+    }
 
-    document.getElementById("likes").textContent = ocData.preferences.likes.join(" · ");
-    document.getElementById("dislikes").textContent = ocData.preferences.dislikes.join(" · ");
+    switchView('view-profile');
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderDirectory();
   });
 </script>
 </body>
