@@ -60,9 +60,32 @@ function toggleGlitch() {
   
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
-    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let fullText = poem.repeat(30);
-    container.innerHTML = `<div class="glitch-matrix">${fullText}</div>`;
+    // 拼接诗句并混入乱码字符
+    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+    let glitchChars = "█▓▒░#@%$&*!?<>";
+    
+    // 插入乱码
+    let mixedText = "";
+    for(let i=0; i<poem.length; i++) {
+        mixedText += poem[i];
+        // 随机在字后面加乱码
+        if(Math.random() > 0.85 && poem[i] !== '<' && poem[i] !== 'b' && poem[i] !== 'r' && poem[i] !== '>') {
+            mixedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        }
+    }
+
+    // 去除 HTML 标签用于 data-text
+    let rawText = mixedText.replace(/<[^>]*>?/gm, '');
+
+    // 注入 DOM，触发 CSS 动画
+    container.innerHTML = `<div class="glitch-text-box" data-text="${rawText}">${mixedText}</div>`;
+    
+    // 强制浏览器重绘，确保每次点击都重新播放“开门杀”
+    const box = container.querySelector('.glitch-text-box');
+    box.style.animation = 'none';
+    void box.offsetWidth; 
+    box.style.animation = null;
+
   } else {
     container.innerHTML = '';
   }
