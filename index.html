@@ -47,7 +47,7 @@
   .p-name { font-size:clamp(60px,10vw,100px); font-weight:900; letter-spacing:.15em; margin-bottom:20px; transition: color 0.6s; }
   .p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; transition: color 0.6s, border-color 0.6s; }
 
-  .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; position: relative; z-index: 20; }
+  .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; position: relative; z-index: 20; /* 内容保证在最顶层 */ }
   .sec-title { font-family:"Oswald",sans-serif; font-size:24px; font-weight:200; margin-bottom:30px; display:flex; align-items:center; gap:15px; transition:.6s; }
   .sec-title::before { content:""; width:20px; height:1px; background:var(--red); transition:.6s; }
   .sec-title span { font-size:12px; color:var(--muted); font-family:"Noto Serif SC",serif; }
@@ -72,25 +72,47 @@
   .rel-desc { font-size:13px; color:var(--muted); flex:1; }
   footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); transition:.6s; position: relative; z-index: 20;}
 
-  /* 满屏闪现矩阵层 */
-  .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #050505; z-index: 100; display: none; overflow: hidden; pointer-events: none; }
-  body.glitch-mode .glitch-overlay { display: block; animation: entrance 1.5s steps(2) forwards, ghost 15s 1.5s infinite steps(2); }
+  /* =========================================
+     👻 幽灵游荡与波浪扭曲特效
+     ========================================= */
+  .glitch-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: transparent; /* 去掉了黑底！ */
+    z-index: 10; /* 夹在背景和正文之间 */
+    display: none; pointer-events: none; overflow: hidden;
+  }
+  body.glitch-mode .glitch-overlay { display: block; }
 
-  .glitch-text-matrix { width: 100%; height: 100%; display: flex; flex-direction: row-reverse; justify-content: flex-start; align-items: flex-start; flex-wrap: wrap; overflow: hidden; }
-  .glitch-col { writing-mode: vertical-rl; text-orientation: upright; font-family: "Noto Serif SC", serif; font-size: 16px; line-height: 1.2; color: rgba(220, 20, 20, 0.85); font-weight: 900; text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.7), -3px 0px 0px rgba(255, 0, 0, 0.9); padding: 10px 4px; white-space: nowrap; }
-  .glitch-col:nth-child(even) { opacity: 0.6; }
-  .glitch-col:nth-child(3n) { color: rgba(0, 255, 255, 0.6); text-shadow: 3px 0px 0px rgba(220, 20, 20, 0.8), -3px 0px 0px rgba(0, 255, 255, 0.8); }
-  .glitch-col:nth-child(5n) { font-size: 20px; opacity: 0.3; }
+  /* 散落四处的文字块 */
+  .glitch-block {
+    position: absolute; font-family: "Noto Serif SC", serif; font-weight: 900; font-size: 20px;
+    color: rgba(220, 20, 20, 0.4); /* 初始半透明暗红 */
+    text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.6), -3px 0px 0px rgba(255, 0, 0, 0.8); /* 经典错位 */
+    opacity: 0; white-space: nowrap;
+    filter: url(#wave); /* 应用 SVG 波浪扭曲 */
+  }
 
-  @keyframes entrance { 0% { opacity: 0; } 20% { opacity: 1; } 40% { opacity: 0.1; } 60% { opacity: 1; } 80% { opacity: 0.4; } 100% { opacity: 0; } }
-  @keyframes ghost { 0%, 92% { opacity: 0; } 94% { opacity: 1; } 96% { opacity: 0; } 98%, 100% { opacity: 0; } }
+  /* 不同位置的块，不同的闪烁延迟和位置 */
+  .block-1 { top: 15%; left: -5%; animation: wander 6s 0s infinite steps(2); }
+  .block-2 { top: 40%; right: -10%; animation: wander 7s 1s infinite steps(2); font-size: 24px; color: rgba(220, 20, 20, 0.6);}
+  .block-3 { top: 70%; left: 10%; animation: wander 5s 2s infinite steps(2); font-size: 18px;}
+  .block-4 { top: 85%; right: 5%; animation: wander 8s 3s infinite steps(2); color: rgba(0, 255, 255, 0.5); text-shadow: 3px 0px 0px rgba(220, 20, 20, 0.8);}
 
-  /* 里世界基础配色 */
+  /* 游荡闪烁动画：错位跳跃 + 显隐 */
+  @keyframes wander {
+    0%, 80% { opacity: 0; transform: translate(0, 0) scale(1); }
+    82% { opacity: 1; transform: translate(20px, -10px) scale(1.05); } /* 在右下角闪现 */
+    86% { opacity: 0.2; transform: translate(-10px, 15px) scale(0.95); }
+    90% { opacity: 1; transform: translate(0, 0) scale(1); }
+    95%, 100% { opacity: 0; transform: translate(0, 0); }
+  }
+
+  /* 基础里世界配色 */
   body.glitch-mode {
     --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
-    background-color: var(--bg); background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px); background-size: 100% 100vh; animation: scan 10s linear infinite;
+    background-color: var(--bg);
+    background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
   }
-  @keyframes scan { 0% { background-position: 0 0; } 100% { background-position: 0 100vh; } }
   body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
   body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
   body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
@@ -107,13 +129,29 @@
     .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
     .content-grid { grid-template-columns:1fr; gap:50px; }
     .glitch-trigger { top:80px; right:20px; }
-    .glitch-col { font-size: 14px; padding: 5px 2px; }
+    .glitch-block { font-size: 14px; } 
   }
 </style>
 </head>
 <body>
 
-<div class="glitch-overlay"><div class="glitch-text-matrix" id="glitch-matrix"></div></div>
+<!-- SVG 滤镜用于文字波浪扭曲 -->
+<svg width="0" height="0" style="position:absolute;">
+  <filter id="wave">
+    <feTurbulence type="fractalNoise" baseFrequency="0.02 0.1" numOctaves="1" result="noise">
+      <animate attributeName="baseFrequency" values="0.02 0.1;0.05 0.1;0.02 0.1" dur="0.5s" repeatCount="indefinite" />
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
+<!-- 散落四处的幽灵文字 -->
+<div class="glitch-overlay">
+  <div class="glitch-block block-1">此恨何时已。滴空阶、寒更雨歇，葬花天气。</div>
+  <div class="glitch-block block-2">三载悠悠魂梦杳，是梦久应醒矣。</div>
+  <div class="glitch-block block-3">料也觉、人间无味。不及夜台尘土隔，冷清清、一片埋愁地。</div>
+  <div class="glitch-block block-4">清泪尽，纸灰起。</div>
+</div>
 
 <div id="view-main" class="view active">
   <header class="main-header"><img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'"></header>
@@ -161,13 +199,6 @@
   let currentActiveId = "";
 
   window.onload = function() {
-    // 生成文字矩阵
-    const poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，冷清清、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let html = '';
-    for(let i=0; i<40; i++) html += `<div class="glitch-col">${poem}</div>`;
-    document.getElementById('glitch-matrix').innerHTML = html;
-
-    // 渲染首页
     const list = document.getElementById('dir-list');
     if (typeof ocDatabase === 'undefined') {
       list.innerHTML = `<div style="color: #b84040; background: #fff; border: 1px dashed #b84040; padding: 20px; text-align: center; font-weight: bold; font-family: sans-serif;">❌ 数据读取失败！请检查 data.js 格式。</div>`;
@@ -197,10 +228,6 @@
   function toggleGlitch() {
     isGlitchMode = !isGlitchMode;
     document.body.classList.toggle('glitch-mode', isGlitchMode);
-    const overlay = document.querySelector('.glitch-overlay');
-    overlay.style.animation = 'none';
-    overlay.offsetHeight; 
-    overlay.style.animation = null;
     showProfile(currentActiveId, true);
   }
 
