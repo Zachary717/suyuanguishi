@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>梁青 · 民俗档案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1115; --bg2:#161920; --line:rgba(232,226,214,.12);
+    --paper:#e8e2d6; --muted:#8b8f98;
+    --jade:#5ba39a; --cinnabar:#c03b36; --pink:#e78fb3;
+    --serif:"Noto Serif SC","Songti SC",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--paper); font-family:var(--sans);
+    line-height:1.8; -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .wrap{max-width:1000px; margin:0 auto; padding:0 24px; position:relative; z-index:1}
+  
+  .topbar{border-bottom:1px solid var(--line); padding:12px 0; font-size:11px; letter-spacing:.2em; color:var(--muted)}
+  .topbar .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px}
+
+  .hero{padding:60px 0; border-bottom:1px solid var(--line)}
+  .hero-grid{display:grid; grid-template-columns:260px 1fr; gap:40px; align-items:end}
+
+  .portrait{
+    position:relative; aspect-ratio:3/4; border:1px solid var(--line);
+    background:linear-gradient(180deg,#1a1e26,#0f1115); overflow:hidden;
+  }
+  .portrait::after{content:""; position:absolute; inset:8px; border:1px solid rgba(91,163,154,.2); pointer-events:none}
+  .portrait img{width:100%; height:100%; object-fit:cover; position:relative; z-index:2}
+  .portrait .ph{
+    position:absolute; inset:0; display:grid; place-content:center; text-align:center;
+    font-size:12px; letter-spacing:.2em; color:rgba(139,143,152,.6);
+  }
+
+  .doc-line{display:flex; gap:16px; align-items:center; font-size:11px; letter-spacing:.15em; color:var(--muted); margin-bottom:20px; flex-wrap:wrap}
+  .stamp{border:2px solid var(--cinnabar); color:var(--cinnabar); font-weight:900; padding:1px 6px; transform:rotate(-6deg)}
+  
+  h1{font-family:var(--serif); font-size:clamp(40px,6vw,60px); font-weight:900; letter-spacing:.15em; line-height:1.1; margin-bottom:12px}
+  .alias{font-family:var(--serif); font-size:15px; color:var(--jade); letter-spacing:.1em; margin-bottom:24px}
+  
+  .tags{display:flex; flex-wrap:wrap; gap:8px}
+  .tags span{
+    font-size:11px; letter-spacing:.1em; color:var(--paper);
+    border:1px solid rgba(231,143,179,.3); background:rgba(231,143,179,.08);
+    padding:4px 12px; border-radius:999px;
+  }
+
+  section{padding:60px 0; border-bottom:1px solid var(--line)}
+  .sec-title{display:flex; align-items:baseline; gap:16px; margin-bottom:32px}
+  .sec-title h2{font-family:var(--serif); font-size:20px; font-weight:600; letter-spacing:.15em}
+  .sec-title .rule{flex:1; height:1px; background:var(--line); transform:translateY(-3px)}
+
+  .facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line)}
+  .fact{background:var(--bg2); padding:16px 20px}
+  .fact .k{display:block; font-size:11px; letter-spacing:.15em; color:var(--muted); margin-bottom:4px}
+  .fact .v{font-family:var(--serif); font-size:15px; color:#eee9de}
+
+  .prose p{margin-bottom:16px; color:#c9c4b8; font-size:14.5px; line-height:2}
+  .prose p:last-child{margin-bottom:0}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:24px}
+  .box{border:1px solid var(--line); padding:24px; background:linear-gradient(180deg,rgba(255,255,255,.02),transparent)}
+  .box h3{font-family:var(--serif); font-size:16px; color:var(--jade); margin-bottom:12px; letter-spacing:.1em}
+  .box p{font-size:14px; color:#a9a49a; margin-bottom:8px}
+
+  footer{padding:60px 0; text-align:center; font-size:11px; letter-spacing:.2em; color:var(--muted); line-height:2.2}
+
+  @media (max-width:768px){
+    .hero-grid{grid-template-columns:1fr; gap:30px}
+    .portrait{max-width:220px}
+    .grid-2{grid-template-columns:1fr}
+    section{padding:44px 0}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>民俗学特别观察档案</span>
+    <span id="top-id"></span>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="portrait">
+      <img id="oc-img" src="" alt="角色立绘" onerror="this.style.display='none'">
+      <div class="ph" id="ph-text">角色立绘</div>
+    </div>
+    <div>
+      <div class="doc-line">
+        <span id="security-level"></span>
+        <span class="stamp">机密</span>
+        <span>录入时间：近期</span>
+      </div>
+      <h1 id="oc-name"></h1>
+      <div class="alias" id="oc-title"></div>
+      <div class="tags" id="oc-tags"></div>
+    </div>
+  </div>
+</header>
+
+<section id="base">
+  <div class="wrap">
+    <div class="sec-title"><h2>基本信息</h2><span class="rule"></span></div>
+    <div class="facts" id="basic-facts"></div>
+  </div>
+</section>
+
+<section id="personality">
+  <div class="wrap">
+    <div class="sec-title"><h2>性格与喜好</h2><span class="rule"></span></div>
+    <div class="grid-2">
+      <div class="box">
+        <h3>性格侧写</h3>
+        <div class="prose" id="personality-text"></div>
+      </div>
+      <div class="box">
+        <h3>喜欢与讨厌</h3>
+        <p><strong style="color:var(--jade)">好感 / 偏好：</strong><span id="likes"></span></p>
+        <p style="margin-top:12px"><strong style="color:var(--cinnabar)">雷区 / 恐惧：</strong><span id="dislikes"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="background">
+  <div class="wrap">
+    <div class="sec-title"><h2>生平纪实</h2><span class="rule"></span></div>
+    <div class="prose" id="background-text"></div>
+  </div>
+</section>
+
+<footer>
+  <p>档案编号：<span id="footer-id"></span></p>
+  <p>未经许可，禁止外传</p>
+</footer>
+
+<script src="data.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("top-id").textContent = ocData.archiveId;
+    document.getElementById("oc-name").textContent = ocData.name;
+    document.getElementById("oc-title").textContent = ocData.title;
+    document.getElementById("security-level").textContent = ocData.securityLevel;
+    document.getElementById("footer-id").textContent = ocData.archiveId;
+
+    if(ocData.tags) {
+      const tagsDiv = document.getElementById("oc-tags");
+      ocData.tags.forEach(tag => {
+        let span = document.createElement("span");
+        span.textContent = tag;
+        tagsDiv.appendChild(span);
+      });
+    }
+
+    if(ocData.image) {
+      let img = document.getElementById("oc-img");
+      img.src = ocData.image;
+      img.style.display = 'block';
+      document.getElementById("ph-text").style.display = 'none';
+    }
+
+    const factsDiv = document.getElementById("basic-facts");
+    ocData.basicFacts.forEach(fact => {
+      let div = document.createElement("div");
+      div.className = "fact";
+      div.innerHTML = `<span class="k">${fact.k}</span><span class="v">${fact.v}</span>`;
+      factsDiv.appendChild(div);
+    });
+
+    const renderParagraphs = (containerId, textArray) => {
+      const container = document.getElementById(containerId);
+      textArray.forEach(text => {
+        let p = document.createElement("p");
+        p.textContent = text;
+        container.appendChild(p);
+      });
+    };
+
+    renderParagraphs("personality-text", ocData.personality);
+    renderParagraphs("background-text", ocData.background);
+
+    document.getElementById("likes").textContent = ocData.preferences.likes.join(" · ");
+    document.getElementById("dislikes").textContent = ocData.preferences.dislikes.join(" · ");
+  });
+</script>
+</body>
+</html>
