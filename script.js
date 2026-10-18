@@ -18,7 +18,8 @@ window.onload = function() {
   if (btn) {
     const warning = document.createElement('div');
     warning.className = 'epilepsy-warning';
-    warning.innerHTML = 'WARNING: FLASHING LIGHTS';
+    // 修改为纯中文警告
+    warning.innerHTML = '本页包含极度闪烁与错乱画面，光敏性癫痫患者请勿点击';
     btn.parentNode.insertBefore(warning, btn);
     
     const observerBtn = new MutationObserver(() => {
@@ -83,7 +84,6 @@ function makeZalgo(text) {
 
 function triggerOpening() {
   const container = document.getElementById('glitch-matrix');
-  // 将诗句中的 <br><br> 替换为换行符，配合 left 对齐显示出“代码文本块”的感觉
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
   container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
@@ -105,7 +105,7 @@ function startTextFlicker() {
 
     flickerTimer = setTimeout(() => {
       if (!isGlitchMode) return;
-      let burstCount = Math.floor(Math.random() * 2) + 1; // 1 到 2 下
+      let burstCount = Math.floor(Math.random() * 2) + 1;
       triggerBurst(burstCount);
     }, nextDelay);
   }
