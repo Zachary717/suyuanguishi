@@ -35,7 +35,7 @@
   .view { display: none; opacity: 0; transition: opacity .4s ease; position: relative; z-index: 1; }
   .view.active { display: block; opacity: 1; }
 
-  /* ---------------- 主页面（标题 + 索引） ---------------- */
+  /* ---------------- 主页面 ---------------- */
   #view-main { padding-bottom: 60px; }
   
   .main-header {
@@ -45,35 +45,24 @@
     border-bottom: 1px solid var(--line);
   }
   
-  .header-content { 
-    display: flex; flex-direction: column; align-items: center; 
-    gap: 24px; width: 100%;
-  }
+  .header-content { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
   
-  /* 横版古风副标题 */
   .home-subtitle {
     font-family: var(--serif); font-size: 14px; 
     letter-spacing: .4em; color: var(--gold);
-    display: flex; align-items: center; gap: 16px;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 16px; white-space: nowrap;
   }
   .home-subtitle::before, .home-subtitle::after {
     content: ""; display: block; width: 50px; height: 1px; 
     background: linear-gradient(90deg, transparent, var(--gold));
   }
-  .home-subtitle::after {
-    background: linear-gradient(90deg, var(--gold), transparent);
-  }
+  .home-subtitle::after { background: linear-gradient(90deg, var(--gold), transparent); }
 
-  /* 图片标题专属样式 */
   .home-title-img {
-    max-width: 90vw; /* 适应手机屏幕 */
-    max-height: 180px; /* 限制高度，防止横版图片过大 */
-    object-fit: contain; 
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); /* 给图片加一点淡淡阴影，更立体 */
+    max-width: 90vw; max-height: 180px; object-fit: contain; 
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
   }
 
-  /* 索引目录区 */
   .directory-section { padding: 40px 20px 0 20px; }
   .dir-header { text-align: center; margin-bottom: 30px; }
   .dir-header h2 { font-family: var(--kai); font-size: 28px; letter-spacing: .2em; color: var(--paper); }
@@ -159,13 +148,12 @@
   .tl-time { font-family: var(--kai); font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .1em; margin-bottom: 6px; }
   .tl-event { font-size: 14px; color: #4a4642; line-height: 1.9; text-align: justify; }
 
-  .stats-box { border: 1px solid var(--line); padding: 24px; background: var(--bg2); border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-  .stat-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
-  .stat-row:last-child { margin-bottom: 0; }
-  .stat-label { width: 40px; font-family: var(--serif); font-size: 14px; color: var(--muted); }
-  .stat-bar-bg { flex: 1; height: 4px; background: rgba(0,0,0,0.06); position: relative; border-radius: 2px; overflow: hidden; }
-  .stat-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--jade); border-radius: 2px; transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
-  .stat-val { width: 20px; font-family: ui-monospace, monospace; font-size: 13px; color: var(--paper); text-align: right; }
+  /* 雷达图容器 */
+  .stats-box { 
+    border: 1px solid var(--line); padding: 20px 10px; background: var(--bg2); 
+    border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    display: flex; justify-content: center; align-items: center;
+  }
 
   footer { padding: 40px 0; text-align: center; font-size: 11px; letter-spacing: .3em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 40px; font-family: var(--kai); }
 
@@ -184,7 +172,6 @@
   <header class="main-header">
     <div class="header-content">
       <div class="home-subtitle">玄门异闻 · 尘世诡录</div>
-      <!-- 这里原本是文字，现在变成了图片 -->
       <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
     </div>
   </header>
@@ -216,7 +203,10 @@
     </div>
 
     <div class="p-sec"><h3>基础信息</h3><div class="info-grid" id="p-info-grid"></div></div>
-    <div class="p-sec"><h3>六维属性</h3><div class="stats-box" id="p-stats"></div></div>
+    
+    <!-- 雷达图区域 -->
+    <div class="p-sec"><h3>能力六维</h3><div class="stats-box" id="p-stats"></div></div>
+    
     <div class="p-sec"><h3>性格侧写</h3><p class="p-text" id="p-personality"></p></div>
     <div class="p-sec"><h3>生平轨迹</h3><div class="timeline" id="p-timeline"></div></div>
     <div class="p-sec"><h3>人际羁绊</h3><div class="relations-grid" id="p-relations"></div></div>
@@ -250,6 +240,86 @@
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
     window.scrollTo(0, 0);
+  }
+
+  // 核心：手绘 SVG 雷达图
+  function renderRadarChart(stats, containerId) {
+    const width = 340, height = 300;
+    const cx = width / 2, cy = height / 2 + 10;
+    const r = 85; // 半径
+    const keys = Object.keys(stats); 
+    const n = keys.length; // 6个维度
+    const maxVal = 6; // 满分 6
+    
+    let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:360px; overflow:visible;">`;
+    
+    // 1. 画背景网格 (6个同心六边形)
+    for (let level = 1; level <= maxVal; level++) {
+      let points = [];
+      let currentR = (r * level) / maxVal;
+      for (let i = 0; i < n; i++) {
+        let angle = (Math.PI * 2 / n) * i - Math.PI / 2; // 从正上方开始
+        let x = cx + currentR * Math.cos(angle);
+        let y = cy + currentR * Math.sin(angle);
+        points.push(`${x},${y}`);
+      }
+      // 最外层稍微加深一点
+      let strokeColor = level === maxVal ? "rgba(51, 48, 46, 0.2)" : "rgba(51, 48, 46, 0.08)";
+      svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" />`;
+    }
+    
+    // 2. 画中心辐射轴
+    for (let i = 0; i < n; i++) {
+      let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      let x = cx + r * Math.cos(angle);
+      let y = cy + r * Math.sin(angle);
+      svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(51, 48, 46, 0.1)" stroke-width="1" />`;
+    }
+    
+    // 3. 画数据区域
+    let dataPoints = [];
+    for (let i = 0; i < n; i++) {
+      let key = keys[i];
+      let val = stats[key];
+      let currentR = (r * val) / maxVal;
+      let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      let x = cx + currentR * Math.cos(angle);
+      let y = cy + currentR * Math.sin(angle);
+      dataPoints.push(`${x},${y}`);
+    }
+    // 填充青玉色，描边
+    svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(70, 128, 117, 0.25)" stroke="#468075" stroke-width="2" stroke-linejoin="round" />`;
+    
+    // 4. 画数据节点点和文字标签
+    for (let i = 0; i < n; i++) {
+      let key = keys[i];
+      let val = stats[key];
+      let currentR = (r * val) / maxVal;
+      let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      let x = cx + currentR * Math.cos(angle);
+      let y = cy + currentR * Math.sin(angle);
+      
+      // 节点小圆点
+      svg += `<circle cx="${x}" cy="${y}" r="3.5" fill="#fff" stroke="#468075" stroke-width="2" />`;
+      
+      // 文字标签的坐标（往外推 25 的距离）
+      let labelR = r + 22;
+      let lx = cx + labelR * Math.cos(angle);
+      let ly = cy + labelR * Math.sin(angle);
+      
+      // 根据角度调整文字的对齐方式，防止文字重叠
+      let textAnchor = "middle";
+      if (Math.cos(angle) > 0.1) textAnchor = "start";
+      else if (Math.cos(angle) < -0.1) textAnchor = "end";
+      
+      // 属性名
+      svg += `<text x="${lx}" y="${ly}" fill="#33302e" font-size="13" font-family="Noto Serif SC, serif" font-weight="bold" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
+      // 数值 (如: 3 / 6)
+      svg += `<text x="${lx}" y="${ly + 16}" fill="#88837c" font-size="11" font-family="monospace" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
+    }
+    
+    svg += `</svg>`;
+    document.getElementById(containerId).innerHTML = svg;
   }
 
   function showProfile(id) {
@@ -307,19 +377,8 @@
       relationsBox.innerHTML = '<div class="p-text">暂无记录</div>';
     }
 
-    const statsBox = document.getElementById('p-stats');
-    statsBox.innerHTML = '';
-    for (const [key, val] of Object.entries(oc.stats)) {
-      const percent = (val / 6) * 100;
-      const barColor = (key === '幸运' || key === '意志') ? 'var(--cinnabar)' : 'var(--jade)';
-      statsBox.innerHTML += `
-        <div class="stat-row">
-          <div class="stat-label">${key}</div>
-          <div class="stat-bar-bg"><div class="stat-bar" style="width:${percent}%; background:${barColor}"></div></div>
-          <div class="stat-val">${val}</div>
-        </div>
-      `;
-    }
+    // 调用雷达图渲染函数
+    renderRadarChart(oc.stats, 'p-stats');
     
     switchView('view-profile');
   }
