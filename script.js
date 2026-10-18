@@ -13,6 +13,22 @@ window.onload = function() {
   list.innerHTML = html;
   setupObserver();
   setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')), 100);
+
+  // 【新增】：自动在隐藏按钮旁边插入光敏警告提示，不破坏原有HTML
+  const btn = document.getElementById('glitch-btn');
+  if (btn) {
+    const warning = document.createElement('div');
+    warning.className = 'epilepsy-warning';
+    warning.innerHTML = '⚠️ 警告<br>光敏性癫痫患者请勿点击';
+    // 插入到按钮的前面
+    btn.parentNode.insertBefore(warning, btn);
+    // 当按钮显示时，提示文字也显示
+    const observerBtn = new MutationObserver(() => {
+      if(btn.style.display === 'block') warning.style.display = 'block';
+      else warning.style.display = 'none';
+    });
+    observerBtn.observe(btn, { attributes: true, attributeFilter: ['style'] });
+  }
 };
 
 let isGlitchMode = false;
@@ -58,7 +74,6 @@ function makeZalgo(text) {
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        // 极度加剧乱码密度
         for(let j=0; j<Math.floor(Math.random() * 15) + 15; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
@@ -84,18 +99,15 @@ function triggerOpening() {
   }, 1200); 
 }
 
-// 【连环崩坏模式】极度不规则的连续抽搐
 function startTextFlicker() {
   clearTimeout(flickerTimer);
   
   function scheduleNextBurst() {
     if (!isGlitchMode) return;
-    // 随机大间隔（3秒 到 7秒之间）
     let nextDelay = Math.random() * 4000 + 3000;
 
     flickerTimer = setTimeout(() => {
       if (!isGlitchMode) return;
-      // 每次大爆发随机连续抽搐 2 到 4 次
       let burstCount = Math.floor(Math.random() * 3) + 2;
       triggerBurst(burstCount);
     }, nextDelay);
@@ -107,7 +119,6 @@ function startTextFlicker() {
     document.body.classList.add('seizure-active');
     renderDataUI(true);
 
-    // 随机本次单次抽搐的时间（极短：50毫秒 到 150毫秒）
     let flashDuration = Math.random() * 100 + 50;
 
     clearTimeout(flashEndTimer);
@@ -115,15 +126,12 @@ function startTextFlicker() {
       document.body.classList.remove('seizure-active');
       renderDataUI(false);
 
-      // 如果还有剩余的抽搐次数
       if (count > 1) {
-        // 短暂停顿一下（30毫秒 到 100毫秒），接着抽搐
         let gap = Math.random() * 70 + 30;
         flickerTimer = setTimeout(() => {
           triggerBurst(count - 1);
         }, gap);
       } else {
-        // 如果全部抽搐完毕，重新安排下一次大爆发
         scheduleNextBurst();
       }
     }, flashDuration);
