@@ -62,17 +62,40 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .rel-desc { font-size:13px; color:var(--muted); flex:1; }
 footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
 
-/* 满屏矩阵特效 */
-.glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 10; display: none; overflow: hidden; pointer-events: none; }
+/* =========================================
+   满屏特效核心修改（避免被遮挡，强制高亮）
+   ========================================= */
+.glitch-overlay { 
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+  background: transparent; 
+  z-index: 9999; /* 提到最顶层，绝对不可能是被挡住 */
+  display: none; overflow: hidden; pointer-events: none; 
+}
 body.glitch-mode .glitch-overlay { display: flex; }
-.matrix-container { width: 100%; height: 100%; display: flex; flex-direction: row-reverse; flex-wrap: wrap; overflow: hidden; }
-.matrix-col { writing-mode: vertical-rl; text-orientation: upright; font-family: "Noto Serif SC", serif; font-size: 16px; line-height: 1.2; font-weight: 900; color: rgba(220, 20, 20, 0.6); text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.5), -3px 0px 0px rgba(255, 0, 0, 0.7); padding: 5px 3px; white-space: nowrap; opacity: 0; }
-.matrix-col:nth-child(1) { animation: flash 5s 0s infinite steps(2); }
-.matrix-col:nth-child(2) { animation: flash 6s 1s infinite steps(2); }
-.matrix-col:nth-child(3) { animation: flash 4s 2s infinite steps(2); }
-.matrix-col:nth-child(4) { animation: flash 7s 0.5s infinite steps(2); }
-.matrix-col:nth-child(5) { animation: flash 5s 3s infinite steps(2); }
-.matrix-col:nth-child(even) { color: rgba(0, 255, 255, 0.4); text-shadow: 3px 0px 0px rgba(220, 20, 20, 0.7), -3px 0px 0px rgba(0, 255, 255, 0.6); }
+
+.matrix-container { 
+  width: 100%; height: 100%; 
+  display: flex; flex-direction: row-reverse; flex-wrap: wrap; 
+  overflow: hidden; align-items: flex-start;
+}
+
+/* 改用普通的文字列，兼容性更好 */
+.matrix-col { 
+  writing-mode: vertical-rl; text-orientation: upright;
+  font-family: "Noto Serif SC", serif; font-size: 18px; line-height: 1.2; font-weight: 900; 
+  color: rgba(255, 0, 0, 0.9); /* 极其显眼的猩红 */
+  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.8); 
+  padding: 5px 4px; white-space: nowrap; opacity: 0; 
+}
+
+/* 随机错位闪现 */
+.matrix-col:nth-child(1) { animation: flash 4s 0s infinite steps(2); }
+.matrix-col:nth-child(2) { animation: flash 5s 1s infinite steps(2); }
+.matrix-col:nth-child(3) { animation: flash 6s 0.5s infinite steps(2); }
+.matrix-col:nth-child(4) { animation: flash 3.5s 2s infinite steps(2); }
+.matrix-col:nth-child(5) { animation: flash 5.5s 1.5s infinite steps(2); }
+
+/* 开门杀 */
 body.glitch-mode .matrix-container { animation: entrance 1.5s steps(2) forwards; }
 
 @keyframes entrance {
@@ -83,13 +106,15 @@ body.glitch-mode .matrix-container { animation: entrance 1.5s steps(2) forwards;
   80% { opacity: 0.8; transform: translate(0); }
   100% { opacity: 0; transform: scale(1); }
 }
+
 @keyframes flash {
-  0%, 75% { opacity: 0; }
-  77% { opacity: 1; transform: translate(2px, -2px); }
-  80% { opacity: 0.1; transform: translate(-2px, 2px); }
-  83%, 100% { opacity: 0; transform: translate(0); }
+  0%, 70% { opacity: 0; }
+  75% { opacity: 1; transform: translate(2px, -2px); }
+  80% { opacity: 0.2; transform: translate(-2px, 2px); }
+  85%, 100% { opacity: 0; transform: translate(0); }
 }
 
+/* 基础里世界配色 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
@@ -110,5 +135,5 @@ body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border
   .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
   .content-grid { grid-template-columns:1fr; gap:50px; }
   .glitch-trigger { top:80px; right:20px; }
-  .matrix-col { font-size: 13px; }
+  .matrix-col { font-size: 14px; }
 }
