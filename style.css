@@ -63,32 +63,37 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
 
 /* =========================================
-   真正的故障艺术特效（散落 + 闪烁 + 扫描线）
+   滑动动画
+   ========================================= */
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.active { opacity: 1; transform: translateY(0); }
+.delay-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
+.delay-item.active { opacity: 1; transform: translateY(0); }
+/* 雷达图文字延迟显示 */
+.radar-text { opacity: 0; transition: opacity 0.5s ease; }
+.radar-text.show { opacity: 1; }
+
+/* =========================================
+   真正的故障艺术特效
    ========================================= */
 .glitch-overlay { 
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
   background: transparent; z-index: 9999;
   display: none; overflow: hidden; pointer-events: none; 
-  /* 老式显示器的横向扫描线 */
   background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px);
 }
 body.glitch-mode .glitch-overlay { display: block; }
 
-/* 散落的文字块 */
 .glitch-text-piece {
   position: absolute;
   font-family: "Noto Serif SC", serif; 
   font-size: 18px; font-weight: 900; 
   white-space: nowrap;
-  
-  /* 经典的故障红蓝错位 */
   color: rgba(255, 0, 0, 0.8);
   text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.7), -3px 0px 0px rgba(255, 0, 0, 0.9);
-  
   opacity: 0;
 }
 
-/* 开门杀：全屏疯狂闪烁 */
 .glitch-overlay.active-anim .glitch-text-piece {
   animation: hard-flash 1.5s steps(2) forwards;
 }
@@ -102,7 +107,6 @@ body.glitch-mode .glitch-overlay { display: block; }
   100% { opacity: 0; }
 }
 
-/* 基础里世界配色 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
