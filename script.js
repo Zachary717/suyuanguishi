@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchInterval;
+let glitchInterval, activeGlitchTimer;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -29,7 +29,7 @@ function setupObserver() {
         if (entry.target.id === 'p-stats') {
           const radarData = entry.target.querySelector('.radar-anim-group');
           const radarText = entry.target.querySelector('.radar-text');
-          ifRadarLines(radarData, radarText);
+          if (radarData) animateRadarLines(radarData, radarText);
         }
         obs.unobserve(entry.target);
       }
@@ -42,20 +42,22 @@ function switchView(viewId) {
   document.getElementById(viewId).classList.add('active');
   window.scrollTo(0, 0);
   if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode', 'seizure-active');
+    document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
     clearInterval(glitchInterval);
+    clearTimeout(activeGlitchTimer);
   }
 }
 
-// 深渊乱码生成器
+// 生成极度重叠的深渊乱码（参考图1的密集感）
 function makeZalgo(text) {
-    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
-    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
+    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ'];
+    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖'];
     const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛'];
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
+        // 核心：每个字叠加十几二十层，彻底让原字不可读
         for(let j=0; j<Math.floor(Math.random() * 10) + 15; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
@@ -65,17 +67,18 @@ function makeZalgo(text) {
     return result;
 }
 
-// 核心：触发页面抽搐与文字异变
-function triggerSeizure() {
+// 触发抽搐与乱码（仅限底层文字，绝不生成浮动层遮挡）
+function triggerGlitch() {
   if (!isGlitchMode) return;
   
-  // 1. 开启全局屏幕微抖与模糊
+  // 加上一个轻微的全局闪屏类（如果你 css 里有的话）
   document.body.classList.add('seizure-active');
-  // 2. 底层文字立刻变异成乱码
+  // 让底层字变乱码
   renderDataUI(true);
   
-  // 1.5 秒后恢复
-  setTimeout(() => {
+  // 1.5秒后恢复
+  clearTimeout(activeGlitchTimer);
+  activeGlitchTimer = setTimeout(() => {
     if (!isGlitchMode) return;
     document.body.classList.remove('seizure-active');
     renderDataUI(false);
@@ -87,18 +90,18 @@ function toggleGlitch() {
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
   if (isGlitchMode) {
-    // 进入里世界立刻抽搐一次
-    triggerSeizure();
-    // 之后每隔 4 秒抽搐一次
-    glitchInterval = setInterval(triggerSeizure, 4000);
+    triggerGlitch(); // 进入时立刻来一下
+    // 每 4 秒循环一次
+    glitchInterval = setInterval(triggerGlitch, 4000);
   } else {
     clearInterval(glitchInterval);
+    clearTimeout(activeGlitchTimer);
     document.body.classList.remove('seizure-active');
     renderDataUI(false);
   }
 }
 
-// 渲染底层数据（isZalgo 控制是否变乱码）
+// 渲染底层文字（不乱动排版，只换内容）
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -112,7 +115,6 @@ function renderDataUI(isZalgo) {
   (oc.mutated_basic || []).forEach((b, i) => { 
     let k = isZalgo ? makeZalgo(b.k) : b.k;
     let v = isZalgo ? makeZalgo(b.v) : b.v;
-    // 稍微限制一下乱码的溢出，防止把排版顶飞
     let styleFix = isZalgo ? 'line-height: 1.5;' : '';
     b_list += `<div class="info-item delay-item active" style="${styleFix}"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
   });
@@ -145,6 +147,7 @@ function showProfile(id, isToggle) {
     document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
     clearInterval(glitchInterval);
+    clearTimeout(activeGlitchTimer);
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
