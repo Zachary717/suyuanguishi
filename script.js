@@ -60,36 +60,54 @@ function toggleGlitch() {
   
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
-    // 拼接诗句并混入乱码字符
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let glitchChars = "█▓▒░#@%$&*!?<>";
+    let glitchChars = "█▓▒░#@%$&*!?<≯̶̵̵̴̸̴̶̷̨̨̡̧̧̨̨̢̛̛̹̼̭̖̥̣̤̹̭͖̻̮͓̮̭̥̥̼̤̄̌̅̈̆̈̽̆̆̄͋̌̀͛͜͝͞"; // 包含 Zalgo 符号
     
-    // 插入乱码
     let mixedText = "";
     for(let i=0; i<poem.length; i++) {
         mixedText += poem[i];
-        // 随机在字后面加乱码
         if(Math.random() > 0.85 && poem[i] !== '<' && poem[i] !== 'b' && poem[i] !== 'r' && poem[i] !== '>') {
             mixedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
         }
     }
 
-    // 去除 HTML 标签用于 data-text
     let rawText = mixedText.replace(/<[^>]*>?/gm, '');
-
-    // 注入 DOM，触发 CSS 动画
     container.innerHTML = `<div class="glitch-text-box" data-text="${rawText}">${mixedText}</div>`;
     
-    // 强制浏览器重绘，确保每次点击都重新播放“开门杀”
+    // 重置整个页面的震动动画
+    const view = document.querySelector('#view-profile');
     const box = container.querySelector('.glitch-text-box');
+    
+    view.style.animation = 'none';
     box.style.animation = 'none';
-    void box.offsetWidth; 
+    void view.offsetWidth; 
+    box.offsetWidth;
+    
+    view.style.animation = null;
     box.style.animation = null;
 
   } else {
     container.innerHTML = '';
+    document.querySelector('#view-profile').style.animation = null;
   }
   showProfile(currentActiveId, true);
+}
+
+// 生成 Zalgo 乱码函数
+function makeZalgo(text) {
+    const zalgo_up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
+    const zalgo_down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
+    
+    let result = "";
+    for(let i=0; i<text.length; i++) {
+        result += text[i];
+        // 随机叠加 3-5 个上下乱码
+        for(let j=0; j<Math.floor(Math.random()*3)+3; j++) {
+            result += zalgo_up[Math.floor(Math.random() * zalgo_up.length)];
+            result += zalgo_down[Math.floor(Math.random() * zalgo_down.length)];
+        }
+    }
+    return result;
 }
 
 function showProfile(id, isToggle) {
@@ -99,6 +117,8 @@ function showProfile(id, isToggle) {
     isGlitchMode = false;
     const container = document.getElementById('glitch-matrix');
     if(container) { container.innerHTML = ''; }
+    const view = document.querySelector('#view-profile');
+    if(view) view.style.animation = null;
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
@@ -133,7 +153,11 @@ function showProfile(id, isToggle) {
     
     if(oc.mutated_relations) oc.mutated_relations.forEach((rel, i) => { 
       let descHtml = rel.desc;
-      if (rel.desc.indexOf("我爱你") > -1) descHtml = '<span style="color: var(--red);">' + rel.desc + '</span>';
+      // 核心：检测到“我爱你”，直接将其变成 Zalgo 乱码！
+      if (rel.desc.indexOf("我爱你") > -1) {
+        let zalgoLove = makeZalgo("我爱你");
+        descHtml = '<span class="zalgo">' + zalgoLove + '</span>';
+      }
       relationsBox.innerHTML += '<div class="rel-item delay-item" style="transition-delay:'+ (i*0.1) +'s"><div class="rel-name">' + rel.name + '</div><div class="rel-desc">' + descHtml + '</div></div>'; 
     });
     
@@ -251,27 +275,4 @@ function renderRadarChart(stats) {
   let circleTags = '';
   for (let i = 0; i < n; i++) {
     let cr = (r * stats[keys[i]]) / maxVal;
-    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
-    dataPoints.push(x + ',' + y);
-    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
-  }
-  
-  svg += '<g class="radar-anim-group" style="opacity: 0;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
-  svg += circleTags;
-  svg += '</g>';
-
-  svg += '<g class="radar-text">';
-  for (let i = 0; i < n; i++) {
-    let key = keys[i], cr = (r * stats[key]) / maxVal;
-    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
-    let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
-    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#1a1a1a') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#888') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
-  }
-  svg += '</g>';
-
-  document.getElementById('p-stats').innerHTML = svg + '</svg>';
-}
+    let
