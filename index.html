@@ -6,24 +6,14 @@
 <title>俗缘诡事 · 角色档案库</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- 引入更有国风感的字体 -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* 玄青墨色背景 */
-    --bg: #06080a; 
-    --bg2: #101317; 
-    --line: rgba(227, 223, 211, 0.08);
-    /* 宣纸白文字 */
-    --paper: #e3dfd3; 
-    --muted: #7a828c;
-    /* 朱砂红、暗金、青玉 */
-    --cinnabar: #d93b3b; 
-    --gold: #b89754; 
-    --jade: #4a837b;
-    
+    --bg: #06080a; --bg2: #101317; --line: rgba(227, 223, 211, 0.08);
+    --paper: #e3dfd3; --muted: #7a828c; --cinnabar: #d93b3b; 
+    --gold: #b89754; --jade: #4a837b;
     --serif: "Noto Serif SC", "Songti SC", serif;
-    --kai: "ZCOOL XiaoWei", "Ma Shan Zheng", "KaiTi", serif; /* 国风标题字体 */
+    --kai: "ZCOOL XiaoWei", "Ma Shan Zheng", "KaiTi", serif;
     --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -31,7 +21,6 @@
     background:var(--bg); color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
-  /* 纸张噪点 */
   body::before{
     content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -40,39 +29,23 @@
   .view { display: none; opacity: 0; transition: opacity .4s ease; position:relative; z-index:1; }
   .view.active { display: block; opacity: 1; }
 
-  /* ---------------- 首页（竖排卷宗风） ---------------- */
+  /* ---------------- 首页 ---------------- */
   #view-home {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     background: radial-gradient(circle at center, #11161c 0%, var(--bg) 70%);
   }
-  
-  .home-wrap {
-    display: flex; align-items: flex-start; gap: 40px; 
-    /* 竖排布局 */
-    flex-direction: row-reverse;
-  }
-  
-  .v-title-box {
-    writing-mode: vertical-rl; /* 文字竖排 */
-    text-orientation: upright;
-    display: flex; align-items: center; gap: 30px;
-  }
-  
+  .home-wrap { display: flex; align-items: flex-start; gap: 40px; flex-direction: row-reverse; }
+  .v-title-box { writing-mode: vertical-rl; text-orientation: upright; display: flex; align-items: center; gap: 30px; }
   .home-title {
     font-family: var(--kai); font-size: clamp(60px, 10vw, 90px);
     font-weight: 900; letter-spacing: .2em; color: var(--paper);
-    text-shadow: 0 0 20px rgba(184, 151, 84, 0.2);
-    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(184, 151, 84, 0.2); margin-bottom: 20px;
   }
-  
   .home-subtitle {
     font-family: var(--serif); font-size: clamp(14px, 2vw, 18px); 
     letter-spacing: .4em; color: var(--gold);
-    border-right: 1px solid rgba(184, 151, 84, 0.3); 
-    padding-right: 15px;
+    border-right: 1px solid rgba(184, 151, 84, 0.3); padding-right: 15px;
   }
-
-  /* 朱砂印章 */
   .seal {
     writing-mode: vertical-rl; font-family: var(--kai);
     display: inline-block; border: 2px solid var(--cinnabar);
@@ -80,26 +53,21 @@
     letter-spacing: .3em; border-radius: 2px; margin-top: 20px;
     opacity: 0.85; transform: rotate(3deg);
   }
-
-  /* 入口按钮 */
   .btn {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 60px; height: 200px;
-    border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+    width: 60px; height: 200px; border: 1px solid var(--line); background: rgba(255,255,255,0.02);
     color: var(--paper); font-family: var(--kai); font-size: 20px;
-    letter-spacing: .3em; writing-mode: vertical-rl;
-    cursor: pointer; transition: .4s; border-radius: 2px;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
-    margin-top: 60px;
+    letter-spacing: .3em; writing-mode: vertical-rl; cursor: pointer; transition: .4s; border-radius: 2px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5); margin-top: 60px;
   }
   .btn:hover {
     background: rgba(217, 59, 59, 0.1); border-color: var(--cinnabar);
     color: var(--cinnabar); box-shadow: 0 0 20px rgba(217, 59, 59, 0.2);
   }
 
-  /* ---------------- 索引目录 ---------------- */
-  #view-directory { padding: 50px 20px 80px 20px; }
-  .dir-header { text-align: center; margin-bottom: 40px; }
+  /* ---------------- 索引目录（已调整上边距） ---------------- */
+  #view-directory { padding: 20px 20px 60px 20px; } /* 上边距从 50px 改为 20px */
+  .dir-header { text-align: center; margin-bottom: 24px; } /* 底部留白也稍微缩小 */
   .dir-header h1 { font-family: var(--kai); font-size: 32px; letter-spacing: .2em; color: var(--paper); }
   .dir-header p { font-size: 12px; color: var(--gold); letter-spacing: .3em; margin-top: 10px; }
   
@@ -145,7 +113,6 @@
 
   .p-text { font-size: 14.5px; color: #b8b3a7; line-height: 2; text-align: justify; }
 
-  /* 时间线 */
   .timeline { position: relative; padding-left: 16px; margin-top: 10px; }
   .timeline::before { content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold), rgba(184, 151, 84, 0.05)); }
   .tl-item { position: relative; padding-bottom: 28px; padding-left: 20px; }
@@ -154,7 +121,6 @@
   .tl-time { font-family: var(--kai); font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .1em; margin-bottom: 6px; }
   .tl-event { font-size: 14px; color: #b8b3a7; line-height: 1.9; text-align: justify; }
 
-  /* 六维图 */
   .stats-box { border: 1px solid var(--line); padding: 24px; background: rgba(255,255,255,0.01); border-radius: 4px; }
   .stat-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
   .stat-row:last-child { margin-bottom: 0; }
@@ -171,10 +137,7 @@
 <!-- 视图 1：首页 -->
 <div id="view-home" class="view active">
   <div class="home-wrap">
-    <!-- 按钮 -->
     <button class="btn" onclick="showDirectory()">启封档案</button>
-    
-    <!-- 竖排标题 -->
     <div class="v-title-box">
       <div class="home-subtitle">玄门异闻 · 尘世诡录</div>
       <h1 class="home-title">俗缘诡事</h1>
@@ -217,11 +180,13 @@
   </div>
 </div>
 
+<!-- 关键：加载数据文件 -->
 <script src="data.js"></script>
 
 <script>
   function renderDirectory() {
     const grid = document.getElementById('dir-grid');
+    
     if (typeof ocDatabase === 'undefined') {
       grid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; color: #d93b3b; padding: 40px; border: 1px dashed #d93b3b; border-radius: 8px;">
@@ -232,6 +197,7 @@
       `;
       return;
     }
+
     grid.innerHTML = '';
     ocDatabase.forEach(oc => {
       const card = document.createElement('div');
