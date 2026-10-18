@@ -25,11 +25,11 @@
   }
   
   .view { display: none; opacity: 0; transition: opacity .5s ease; position: relative; z-index: 1; min-height: 100vh; }
-  .view.active { display: block; opacity: 1; }
+  .view .active { display: block; opacity: 10; }
 
   /* 首页基础样式 */
-  #view-main { padding: 80px 40px; }
-  .main-header { text-align: center; margin-bottom: 80px; }
+.  #view-main { padding: 680px 40px; }
+s  .main-header { text-align: center; margin-bottom: 80px; }
   .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
   .directory-wrap { max-width: 900px; margin: 0 auto; }
   .dir-header { font-family: var(--eng); font-size: 14px; letter-spacing: .4em; color: var(--muted); margin-bottom: 40px; display: flex; align-items: center; gap: 20px; }
@@ -91,12 +91,12 @@
 
   .relations-list { display: flex; flex-direction: column; gap: 0; }
   .rel-item { padding: 20px 0; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; gap: 20px; transition: border-color 0.6s;}
-  .rel-item.has-link { cursor: pointer; }
-  .rel-name { font-size: 18px; font-weight: 600; color: var(--paper); min-width: 80px; transition: color 0.6s;}
-  .rel-desc { font-size: 13px; color: var(--muted); flex: 1; transition: color 0.6s;}
-  footer { margin-top: 120px; text-align: center; font-family: var(--eng); font-size: 12px; letter-spacing: .5em; color: var(--muted); transition: color 0.6s;}
+ ; .rel-item.has-link { cursor: pointer; }
+ }
 
-  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+ .rel-name { font-size: 18px; font-weight: 600; color: var(--paper); min-width: 80px; transition: color 0.6s;}
+  .rel-desc { font-size: 13px; color: var(--muted); flex: 1; transition: color 0.6s;}
+  footer { margin-top: 120px; text-align: center; font-family: var(--eng); font-size: 12px; letter-spacing: .5em; color: var(--muted); transition: color  .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
   .reveal.active { opacity: 1; transform: translateY(0); }
   .delay-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
   .delay-item.active { opacity: 1; transform: translateY(0); }
@@ -115,12 +115,10 @@
     background-image: radial-gradient(circle, #0a1c14 0%, #050a08 100%);
     animation: screen-glitch 0.15s infinite; 
   }
-  body.glitch-mode .cp-name {
-    color: var(--paperinn);
-    animation: text-glitch abar1.5s infinite;
-    text-shadow);: 2px 0 #00ff00, }
-
- -2px 0 #ff 3333;
+  body.glitch-mode .p-name {
+    color: var(--paper);
+    animation: text-glitch 1.5s infinite;
+    text-shadow: 2px 0 #00ff00, -2px 0 #ff3333;
   }
   body.glitch-mode .avatar-box {
     box-shadow: 20px 20px 0px rgba(0, 255, 0, 0.2);
@@ -131,7 +129,9 @@
   }
   body.glitch-mode .glitch-trigger { opacity: 0.8; border-color: var(--cinnabar); }
   body.glitch-mode .glitch-trigger::before { border-color: var(--cinnabar); }
-  body.glitch-mode .glitch-trigger::after { background: var(-- @keyframes screen-glitch {
+  body.glitch-mode .glitch-trigger::after { background: var(--cinnabar); }
+
+  @keyframes screen-glitch {
     0% { transform: translate(0) }
     20% { transform: translate(-1px, 1px) }
     40% { transform: translate(-1px, -1px) }
@@ -394,77 +394,54 @@
       imgEl.onerror = function() { this.style.display = 'none'; avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; };
     } else { avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; }
 
-    if (id === 'yeyao') {
+    const infoList = document.getElementById('p-info-list');
+    const timelineBox = document.getElementById('p-timeline');
+    const relationsBox = document.getElementById('p-relations');
+    infoList.innerHTML = '';
+    timelineBox.innerHTML = '';
+    relationsBox.innerHTML = '';
+
+    // 如果进入了里世界
+    if (id === 'yeyao' && isGlitchMode) {
       document.getElementById('glitch-btn').style.display = 'block';
+      document.getElementById('p-name').textContent = "叶 瑶 ？";
+      document.getElementById('p-title').textContent = "错误代码：虫化地缚灵 // 怨念溢满";
       
-      if (isGlitchMode) {
-        document.getElementById('p-name').textContent = "叶 瑶 ？";
-        document.getElementById('p-title').textContent = "错误代码：虫化地缚灵 // 怨念溢满";
-        document.getElementById('p-name').style.letterSpacing = "0.3em";
-        
-        document.getElementById('p-info-list').innerHTML = `
-          <div class="info-item delay-item active"><span class="k">状态</span><span class="v" style="color:#ff3333">已死亡 / 异变</span></div>
-          <div class="info-item delay-item active"><span class="k">形态</span><span class="v" style="color:#00ff00">虫化地缚灵</span></div>
-          <div class="info-item delay-item active"><span class="k">执念</span><span class="v">让叶阮活过来。</span></div>
-        `;
-        document.getElementById('p-timeline').innerHTML = `
-          <div class="tl-item delay-item active"><div class="tl-time" style="color:#00ff00">ERROR</div><div class="tl-event" style="color:#ff3333">数据已被幽冥篡改，无法读取。</div></div>
-        `;
-        document.getElementById('p-relations').innerHTML = `
-          <div class="rel-item delay-item active"><div class="rel-name" style="color:#ff3333">叶阮</div><div class="rel-desc">不可触碰的执念。</div></div>
-        `;
-      } else {
-        document.getElementById('p-name').textContent = oc.name;
-        document.getElementById('p-title').textContent = oc.title;
-        document.getElementById('p-name').style.letterSpacing = ".15em";
-        
-        const infoList = document.getElementById('p-info-list');
-        infoList.innerHTML = '';
-        oc.basic.forEach((b, i) => { 
-          infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay: ${i * 0.1}s"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`; 
-        });
+      // 重点：试图读取 data.js 中的隐藏字段。如果没有配置，就显示待补全。
+      const mutatedBasic = oc.mutated_basic || [{ k: "状态", v: "档案被幽冥掩盖，等待补全..." }];
+      mutatedBasic.forEach((b, i) => {
+        infoList.innerHTML += `<div class="info-item delay-item active" style="color:#ff3333"><span class="k" style="color:#00ff00">${b.k}</span><span class="v">${b.v}</span></div>`;
+      });
 
-        const timelineBox = document.getElementById('p-timeline');
-        timelineBox.innerHTML = '';
-        oc.timeline.forEach((item, i) => { 
-          timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay: ${i * 0.1}s"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`; 
-        });
+      const mutatedTimeline = oc.mutated_timeline || [{ time: "ERROR", event: "数据已被篡改，无法读取。" }];
+      mutatedTimeline.forEach((item, i) => {
+        timelineBox.innerHTML += `<div class="tl-item delay-item active"><div class="tl-time" style="color:#00ff00">${item.time}</div><div class="tl-event" style="color:#ff3333">${item.event}</div></div>`;
+      });
 
-        const relationsBox = document.getElementById('p-relations');
-        relationsBox.innerHTML = '';
-        if (oc.relations && oc.relations.length > 0) {
-          oc.relations.forEach((rel, i) => {
-            const exists = ocDatabase.find(o => o.id === rel.id);
-            const hasLink = exists && rel.id !== '';
-            const relCard = document.createElement('div');
-            relCard.className = hasLink ? 'rel-item has-link delay-item' : 'rel-item no-link delay-item';
-            relCard.style.transitionDelay = `${i * 0.1}s`;
-            if (hasLink) { relCard.onclick = function() { showProfile(rel.id); }; }
-            relCard.innerHTML = `<div class="rel-name">${rel.name}</div><div class="rel-desc">${rel.desc}</div>`;
-            relationsBox.appendChild(relCard);
-          });
-        }
-      }
+      const mutatedRelations = oc.mutated_relations || [{ name: "？？", desc: "关系数据丢失。" }];
+      mutatedRelations.forEach((rel, i) => {
+        relationsBox.innerHTML += `<div class="rel-item delay-item active"><div class="rel-name" style="color:#ff3333">${rel.name}</div><div class="rel-desc">${rel.desc}</div></div>`;
+      });
+      
     } else {
-      document.getElementById('glitch-btn').style.display = 'none';
+      // 正常形态或者其他人
+      if (id === 'yeyao') {
+        document.getElementById('glitch-btn').style.display = 'block'; // 只有叶瑶显示印记
+      } else {
+        document.getElementById('glitch-btn').style.display = 'none';
+      }
+
       document.getElementById('p-name').textContent = oc.name;
       document.getElementById('p-title').textContent = oc.title;
-      document.getElementById('p-name').style.letterSpacing = ".15em";
 
-      const infoList = document.getElementById('p-info-list');
-      infoList.innerHTML = '';
       oc.basic.forEach((b, i) => { 
         infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay: ${i * 0.1}s"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`; 
       });
 
-      const timelineBox = document.getElementById('p-timeline');
-      timelineBox.innerHTML = '';
       oc.timeline.forEach((item, i) => { 
         timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay: ${i * 0.1}s"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`; 
       });
 
-      const relationsBox = document.getElementById('p-relations');
-      relationsBox.innerHTML = '';
       if (oc.relations && oc.relations.length > 0) {
         oc.relations.forEach((rel, i) => {
           const exists = ocDatabase.find(o => o.id === rel.id);
