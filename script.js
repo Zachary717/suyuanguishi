@@ -1,8 +1,8 @@
 window.onload = function() {
   const list = document.getElementById('dir-list');
   if (typeof ocDatabase === 'undefined') {
-    list.innerHTML = '<div style="color:red; padding:20px', '; text-align:center̝;">❌ data.js 读取失败',！</div>';
-    return ';
+    list.innerHTML = '<div style="color:red; padding:20px; text-align:center;">❌ data.js 读取失败！</div>';
+    return;
   }
   let html = '';
   for(let i=0; i<ocDatabase.length; i++) {
@@ -57,7 +57,7 @@ function toggleGlitch() {
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let glitchChars = "█▓▒░#@%$&*!?<≯̶̵̵̴̸̴̶̷̨̨̡̧̧̨̨̢̛̛̹̼̭̖̥̣̤̹̭͖̻̮͓̮̭̥̥̼̤̄̌̅̈̆̈̽̆̆̄͋̌̀͛͜͝͞";
+    let glitchChars = "█▓▒░#@%$&*!?<>";
     let mixedText = "";
     for(let i=0; i<poem.length; i++) {
         mixedText += poem[i];
@@ -81,7 +81,7 @@ function toggleGlitch() {
 
 function makeZalgo(text) {
     const zalgo_up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
-    const zalgo_down = ['̖', '̗', '̘', '̙', '̜̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
+    const zalgo_down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
