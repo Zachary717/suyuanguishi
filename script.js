@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let poetryTimer, textFlashInterval, textFlashTimer;
+let poetryTimer, flickerTimer, flashEndTimer;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -45,8 +45,8 @@ function switchView(viewId) {
     document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
     clearTimeout(poetryTimer);
-    clearInterval(textFlashInterval);
-    clearTimeout(textFlashTimer);
+    clearTimeout(flickerTimer);
+    clearTimeout(flashEndTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
@@ -58,7 +58,8 @@ function makeZalgo(text) {
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        for(let j=0; j<Math.floor(Math.random() * 10) + 12; j++) {
+        // 极度加剧乱码密度
+        for(let j=0; j<Math.floor(Math.random() * 15) + 15; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
             if(Math.random() > 0.3) result += mid[Math.floor(Math.random() * mid.length)];
@@ -71,7 +72,7 @@ function triggerOpening() {
   const container = document.getElementById('glitch-matrix');
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
-  container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
+  container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, ' ')}">${poem}</div>`;
   document.body.classList.add('seizure-active');
   renderDataUI(true);
   
@@ -79,22 +80,56 @@ function triggerOpening() {
     container.innerHTML = '';
     document.body.classList.remove('seizure-active');
     renderDataUI(false);
-    startTextFlicker();
-  }, 1000); 
+    startTextFlicker(); 
+  }, 1200); 
 }
 
+// 【连环崩坏模式】极度不规则的连续抽搐
 function startTextFlicker() {
-  clearInterval(textFlashInterval);
-  textFlashInterval = setInterval(() => {
+  clearTimeout(flickerTimer);
+  
+  function scheduleNextBurst() {
     if (!isGlitchMode) return;
+    // 随机大间隔（3秒 到 7秒之间）
+    let nextDelay = Math.random() * 4000 + 3000;
+
+    flickerTimer = setTimeout(() => {
+      if (!isGlitchMode) return;
+      // 每次大爆发随机连续抽搐 2 到 4 次
+      let burstCount = Math.floor(Math.random() * 3) + 2;
+      triggerBurst(burstCount);
+    }, nextDelay);
+  }
+
+  function triggerBurst(count) {
+    if (!isGlitchMode) return;
+
     document.body.classList.add('seizure-active');
     renderDataUI(true);
-    clearTimeout(textFlashTimer);
-    textFlashTimer = setTimeout(() => {
+
+    // 随机本次单次抽搐的时间（极短：50毫秒 到 150毫秒）
+    let flashDuration = Math.random() * 100 + 50;
+
+    clearTimeout(flashEndTimer);
+    flashEndTimer = setTimeout(() => {
       document.body.classList.remove('seizure-active');
       renderDataUI(false);
-    }, 1000); 
-  }, 4000); 
+
+      // 如果还有剩余的抽搐次数
+      if (count > 1) {
+        // 短暂停顿一下（30毫秒 到 100毫秒），接着抽搐
+        let gap = Math.random() * 70 + 30;
+        flickerTimer = setTimeout(() => {
+          triggerBurst(count - 1);
+        }, gap);
+      } else {
+        // 如果全部抽搐完毕，重新安排下一次大爆发
+        scheduleNextBurst();
+      }
+    }, flashDuration);
+  }
+
+  scheduleNextBurst();
 }
 
 function toggleGlitch() {
@@ -102,17 +137,15 @@ function toggleGlitch() {
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
   clearTimeout(poetryTimer);
-  clearInterval(textFlashInterval);
-  clearTimeout(textFlashTimer);
+  clearTimeout(flickerTimer);
+  clearTimeout(flashEndTimer);
   document.getElementById('glitch-matrix').innerHTML = '';
   document.body.classList.remove('seizure-active');
 
   if (isGlitchMode) {
-    // 【核心修复】：必须调用 showProfile 来触发数据切换（获取 mutated_stats 画出 6,6,6,3,0,0）
     showProfile(currentActiveId, true); 
     triggerOpening(); 
   } else {
-    // 【核心修复】：退出里世界时，恢复正常雷达图
     showProfile(currentActiveId, true); 
     renderDataUI(false);
   }
@@ -166,8 +199,8 @@ function showProfile(id, isToggle) {
     document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
     clearTimeout(poetryTimer);
-    clearInterval(textFlashInterval);
-    clearTimeout(textFlashTimer);
+    clearTimeout(flickerTimer);
+    clearTimeout(flashEndTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
   const oc = ocDatabase.find(o => o.id === id);
@@ -181,7 +214,7 @@ function showProfile(id, isToggle) {
 
   if (id === 'yeyao' && isGlitchMode) {
     document.getElementById('glitch-btn').style.display = 'block';
-    if (oc.mutated_stats) statsToRender = oc.mutated_stats; // 这里成功抓取黑化数据 6,6,6,3,0,0
+    if (oc.mutated_stats) statsToRender = oc.mutated_stats;
     renderDataUI(false); 
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
@@ -203,7 +236,6 @@ function showProfile(id, isToggle) {
   
   document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
   
-  // 这里渲染雷达图：点暗门时会收到 mutated_stats，形状发生巨变
   renderRadarChart(statsToRender);
   
   if (isToggle !== true) switchView('view-profile');
