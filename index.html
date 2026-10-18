@@ -78,9 +78,7 @@
   .card:hover { border-color: rgba(168, 126, 63, 0.4); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
   .card:hover::before { opacity: 1; }
   .card-name { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); }
-  .card-title { font-size: 12px; color: var(--jade); margin-bottom: 16px; letter-spacing: .05em; }
-  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .card-tags span { font-size: 10px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); background: var(--bg); }
+  .card-title { font-size: 12px; color: var(--jade); letter-spacing: .05em; }
 
   /* ---------------- 详情页 ---------------- */
   #view-profile { padding-bottom: 60px; background: var(--bg); }
@@ -111,9 +109,7 @@
 
   .p-info-box { flex: 1; padding-top: 10px; }
   .p-name { font-family: var(--kai); font-size: clamp(36px, 6vw, 52px); font-weight: 900; letter-spacing: .15em; margin-bottom: 12px; color: var(--paper); line-height: 1.1; }
-  .p-title { font-family: var(--serif); font-size: 15px; color: var(--jade); letter-spacing: .1em; margin-bottom: 20px; }
-  .p-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-  .p-tags span { font-size: 11px; background: rgba(201, 66, 59, 0.08); color: var(--cinnabar); border: 1px solid rgba(201, 66, 59, 0.25); padding: 3px 12px; border-radius: 999px; }
+  .p-title { font-family: var(--serif); font-size: 15px; color: var(--jade); letter-spacing: .1em; }
 
   .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .rel-card {
@@ -148,7 +144,6 @@
   .tl-time { font-family: var(--kai); font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .1em; margin-bottom: 6px; }
   .tl-event { font-size: 14px; color: #4a4642; line-height: 1.9; text-align: justify; }
 
-  /* 雷达图容器 */
   .stats-box { 
     border: 1px solid var(--line); padding: 20px 10px; background: var(--bg2); 
     border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
@@ -160,7 +155,6 @@
   @media (max-width: 600px) {
     .p-header { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
     .p-avatar { width: 140px; height: 186px; }
-    .p-tags { justify-content: center; }
     .home-subtitle::before, .home-subtitle::after { width: 30px; }
   }
 </style>
@@ -198,13 +192,11 @@
       <div class="p-info-box">
         <h1 class="p-name" id="p-name"></h1>
         <div class="p-title" id="p-title"></div>
-        <div class="p-tags" id="p-tags"></div>
       </div>
     </div>
 
     <div class="p-sec"><h3>基础信息</h3><div class="info-grid" id="p-info-grid"></div></div>
     
-    <!-- 雷达图区域 -->
     <div class="p-sec"><h3>能力六维</h3><div class="stats-box" id="p-stats"></div></div>
     
     <div class="p-sec"><h3>性格侧写</h3><p class="p-text" id="p-personality"></p></div>
@@ -230,8 +222,8 @@
       card.className = 'card';
       card.onclick = function() { showProfile(oc.id); };
       
-      const tagsHtml = oc.tags.map(t => `<span>${t}</span>`).join('');
-      card.innerHTML = `<div class="card-name">${oc.name}</div><div class="card-title">${oc.title}</div><div class="card-tags">${tagsHtml}</div>`;
+      // 删除了标签渲染，直接只用名字和身份
+      card.innerHTML = `<div class="card-name">${oc.name}</div><div class="card-title">${oc.title}</div>`;
       grid.appendChild(card);
     });
   }
@@ -242,33 +234,30 @@
     window.scrollTo(0, 0);
   }
 
-  // 核心：手绘 SVG 雷达图
+  // 手绘 SVG 雷达图
   function renderRadarChart(stats, containerId) {
     const width = 340, height = 300;
     const cx = width / 2, cy = height / 2 + 10;
-    const r = 85; // 半径
+    const r = 85; 
     const keys = Object.keys(stats); 
-    const n = keys.length; // 6个维度
-    const maxVal = 6; // 满分 6
+    const n = keys.length; 
+    const maxVal = 6; 
     
     let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:360px; overflow:visible;">`;
     
-    // 1. 画背景网格 (6个同心六边形)
     for (let level = 1; level <= maxVal; level++) {
       let points = [];
       let currentR = (r * level) / maxVal;
       for (let i = 0; i < n; i++) {
-        let angle = (Math.PI * 2 / n) * i - Math.PI / 2; // 从正上方开始
+        let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
         let x = cx + currentR * Math.cos(angle);
         let y = cy + currentR * Math.sin(angle);
         points.push(`${x},${y}`);
       }
-      // 最外层稍微加深一点
       let strokeColor = level === maxVal ? "rgba(51, 48, 46, 0.2)" : "rgba(51, 48, 46, 0.08)";
       svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" />`;
     }
     
-    // 2. 画中心辐射轴
     for (let i = 0; i < n; i++) {
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
       let x = cx + r * Math.cos(angle);
@@ -276,7 +265,6 @@
       svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(51, 48, 46, 0.1)" stroke-width="1" />`;
     }
     
-    // 3. 画数据区域
     let dataPoints = [];
     for (let i = 0; i < n; i++) {
       let key = keys[i];
@@ -287,10 +275,8 @@
       let y = cy + currentR * Math.sin(angle);
       dataPoints.push(`${x},${y}`);
     }
-    // 填充青玉色，描边
     svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(70, 128, 117, 0.25)" stroke="#468075" stroke-width="2" stroke-linejoin="round" />`;
     
-    // 4. 画数据节点点和文字标签
     for (let i = 0; i < n; i++) {
       let key = keys[i];
       let val = stats[key];
@@ -299,22 +285,17 @@
       let x = cx + currentR * Math.cos(angle);
       let y = cy + currentR * Math.sin(angle);
       
-      // 节点小圆点
       svg += `<circle cx="${x}" cy="${y}" r="3.5" fill="#fff" stroke="#468075" stroke-width="2" />`;
       
-      // 文字标签的坐标（往外推 25 的距离）
       let labelR = r + 22;
       let lx = cx + labelR * Math.cos(angle);
       let ly = cy + labelR * Math.sin(angle);
       
-      // 根据角度调整文字的对齐方式，防止文字重叠
       let textAnchor = "middle";
       if (Math.cos(angle) > 0.1) textAnchor = "start";
       else if (Math.cos(angle) < -0.1) textAnchor = "end";
       
-      // 属性名
       svg += `<text x="${lx}" y="${ly}" fill="#33302e" font-size="13" font-family="Noto Serif SC, serif" font-weight="bold" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
-      // 数值 (如: 3 / 6)
       svg += `<text x="${lx}" y="${ly + 16}" fill="#88837c" font-size="11" font-family="monospace" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
     }
     
@@ -341,7 +322,6 @@
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
     document.getElementById('p-top-id').textContent = `编号: ${oc.id.toUpperCase()}`;
-    document.getElementById('p-tags').innerHTML = oc.tags.map(t => `<span>${t}</span>`).join('');
 
     const infoGrid = document.getElementById('p-info-grid');
     infoGrid.innerHTML = '';
@@ -377,7 +357,6 @@
       relationsBox.innerHTML = '<div class="p-text">暂无记录</div>';
     }
 
-    // 调用雷达图渲染函数
     renderRadarChart(oc.stats, 'p-stats');
     
     switchView('view-profile');
