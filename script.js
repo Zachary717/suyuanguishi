@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchTimeout;
+let glitchTimer, waitTimer;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -44,12 +44,13 @@ function switchView(viewId) {
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
-    clearTimeout(glitchTimeout);
+    clearTimeout(glitchTimer);
+    clearTimeout(waitTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
 
-// Zalgo 乱码生成
+// 生成深渊乱码（只用底层抽搐时）
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
@@ -63,30 +64,27 @@ function makeZalgo(text) {
     return result;
 }
 
-// 核心：触发闪现
-function triggerGlitchCycle() {
+// 触发单次抽搐
+function triggerSeizure() {
   if (!isGlitchMode) return;
   
   const container = document.getElementById('glitch-matrix');
-  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+  // 不重叠的诗句显示
+  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。<br>三载悠悠魂梦杳，是梦久应醒矣。<br>料也觉、人间无味。不及夜台尘土隔，<br>清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。<br>我自中宵成转侧，忍听湘弦重理。<br>待结个、他生知己。还怕两人俱薄命，<br>再缘悭、剩月零风里。清泪尽，纸灰起。";
   
-  // 用全角空格铺满
-  let fullText = (poem + "　").repeat(25); 
-  
-  // 全屏文字墙渲染
-  container.innerHTML = `<div class="glitch-scanlines"></div><div class="glitch-text-wall" data-text="${fullText}">${fullText}</div>`;
-  // 底层变乱码
+  // 闪现诗词，底层数据变乱码
+  container.innerHTML = `<div class="glitch-text-wall" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
   renderDataUI(true);
   
-  clearTimeout(glitchTimeout);
-  // 停留 1.5 秒
-  glitchTimeout = setTimeout(() => {
+  // 1.5秒后恢复
+  clearTimeout(glitchTimer);
+  glitchTimer = setTimeout(() => {
     if (!isGlitchMode) return;
-    container.innerHTML = '';
-    // 底层恢复
-    renderDataUI(false);
-    // 等待 3 秒后继续
-    glitchTimeout = setTimeout(triggerGlitchCycle, 3000);
+    container.innerHTML = ''; // 闪掉诗词
+    renderDataUI(false); // 恢复底层文字
+    
+    // 再等 4 秒后重新抽搐
+    waitTimer = setTimeout(triggerSeizure, 4000);
   }, 1500);
 }
 
@@ -94,17 +92,18 @@ function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
-  clearTimeout(glitchTimeout);
+  clearTimeout(glitchTimer);
+  clearTimeout(waitTimer);
   document.getElementById('glitch-matrix').innerHTML = '';
 
   if (isGlitchMode) {
-    triggerGlitchCycle();
+    triggerSeizure();
   } else {
     renderDataUI(false);
   }
 }
 
-// 底层文字渲染控制
+// 渲染底层数据（isZalgo 控制是否变成乱码）
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -130,6 +129,7 @@ function renderDataUI(isZalgo) {
   oc.mutated_relations.forEach((rel, i) => { 
     let name = isZalgo ? makeZalgo(rel.name) : rel.name;
     let desc = isZalgo ? makeZalgo(rel.desc) : rel.desc;
+    // 只要不是乱码状态，就把我爱你变红
     if (!isZalgo && desc.indexOf("我爱你") > -1) {
       desc = `<span style="color: var(--red);">${desc}</span>`;
     }
@@ -146,7 +146,8 @@ function showProfile(id, isToggle) {
     currentActiveId = id;
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
-    clearTimeout(glitchTimeout);
+    clearTimeout(glitchTimer);
+    clearTimeout(waitTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
   const oc = ocDatabase.find(o => o.id === id);
@@ -163,6 +164,7 @@ function showProfile(id, isToggle) {
     document.getElementById('p-name').textContent = "叶 瑶 ？";
     document.getElementById('p-title').textContent = "是我做错了吗?";
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
+    // 初始化时，渲染正常文字
     renderDataUI(false); 
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
