@@ -94,7 +94,7 @@
   .tl-item { position: relative; margin-bottom: 40px; }
   .tl-item:last-child { margin-bottom: 0; }
   .tl-item::before { content: ""; position: absolute; left: -24px; top: 8px; width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--jade); background: var(--bg); }
-  .tl-time { font-family: var(--eng); font-size: 16px; color: var(--cinnabar); letter-spacing: .或者1em; margin-bottom: 5漏px; }
+  .tl-time { font-family: var(--eng); font-size: 16px; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: 5px; }
   .tl-event { font-size: 14px; color: var(--muted); line-height: 1.8; }
 
   .relations-list { display: flex; flex-direction: column; gap: 0; }
@@ -110,16 +110,23 @@
   footer { margin-top: 120px; text-align: center; font-family: var(--eng); font-size: 12px; letter-spacing: .5em; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 20px; }
   footer::before, footer::after { content: ""; width: 50px; height: 1px; background: var(--line); }
 
-  /* 手机端适配 */
+  /* =========================================
+     手机端适配优化：缩小头像，收紧排版
+     ========================================= */
   @media (max-width: 768px) {
     #view-main { padding: 50px 20px; }
     .list-item { flex-direction: column; align-items: flex-start; gap: 10px; }
     .item-name { font-size: 28px; }
     .item-title { text-align: left; max-width: 100%; }
+    
     .profile-wrap { padding-top: 80px; }
     .hero-section { flex-direction: column; align-items: flex-start; gap: 20px; margin-bottom: 50px; }
-    .avatar-box { width: 100%; max-width: 280px; box-shadow: 10px 10px 0 rgba(74,98,85,0.1); }
+    
+    /* 核心修改：把手机端头像缩到 200px，并把阴影改小 */
+    .avatar-box { width: 100%; max-width: 200px; box-shadow: 10px 10px 0 rgba(74,98,85,0.1); }
+    
     .hero-text { align-items: flex-start; text-align: left; padding-bottom: 0; width: 100%; }
+    
     .content-grid { grid-template-columns: 1fr; gap: 50px; }
     .rel-item { flex-direction: column; gap: 5px; }
   }
@@ -136,13 +143,11 @@
 </head>
 <body>
 
-<!-- 错误提示框 -->
 <div id="error-box" class="error-box">
   <h3>❌ 数据加载失败</h3>
-  <p>请检查 <b>data.js</b> 的格式。<br>最常见的原因是：<b>使用了中文逗号（，）掉了引号。</b></p>
+  <p>请检查 <b>data.js</b> 的格式。<br>最常见的原因是：<b>使用了中文逗号（，）或者漏掉了引号。</b></p>
 </div>
 
-<!-- 视图 1：主页面 -->
 <div id="view-main" class="view active">
   <header class="main-header">
     <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
@@ -153,7 +158,6 @@
   </div>
 </div>
 
-<!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
   <div class="nav-top">
     <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
@@ -185,10 +189,9 @@
   </div>
 </div>
 
-<script src="data.js"></script>
+<script src="data.js?v=100"></script>
 
 <script>
-  // 捕获错误，防止白屏
   window.onerror = function() {
     document.getElementById('error-box').style.display = 'block';
     return false;
