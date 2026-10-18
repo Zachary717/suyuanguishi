@@ -4,7 +4,7 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .view { display:none; opacity:0; transition:.5s; min-height:100vh; }
 .view.active { display:block; opacity:1; }
 
-/* 首页排版（锁死） */
+/* 首页排版 */
 #view-main { padding: 80px 40px; }
 .main-header { text-align: center; margin-bottom: 80px; }
 .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
@@ -18,7 +18,7 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; } 
 .item-title { font-size:13px; color:var(--green); text-align:right; flex-grow: 1; }
 
-/* 详情页排版（锁死大雷达图） */
+/* 详情页排版 */
 #view-profile { padding-bottom: 100px; }
 .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
 .back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
@@ -30,14 +30,22 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .glitch-trigger::after { width:10px; height:10px; background:var(--paper); }
 .glitch-trigger:hover { opacity:1; transform:rotate(90deg); }
 
-/* 新增：光敏警告提示 */
+/* 顶部居中的警戒条 */
 .epilepsy-warning {
-  position: fixed; top: 75px; right: 80px; z-index: 999;
-  font-size: 10px; color: var(--red); font-family: "Oswald", sans-serif;
-  letter-spacing: 0.1em; opacity: 0.;
-6; pointer-events: none; display : none;
-  text-align: background right; line-height: 1.:2;
+  position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+  z-index: 999;
+  background: rgba(20, 10, 10, 0.85);
+  border: 1px solid var(--red);
+  color: var(--red); font-family: "Oswald", sans-serif;
+  font-size: 11px; letter-spacing: 0.15em;
+  padding: 6px 20px;
+  display: none;
+  text-align: center; line-height: 1.5;
+  box-shadow: 0 0 10px rgba(184, 64, 64, 0.2);
+  pointer-events: none;
 }
+.epilepsy-warning::before { content: "⚠ "; }
+.epilepsy-warning::after { content: " ⚠"; }
 
 .profile-wrap { max-width:1000px; margin:0 auto; padding:120px 30px 40px; }
 .hero-section { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:80px; }
@@ -49,9 +57,6 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; transition: color 0.8s, border-color 0.8s; }
 
 .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; position: relative; z-index: 20; }
-/* 【关键修复】：强制网格子项允许缩小，防止 SVG 撑破排版 */
-.content-grid > div { min-width: 0; }
-
 .sec-title { font-family:"Oswald",sans-serif; font-size:24px; font-weight:200; margin-bottom:30px; display:flex; align-items:center; gap:15px; transition:.8s; }
 .sec-title::before { content:""; width:20px; height:1px; background:var(--red); transition:.8s; }
 .sec-title span { font-size:12px; color:var(--muted); font-family:"Noto Serif SC",serif; }
@@ -61,12 +66,7 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .info-item .k { width:80px; color:var(--muted); font-size:13px; flex-shrink:0; }
 .info-item .v { font-size:15px; font-weight:600; }
 
-/* 【关键修复】：给雷达图容器加上硬性尺寸保护 */
-.stats-container { 
-  padding:20px 0; display:flex; justify-content:center; width: 100%; min-height: 280px; 
-  min-width: 0; /* 防止溢出 */
-}
-
+.stats-container { padding:20px 0; display:flex; justify-content:center; width: 100%; min-height: 280px; }
 .timeline { position:relative; padding-left:20px; }
 .timeline::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:1px; background:var(--line); transition:.8s; }
 .tl-item { position:relative; margin-bottom:40px; }
@@ -89,7 +89,7 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   全屏故障滤镜与诗词浮现 (红绿柔和版)
+   全屏故障滤镜与诗词浮现 (系统卡BUG版)
    ========================================= */
 .glitch-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -99,33 +99,74 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 }
 body.glitch-mode .glitch-overlay { display: flex; }
 
-/* 诗词排版：绝对居中 + 忽明忽暗 */
+/* 核心修改：网页入侵/报错弹窗质感 */
 .glitch-text-box {
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
-  width: 95%; max-width: 800px;
-  color: #ff2222; font-family: "Noto Serif SC", serif;
-  font-size: 20px; line-height: 2.2; letter-spacing: 0.15em;
-  text-align: center; font-weight: 900;
-  text-shadow: 3px 0px 0px rgba(255, 0, 0, 0.8), -3px 0px 0px rgba(0, 255, 100, 0.8); /* 改成红绿错位 */
-  background: radial-gradient(circle, rgba(5,5,10,0.8) 0%, transparent 70%);
-  padding: 50px 20px;
-  animation: poem-flicker 0.4s infinite alternate; /* 新增：忽明忽暗 */
+  width: 90%; max-width: 800px;
+  color: #d1d1d1; /* 冰冷的灰白色，像系统终端 */
+  font-family: monospace, "Noto Serif SC", serif; /* 用等宽字体增加代码感 */
+  font-size: 18px; line-height: 2; letter-spacing: 0.1em;
+  text-align: left; /* 偏左，像代码块 */
+  font-weight: 600;
+  
+  /* 报错弹窗的边框和背景 */
+  background: rgba(5, 5, 8, 0.85);
+  border-left: 3px solid #ff0000;
+  border-top: 1px solid rgba(255, 0, 0, 0.3);
+  border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+  box-shadow: inset 0 0 20px rgba(255, 0, 0, 0.1);
+  padding: 40px;
+  
+  /* 极端的错位重影，去掉发光 */
+  text-shadow: 2px 0px 0px rgba(255, 0, 0, 0.8), -2px 0px 0px rgba(0, 255, 0, 0.8);
+  
+  /* 生硬的闪断动画 */
+  animation: harsh-signal-drop 0.2s infinite;
 }
-.glitch-text-box::before, .glitch-text-box::after {
-  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center; text-align: center;
-}
-.glitch-text-box::before { color: #ff0000; z-index: -1; animation: glitch-slice-1 0.8s infinite linear alternate-reverse; }
-.glitch-text-box::after { color: #00ff66; z-index: -2; animation: glitch-slice-2 1.2s infinite linear alternate-reverse; }
 
-@keyframes poem-flicker {
-  0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.6)); }
-  50% { opacity: 0.7; filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.2)); }
+/* 模拟代码报错的前缀 */
+.glitch-text-box::before {
+  content: "> ERR_INTRUSION_DETECTED :: \A 载入中..."; 
+  display: block;
+  font-size: 12px; color: #ff0000; font-family: monospace;
+  margin-bottom: 20px;
+  letter-spacing: 0.2em;
+  text-shadow: none;
+  white-space: pre;
 }
 
-@keyframes glitch-slice-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-8px, 0); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(8px, 0); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-8px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(8px, 0); } 100% { clip-path: inset(10% 0 70% 0); transform: translate(-8px, 0); } }
-@keyframes glitch-slice-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(8px, 0); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-8px, 0); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(8px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-8px, 0); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(8px, 0); } }
+/* 文字切片撕裂层 */
+.glitch-text-box::after {
+  content: attr(data-text); 
+  position: absolute; top: 40px; left: 40px; width: calc(100% - 80px); height: calc(100% - 80px);
+  color: #00ffff; /* 青色重影 */
+  z-index: -1; 
+  text-shadow: none;
+  /* 剧烈的横切错位 */
+  animation: text-slice-tear 0.8s infinite linear alternate-reverse;
+}
+
+/* 生硬的闪断（像显示器断电） */
+@keyframes harsh-signal-drop {
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg); }
+  10% { opacity: 0.8; transform: translate(-49%, -50%) skewX(2deg); } /* 轻微变形 */
+  15% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg); }
+  50% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg); }
+  51% { opacity: 0; } /* 瞬间黑屏一帧 */
+  52% { opacity: 1; transform: translate(-51%, -50%) skewX(-2deg); }
+  55% { opacity: 1; transform: translate(-50%, -50%) skewX(0deg); }
+}
+
+/* 文字被切片撕裂 */
+@keyframes text-slice-tear {
+  0% { clip-path: inset(10% 0 80% 0); transform: translate(-4px, 0); }
+  20% { clip-path: inset(60% 0 5% 0); transform: translate(4px, 0); }
+  40% { clip-path: inset(30% 0 40% 0); transform: translate(-6px, 0); }
+  60% { clip-path: inset(80% 0 2% 0); transform: translate(6px, 0); }
+  80% { clip-path: inset(5% 0 60% 0); transform: translate(-2px, 0); }
+  100% { clip-path: inset(45% 0 30% 0); transform: translate(2px, 0); }
+}
 
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
@@ -148,20 +189,18 @@ body.glitch-mode::before {
   100% { background-position: 0 100vh; }
 }
 
-/* 全屏电视雪花层（仅在乱码爆发时出现，且颜色极柔和） */
+/* 全屏电视雪花层（恢复可见度） */
 body::after {
   content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  pointer-events: none; z-index: 9997; opacity: 0 
-    repeating-linear-gradient(90deg, rgba(255,0,0,0.1) 0px, rgba(255,0,0,0.1) 2px, transparent 2px, transparent 4px),
-    repeating-linear-gradient(0deg, rgba(0,255,100,0.1) 0px, rgba(0,255,100,0.1) 1px, transparent 1px, transparent 3px);
+  pointer-events: none; z-index: 9997; opacity: 0;
+  background: 
+    repeating-linear-gradient(90deg, rgba(255,0,0,0.15) 0px, rgba(255,0,0,0.15) 2px, transparent 2px, transparent 4px),
+    repeating-linear-gradient(0deg, rgba(0,255,100,0.15) 0px, rgba(0,255,100,0.15) 1px, transparent 1px, transparent 3px);
 }
-
-/* 激活时：出现融合场景的雪花干扰 */
 body.seizure-active::after {
   opacity: 1;
   animation: tv-snow-glitch 0.15s infinite linear;
 }
-
 @keyframes tv-snow-glitch {
   0% { transform: translateY(0); filter: contrast(1.5) brightness(1.1); background-position: 0 0, 0 0; }
   25% { transform: translateY(-5px); filter: contrast(2) brightness(0.8); background-position: 10px 0, -5px 0; }
@@ -170,12 +209,12 @@ body.seizure-active::after {
   100% { transform: translateY(0); filter: contrast(1.5) brightness(1.1); background-position: 0 0, 0 0; }
 }
 
-/* 文字乱码重影：改为红绿交替，更贴合场景 */
+/* 底层数据文字乱码重影 */
 @keyframes text-mega-corrupt {
-  0% { text-shadow: 3px 0 0 rgba(255,0,0,0.8), -3px 0 0 rgba(0,255,100,0.8); opacity: 1; }
-  25% { text-shadow: -4px 0 0 rgba(0,255,100,0.8), 4px 0 0 rgba(255,0,0,0.8); opacity: 0.8; }
-  50% { text-shadow: 4px 0 0 rgba(255,0,0,0.8), -4px 0 0 rgba(0,255,100,0.8); opacity: 0.9; }
-  75% { text-shadow: -3px 0 0 rgba(0,255,100,0.8), 3px 0 0 rgba(255,0,0,0.8); opacity: 0.7; }
+  0% { text-shadow: 2px 0 0 rgba(255,0,0,0.8), -2px 0 0 rgba(0,255,100,0.8); opacity: 1; }
+  25% { text-shadow: -3px 0 0 rgba(0,255,100,0.8), 3px 0 0 rgba(255,0,0,0.8); opacity: 0.7; }
+  50% { text-shadow: 3px 0 0 rgba(255,0,0,0.8), -3px 0 0 rgba(0,255,100,0.8); opacity: 0.9; }
+  75% { text-shadow: -2px 0 0 rgba(0,255,100,0.8), 2px 0 0 rgba(255,0,0,0.8); opacity: 0.6; }
   100% { text-shadow: 2px 0 0 rgba(255,0,0,0.8), -2px 0 0 rgba(0,255,100,0.8); opacity: 1; }
 }
 
@@ -185,7 +224,7 @@ body.seizure-active .info-item,
 body.seizure-active .tl-item,
 body.seizure-active .rel-item,
 body.seizure-active .radar-text {
-  animation: text-mega-corrupt 0.12s infinite;
+  animation: text-mega-corrupt 0.1s infinite;
 }
 
 body.glitch-mode .p-name { color: var(--paper); }
@@ -193,6 +232,18 @@ body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border
 body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
 
 @media (max-width:768px) {
-  .glitch-text-box { font-size: 15px; line-height: 1.8; padding: 20px 10px; }
-  .epilepsy-warning { font-size: 8px; top: 75px; right: 60px; }
+  #view-main { padding:50px 20px; }
+  .list-item { flex-direction:column; align-items:flex-start; gap:8px; padding: 24px 10px; }
+  .item-left { width: 100%; gap: 20px; flex-shrink: 1; }
+  .item-name { font-size:28px; white-space:normal; }
+  .item-title { font-size:12px; text-align:left; width: 100%; padding-left: 50px; margin-top: -5px;}
+  .profile-wrap { padding-top:80px; }
+  .hero-section { flex-direction:column; align-items:flex-start; gap:20px; margin-bottom:50px; }
+  .avatar-box { width:100%; max-width:200px; }
+  .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
+  .content-grid { grid-template-columns:1fr; gap:50px; }
+  .glitch-trigger { top:80px; right:20px; }
+  .glitch-text-box { font-size: 14px; padding: 20px; width: 95%; }
+  .glitch-text-box::after { top: 20px; left: 20px; width: calc(100% - 40px); height: calc(100% - 40px); }
+  .epilepsy-warning { font-size: 9px; top: 60px; padding: 4px 10px; }
 }
