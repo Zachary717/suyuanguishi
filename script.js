@@ -42,15 +42,18 @@ function switchView(viewId) {
   }
 }
 
+// 触发全屏诗词闪现
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+    // 生成铺满全屏的文字
     let fullText = (poem + "<br><br>").repeat(6);
     container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${fullText}</div>`;
     
+    // 强制重播特效
     const view = document.querySelector('#view-profile');
     const box = container.querySelector('.glitch-text-box');
     view.style.animation = 'none';
@@ -63,19 +66,6 @@ function toggleGlitch() {
     document.querySelector('#view-profile').style.animation = null;
   }
   showProfile(currentActiveId, true);
-}
-
-function makeZalgo(text) {
-    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
-    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
-    let result = "";
-    for(let i=0; i<text.length; i++) {
-        result += text[i];
-        for(let j=0; j<Math.floor(Math.random()*3)+2; j++) {
-            result += up[Math.floor(Math.random() * up.length)] + down[Math.floor(Math.random() * down.length)];
-        }
-    }
-    return result;
 }
 
 function showProfile(id, isToggle) {
@@ -101,18 +91,17 @@ function showProfile(id, isToggle) {
   if (id === 'yeyao' && isGlitchMode) {
     document.getElementById('glitch-btn').style.display = 'block';
     document.getElementById('p-name').textContent = "叶 瑶 ？";
-    document.getElementById('p-title').textContent = makeZalgo("是我做错了吗?");
+    document.getElementById('p-title').textContent = "是我做错了吗?";
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
 
-    oc.mutated_basic.forEach((b, i) => { infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${makeZalgo(b.k)}</span><span class="v">${makeZalgo(b.v)}</span></div>`; });
-    oc.mutated_timeline.forEach((item, i) => { timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${makeZalgo(item.time)}</div><div class="tl-event">${makeZalgo(item.event)}</div></div>`; });
+    // 【核心修改】文字恢复成干干净净的正常文字，不再渲染 Zalgo
+    oc.mutated_basic.forEach((b, i) => { infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${b.k}</span><span class="v">${b.v}</span></div>`; });
+    oc.mutated_timeline.forEach((item, i) => { timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
     oc.mutated_relations.forEach((rel, i) => { 
-      let desc = makeZalgo(rel.desc);
-      // 如果包含我爱你，把它变红（和整体暗红环境融为一体）
-      if (rel.desc.indexOf("我爱你") > -1) {
-        desc = `<span style="color: var(--red);">${desc}</span>`;
-      }
-      relationsBox.innerHTML += `<div class="rel-item delay-item" style="transition-delay:${i*0.1}s"><div class="rel-name">${makeZalgo(rel.name)}</div><div class="rel-desc">${desc}</div></div>`; 
+      // 单独给“我爱你”变红，但文字保持正常，绝不乱码
+      let desc = rel.desc;
+      if (desc.indexOf("我爱你") > -1) desc = `<span style="color: var(--red);">${desc}</span>`;
+      relationsBox.innerHTML += `<div class="rel-item delay-item" style="transition-delay:${i*0.1}s"><div class="rel-name">${rel.name}</div><div class="rel-desc">${desc}</div></div>`; 
     });
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
