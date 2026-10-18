@@ -7,16 +7,16 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 /* 首页 */
 #view-main { padding: 80px 40px; }
 .main-header { text-align: center; margin-bottom: 80px; }
-.home-title-img { max-width: 80vw; max-height: 150pxuted; object-fit: contain; }
-.directory-wrap { max-width: 900px;); width margin: 0: auto; }
-.dir-header30 { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
+.home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
+.directory-wrap { max-width: 900px; margin: 0 auto; }
+.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
 .dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
-.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
+.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; gap: 20px;}
 .list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
-.item-left { display:flex; align-items:baseline; gap:30px; }
-.item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--mpx; }
-.item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; }
-.item-title { font-size:13px; color:var(--green); text-align:right; }
+.item-left { display:flex; align-items:baseline; gap:30px; flex-shrink: 0; /* 核心：绝对不允许被挤压 */ }
+.item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
+.item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; /* 核心：绝不换行 */ }
+.item-title { font-size:13px; color:var(--green); text-align:right; flex-grow: 1; }
 
 /* 详情页 */
 #view-profile { padding-bottom: 100px; }
@@ -72,9 +72,7 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
 
-/* =========================================
-   幽灵浮层特效（完美还原）
-   ========================================= */
+/* 里世界特效（完全隔离的浮层） */
 .glitch-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(5, 5, 5, 0.95); z-index: 9999;
@@ -92,36 +90,14 @@ body.glitch-mode .glitch-overlay { display: flex; }
 }
 
 .glitch-text-box::before, .glitch-text-box::after {
-  content: attr(data-text);
-  position: absolute; top: 0; left: 0; width: 100%;
+  content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%;
 }
-.glitch-text-box::before {
-  color: #00ffff; z-index: -1;
-  animation: glitch-anim-1 2s infinite linear alternate-reverse;
-}
-.glitch-text-box::after {
-  color: #ff0000; z-index: -2;
-  animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
+.glitch-text-box::before { color: #00ffff; z-index: -1; animation: glitch-anim-1 2s infinite linear alternate-reverse; }
+.glitch-text-box::after { color: #ff0000; z-index: -2; animation: glitch-anim-2 3s infinite linear alternate-reverse; }
 
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 0); }
-  20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, 0); }
-  40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); }
-  60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 0); }
-  80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); }
-  100% { clip-path: inset(30% 0 50% 0); transform: translate(3px, 0); }
-}
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, 0); }
-  20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 0); }
-  40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); }
-  60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 0); }
-  80% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); }
-  100% { clip-path: inset(5% 0 80% 0); transform: translate(-3px, 0); }
-}
+@keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 0); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, 0); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 0); } 80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); } 100% { clip-path: inset(30% 0 50% 0); transform: translate(3px, 0); } }
+@keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, 0); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 0); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 0); } 80% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(-3px, 0); } }
 
-/* 里世界持续动态：扫描线缓慢流动 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
@@ -131,29 +107,11 @@ body.glitch-mode {
 }
 @keyframes scanline-move { 0% { background-position: 0 0; } 100% { background-position: 0 100vh; } }
 
-body.glitch-mode .p-name { 
-  color: var(--paper); 
-  text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); 
-  animation: text-breathe 3s infinite alternate;
-}
-@keyframes text-breathe {
-  0% { text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
-  100% { text-shadow: 3px 3px 0px rgba(204,51,68,1), -3px -2px 0px rgba(60,122,107,1); }
-}
+body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); animation: text-breathe 3s infinite alternate; }
+@keyframes text-breathe { 0% { text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); } 100% { text-shadow: 3px 3px 0px rgba(204,51,68,1), -3px -2px 0px rgba(60,122,107,1); } }
 
-/* 底层文字微弱的电流波动 */
-body.glitch-mode .info-item .v,
-body.glitch-mode .tl-event,
-body.glitch-mode .rel-name,
-body.glitch-mode .rel-desc {
-  animation: micro-jitter 4s infinite steps(2);
-}
-@keyframes micro-jitter {
-  0%, 90%, 100% { transform: translate(0); opacity: 1; }
-  92% { transform: translate(1px, 0); opacity: 0.8; }
-  94% { transform: translate(-1px, 0); opacity: 0.9; }
-  96% { transform: translate(0); opacity: 1; }
-}
+body.glitch-mode .info-item .v, body.glitch-mode .tl-event, body.glitch-mode .rel-name, body.glitch-mode .rel-desc { animation: micro-jitter 4s infinite steps(2); }
+@keyframes micro-jitter { 0%, 90%, 100% { transform: translate(0); opacity: 1; } 92% { transform: translate(1px, 0); opacity: 0.8; } 94% { transform: translate(-1px, 0); opacity: 0.9; } 96% { transform: translate(0); opacity: 1; } }
 
 body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
 body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
@@ -161,7 +119,7 @@ body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.
 @media (max-width:768px) {
   #view-main { padding:50px 20px; }
   .list-item { flex-direction:column; align-items:flex-start; gap:8px; padding: 24px 10px; }
-  .item-left { width: 100%; gap: 20px; }
+  .item-left { width: 100%; gap: 20px; flex-shrink: 1; }
   .item-name { font-size:28px; }
   .item-title { font-size:12px; text-align:left; width: 100%; padding-left: 50px; margin-top: -5px;}
   .profile-wrap { padding-top:80px; }
