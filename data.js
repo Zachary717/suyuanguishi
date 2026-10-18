@@ -83,7 +83,19 @@ const ocDatabase = [
       { name: "叶阮", id: "yeruan", desc: "活着的理由。" },
       { name: "原行逸", id: "yuanxingyi", desc: "敌人。" }
     ],
-    stats: { 力量: 3, 敏捷: 4, 体质: 2, 智力: 5, 意志: 3, 幸运: 4 }
+    stats: { 力量: 3, 敏捷: 4, 体质: 2, 智力: 5, 意志: 3, 幸运: 4 },
+    mutated_basic: [
+      { k: "状态", v: "已死亡 / 异变" },
+      { k: "形态", v: "虫化地缚灵" },
+      { k: "执念", v: "让叶阮活过来。" }
+    ],
+    mutated_timeline: [
+      { time: "17岁", event: "割腕自杀，被叶阮吃掉。" },
+      { time: "死后", event: "化为怨灵，盘踞槐吟山。" }
+    ],
+    mutated_relations: [
+      { name: "叶阮", desc: "不可触碰的执念。" }
+    ]
   },
   {
     id: "shenxiuju",
