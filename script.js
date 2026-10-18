@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchTimer;
+let poetryTimer, textFlashInterval, textFlashTimer;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -42,14 +42,16 @@ function switchView(viewId) {
   document.getElementById(viewId).classList.add('active');
   window.scrollTo(0, 0);
   if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode');
+    document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearTimeout(glitchTimer);
+    clearTimeout(poetryTimer);
+    clearInterval(textFlashInterval);
+    clearTimeout(textFlashTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
 
-// 深渊乱码生成器（极密）
+// 极致深渊乱码
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
@@ -57,7 +59,7 @@ function makeZalgo(text) {
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        for(let j=0; j<Math.floor(Math.random() * 10) + 15; j++) {
+        for(let j=0; j<Math.floor(Math.random() * 10) + 12; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
             if(Math.random() > 0.3) result += mid[Math.floor(Math.random() * mid.length)];
@@ -66,54 +68,71 @@ function makeZalgo(text) {
     return result;
 }
 
-// 核心：闪现一次，2.5 秒后消失
-function triggerGlitchCycle() {
-  if (!isGlitchMode) return;
-  
+// 初次点开：浮现诗词，同时文字变乱码
+function triggerOpening() {
   const container = document.getElementById('glitch-matrix');
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
-  // 1. 展示诗词
+  // 1. 浮现诗词
   container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
-  // 2. 所有文字（包括问号和苗医）全部变乱码
+  // 2. 底层文字变乱码，页面微颤
+  document.body.classList.add('seizure-active');
   renderDataUI(true);
   
-  // 3. 停留 2.5 秒后彻底消失并恢复
-  clearTimeout(glitchTimer);
-  glitchTimer = setTimeout(() => {
-    if (!isGlitchMode) return;
+  // 3. 停留 2.5 秒，诗词消失，页面平稳，文字恢复
+  poetryTimer = setTimeout(() => {
     container.innerHTML = '';
+    document.body.classList.remove('seizure-active');
     renderDataUI(false);
+    
+    // 4. 开启后续的“文字偶尔闪烁”循环
+    startTextFlicker();
   }, 2500);
+}
+
+// 后续节奏：诗词不再出现，只有文字偶尔闪烁
+function startTextFlicker() {
+  clearInterval(textFlashInterval);
+  textFlashInterval = setInterval(() => {
+    if (!isGlitchMode) return;
+    
+    // 页面轻微抽搐，文字变乱码
+    document.body.classList.add('seizure-active');
+    renderDataUI(true);
+    
+    clearTimeout(textFlashTimer);
+    textFlashTimer = setTimeout(() => {
+      document.body.classList.remove('seizure-active');
+      renderDataUI(false);
+    }, 1200); // 闪 1.2 秒就恢复
+  }, 4000); // 每 4 秒闪一次
 }
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
-  clearTimeout(glitchTimer);
+  clearTimeout(poetryTimer);
+  clearInterval(textFlashInterval);
+  clearTimeout(textFlashTimer);
   document.getElementById('glitch-matrix').innerHTML = '';
+  document.body.classList.remove('seizure-active');
 
   if (isGlitchMode) {
-    triggerGlitchCycle();
+    triggerOpening(); // 开启时演一次全屏诗词
   } else {
     renderDataUI(false);
   }
 }
 
-// 渲染底层文字（这里把“苗医”等标题也一起处理了）
+// 渲染文字
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
 
-  // 名字和副标题的乱码处理
-  if (isZalgo) {
-    document.getElementById('p-name').textContent = "叶 瑶 ？";
-    document.getElementById('p-title').textContent = makeZalgo("是我做错了吗?");
-  } else {
-    document.getElementById('p-name').textContent = "叶 瑶 ？";
-    document.getElementById('p-title').textContent = "是我做错了吗?";
-  }
+  // 标题和问号处理
+  document.getElementById('p-name').textContent = "叶 瑶 ？";
+  document.getElementById('p-title').textContent = isZalgo ? makeZalgo("是我做错了吗?") : "是我做错了吗?";
 
   const infoList = document.getElementById('p-info-list');
   const timelineBox = document.getElementById('p-timeline');
@@ -153,9 +172,11 @@ function renderDataUI(isZalgo) {
 function showProfile(id, isToggle) {
   if (isToggle !== true) {
     currentActiveId = id;
-    document.body.classList.remove('glitch-mode');
+    document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearTimeout(glitchTimer);
+    clearTimeout(poetryTimer);
+    clearInterval(textFlashInterval);
+    clearTimeout(textFlashTimer);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
   const oc = ocDatabase.find(o => o.id === id);
