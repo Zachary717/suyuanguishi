@@ -6,21 +6,21 @@
 <title>俗缘诡事 · 角色档案库</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #ebe7dd; /* 更深一点的复古米色 */
-    --bg2: #f8f6f0; 
-    --line: rgba(51, 48, 46, 0.15);
+    /* 宣纸米白底色 */
+    --bg: #f2efe9; 
+    --bg2: #fbfaf7; 
+    --line: rgba(51, 48, 46, 0.2);
     --paper: #2b2927; 
     --muted: #7a756e; 
-    --cinnabar: #b33a33; 
+    --cinnabar: #c9423b; 
     --gold: #a87e3f; 
     --jade: #3d7369;
     
     --serif: "Noto Serif SC", "Songti SC", serif;
     --kai: "ZCOOL XiaoWei", "Ma Shan Zheng", "KaiTi", serif;
-    --eng: "Oswald", sans-serif; /* 引入有设计感的英文字体 */
     --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
@@ -28,11 +28,9 @@
     background-color:var(--bg); 
     color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
-    /* 绘制网格底纹，模拟活页纸 */
-    background-image: 
-      linear-gradient(rgba(51, 48, 46, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(51, 48, 46, 0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
+    /* 中式淡淡的云水暗纹 */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 10 Q 30 5 50 10 T 90 10 M10 90 Q 30 95 50 90 T 90 90' stroke='rgba(51,48,46,0.03)' stroke-width='2' fill='none'/%3E%3Ccircle cx='50' cy='50' r='40' stroke='rgba(51,48,46,0.02)' stroke-width='1' fill='none' stroke-dasharray='4 4'/%3E%3C/svg%3E");
+    background-size: 150px 150px;
   }
   
   .view { display: none; opacity: 0; transition: opacity .4s ease; position: relative; z-index: 1; }
@@ -44,132 +42,149 @@
   .main-header {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 60px 20px 40px 20px;
-    border-bottom: 2px solid var(--paper); /* 加粗底线，像书籍封面 */
-    margin-bottom: 20px;
+    border-bottom: 2px solid var(--paper);
+    margin-bottom: 30px;
   }
   
   .home-title-img {
     max-width: 90vw; max-height: 180px; object-fit: contain; 
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
   }
 
   .directory-section { padding: 20px 20px 0 20px; }
-  .dir-header { text-align: left; margin-bottom: 20px; border-left: 4px solid var(--cinnabar); padding-left: 12px; max-width: 1000px; margin: 0 auto 20px auto; }
-  .dir-header h2 { font-family: var(--eng); font-size: 28px; letter-spacing: .2em; color: var(--paper); line-height: 1; }
   
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
-  .card {
-    border: 1px solid var(--paper); background: var(--bg2); padding: 24px; cursor: pointer;
-    transition: .3s; position: relative; border-radius: 2px;
-    box-shadow: 4px 4px 0 rgba(43, 41, 39, 0.1); /* 硬阴影，像卡片叠放 */
+  /* 中式小标题 */
+  .dir-header { 
+    text-align: center; margin-bottom: 30px; 
+    font-family: var(--serif); font-size: 18px; 
+    letter-spacing: .4em; color: var(--paper); 
+    display: flex; align-items: center; justify-content: center; gap: 10px;
   }
-  .card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 rgba(43, 41, 39, 0.2); }
-  .card-name { font-family: var(--kai); font-size: 26px; font-weight: 900; letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); border-bottom: 1px solid var(--line); padding-bottom: 8px;}
+  .dir-header::before, .dir-header::after { content: "◆"; font-size: 10px; color: var(--gold); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; }
+  
+  /* 古籍线装书式卡片 */
+  .card {
+    background: var(--bg2); padding: 24px; cursor: pointer;
+    transition: .3s; position: relative; 
+    border: 1px solid var(--paper);
+    outline: 1px solid var(--line); outline-offset: -4px; /* 内层的细框 */
+  }
+  .card:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(43, 41, 39, 0.08); }
+  .card-name { font-family: var(--kai); font-size: 26px; font-weight: 900; letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); border-bottom: 1px dashed var(--line); padding-bottom: 8px;}
   .card-title { font-size: 13px; color: var(--jade); letter-spacing: .05em; font-family: var(--serif); }
 
-  /* ---------------- 详情页（画集杂志风） ---------------- */
+  /* ---------------- 详情页 ---------------- */
   #view-profile { padding-bottom: 60px; }
   .nav-top {
-    position: sticky; top: 0; z-index: 50; background: rgba(235, 231, 221, 0.95);
+    position: sticky; top: 0; z-index: 50; background: rgba(242, 239, 233, 0.95);
     backdrop-filter: blur(10px); border-bottom: 1px solid var(--paper);
     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
   }
-  .back-btn { font-size: 13px; color: var(--paper); cursor: pointer; letter-spacing: .1em; font-weight: 600; font-family: var(--eng);}
+  .back-btn { font-size: 14px; color: var(--paper); cursor: pointer; letter-spacing: .1em; font-weight: 600; font-family: var(--serif);}
   
   .profile-wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
   
-  /* 顶部大区：左图右字 */
   .hero-section {
-    display: grid; grid-template-columns: 320px 1fr; gap: 40px;
+    display: grid; grid-template-columns: 300px 1fr; gap: 40px;
     border-bottom: 2px solid var(--paper); padding-bottom: 40px; margin-bottom: 40px;
-    position: relative;
+    position: relative; align-items: center;
   }
 
-  /* 图片框，模拟拍立得 */
+  /* 画像框：宣纸装裱感 */
   .avatar-box {
-    width: 100%; aspect-ratio: 3/4; background: #fff; padding: 12px 12px 40px 12px;
-    border: 1px solid var(--line); box-shadow: 2px 4px 12px rgba(0,0,0,0.1);
-    transform: rotate(-2deg); position: relative; z-index: 2;
+    width: 100%; aspect-ratio: 3/4; 
+    background: #f7f5f0; /* 改成偏宣纸底色，而不是纯白 */
+    position: relative; 
+    border: 1px solid var(--paper); padding: 10px;
   }
-  .avatar-box img { width: 100%; height: 100%; object-fit: cover; filter: sepia(0.2) contrast(1.1); }
-  .avatar-box .empty-text { display: flex; height: 100%; align-items: center; justify-content: center; color: var(--muted); font-family: var(--serif); }
-  /* 图钉装饰 */
-  .avatar-box::before {
-    content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-    width: 20px; height: 20px; background: var(--cinnabar); border-radius: 50%;
-    box-shadow: inset -3px -3px 5px rgba(0,0,0,0.3), 2px 2px 4px rgba(0,0,0,0.2);
+  
+  /* 去掉了曝光滤镜 */
+  .avatar-box img { 
+    width: 100%; height: 100%; object-fit: cover; 
+  }
+  
+  .avatar-box .empty-text { 
+    display: flex; height: 100%; align-items: center; justify-content: center; 
+    color: var(--muted); font-family: var(--serif); background: #f4f1ea;
+  }
+  
+  /* 朱砂印章装饰 */
+  .avatar-box::after {
+    content: "印"; position: absolute; bottom: -15px; right: -15px;
+    width: 40px; height: 40px; background: var(--cinnabar); color: #fff;
+    font-family: var(--kai); font-size: 20px; display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; box-shadow: 0 2px 8px rgba(201, 66, 59, 0.4); transform: rotate(5deg);
+    z-index: 10;
   }
 
-  .hero-text { display: flex; flex-direction: column; justify-content: center; }
+  .hero-text { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 30px; align-items: center;}
   
-  /* 大号英文名/拼音，作为背景装饰 */
-  .bg-pinyin {
-    font-family: var(--eng); font-size: 80px; font-weight: 700; color: rgba(43, 41, 39, 0.04);
-    position: absolute; right: 0; top: 0; line-height: 1; pointer-events: none; z-index: 0;
-    white-space: nowrap;
+  .p-name { font-family: var(--kai); font-size: clamp(48px, 8vw, 72px); font-weight: 900; letter-spacing: .1em; color: var(--paper); line-height: 1.1; writing-mode: horizontal-tb; }
+  
+  /* 竖排引语 */
+  .p-quote-container {
+    border-right: 1px solid var(--line); padding-right: 20px;
+    display: flex; align-items: center; height: 100px;
   }
-
-  .p-name { font-family: var(--kai); font-size: clamp(48px, 8vw, 72px); font-weight: 900; letter-spacing: .1em; color: var(--paper); line-height: 1.1; margin-bottom: 16px; position: relative; z-index: 1;}
-  
   .p-quote {
-    border-left: 3px solid var(--gold); padding-left: 16px;
-    font-family: var(--serif); font-size: 16px; color: var(--paper); font-weight: 600;
-    margin-bottom: 24px; font-style: italic;
+    writing-mode: vertical-rl; text-orientation: upright;
+    font-family: var(--serif); font-size: 14px; color: var(--paper); font-weight: 600;
+    letter-spacing: .2em;
   }
+  .p-quote::before { content: "「"; color: var(--cinnabar); font-size: 20px; margin-bottom: 5px; }
+  .p-quote::after { content: "」"; color: var(--cinnabar); font-size: 20px; margin-top: 5px; }
 
   .p-title { 
-    font-family: var(--serif); font-size: 15px; color: var(--bg2); 
-    background: var(--jade); display: inline-block; padding: 4px 16px; 
-    border-radius: 2px; letter-spacing: .1em; align-self: flex-start;
+    font-family: var(--serif); font-size: 14px; color: var(--paper); 
+    border-bottom: 1px dashed var(--paper); padding-bottom: 4px;
+    letter-spacing: .1em; margin-top: 20px; display: inline-block;
   }
 
-  /* 中部信息区：杂志网格 */
-  .content-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
-  }
+  .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
   .full-width { grid-column: 1 / -1; }
 
+  /* 中式版块标题 */
   .sec-title {
-    font-family: var(--eng); font-size: 20px; color: var(--paper); font-weight: 700;
-    display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-    text-transform: uppercase; letter-spacing: .1em;
+    font-family: var(--serif); font-size: 18px; color: var(--paper); font-weight: 900;
+    display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 24px;
+    letter-spacing: .3em;
   }
-  .sec-title::before { content: "■"; color: var(--cinnabar); font-size: 14px; }
+  .sec-title::before, .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
-  /* 基础信息（紧凑标签化） */
   .info-box {
-    background: var(--bg2); border: 1px solid var(--paper); padding: 20px;
-    box-shadow: 3px 3px 0 rgba(43, 41, 39, 0.05);
+    background: var(--bg2); border: 1px solid var(--line); padding: 24px;
+    outline: 1px solid var(--line); outline-offset: -4px;
   }
-  .info-item { display: flex; border-bottom: 1px dashed var(--line); padding: 10px 0; }
+  .info-item { display: flex; border-bottom: 1px dashed var(--line); padding: 12px 0; }
   .info-item:last-child { border-bottom: none; padding-bottom: 0; }
   .info-item .k { width: 80px; color: var(--muted); font-size: 13px; font-family: var(--serif); flex-shrink: 0;}
   .info-item .v { font-family: var(--serif); font-size: 15px; color: var(--paper); font-weight: 600; }
 
-  /* 雷达图区域 */
   .stats-box { 
-    background: var(--bg2); border: 1px solid var(--paper); padding: 20px;
-    box-shadow: 3px 3px 0 rgba(43, 41, 39, 0.05); display: flex; justify-content: center;
+    background: var(--bg2); border: 1px solid var(--line); padding: 20px;
+    outline: 1px solid var(--line); outline-offset: -4px;
+    display: flex; justify-content: center;
   }
 
-  /* 文本区 */
   .text-box { 
     background: transparent; padding: 10px 0; 
-    font-family: var(--serif); font-size: 14.5px; color: var(--paper); line-height: 2.2; text-align: justify;
+    font-family: var(--serif); font-size: 15px; color: var(--paper); line-height: 2.2; text-align: justify;
+    text-indent: 2em; /* 中文首行缩进 */
   }
 
-  /* 生平轨迹 */
-  .timeline { padding-left: 10px; margin-top: 10px; border-left: 1px solid var(--paper); }
+  /* 卷宗时间线 */
+  .timeline { padding-left: 10px; margin-top: 10px; border-left: 2px solid var(--line); }
   .tl-item { position: relative; margin-bottom: 24px; padding-left: 20px; }
   .tl-item:last-child { margin-bottom: 0; }
   .tl-item::before { 
-    content: ""; position: absolute; left: -5px; top: 6px; 
-    width: 9px; height: 9px; background: var(--bg); border: 2px solid var(--paper); border-radius: 50%; 
+    content: ""; position: absolute; left: -7px; top: 6px; 
+    width: 10px; height: 10px; background: var(--bg); border: 2px solid var(--jade); border-radius: 50%; 
   }
-  .tl-time { font-family: var(--eng); font-size: 15px; font-weight: 700; color: var(--cinnabar); letter-spacing: .05em; margin-bottom: 4px; }
-  .tl-event { font-size: 14px; color: var(--paper); }
+  .tl-time { font-family: var(--kai); font-size: 16px; font-weight: 900; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: 4px; }
+  .tl-event { font-size: 14.5px; color: var(--paper); font-family: var(--serif); }
 
-  /* 关系卡片（像小档案标签） */
   .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
   .rel-card {
     background: var(--bg2); border: 1px dashed var(--paper);
@@ -179,18 +194,22 @@
   .rel-card.has-link:hover { background: #fff; border-style: solid; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
   .rel-card.no-link { opacity: 0.6; background: transparent; }
   .rel-name { font-family: var(--kai); font-size: 18px; font-weight: 900; color: var(--paper); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 6px;}
-  .rel-card.has-link .rel-name::after { content: "↗"; color: var(--gold); font-family: var(--sans); }
-  .rel-desc { font-size: 12px; color: var(--muted); line-height: 1.6; font-family: var(--serif); }
+  .rel-card.has-link .rel-name::after { content: "→"; color: var(--gold); font-family: var(--sans); }
+  .rel-desc { font-size: 13px; color: var(--muted); line-height: 1.6; font-family: var(--serif); }
 
-  footer { padding: 40px 0; text-align: center; font-size: 11px; letter-spacing: .3em; color: var(--muted); border-top: 2px solid var(--paper); margin-top: 40px; font-family: var(--eng); }
+  footer { padding: 40px 0; text-align: center; font-size: 12px; letter-spacing: .5em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 50px; font-family: var(--serif); }
 
   /* 手机端适配 */
   @media (max-width: 768px) {
     .hero-section { grid-template-columns: 1fr; gap: 30px; text-align: center; }
     .avatar-box { max-width: 260px; margin: 0 auto; }
-    .bg-pinyin { display: none; }
-    .p-quote { border-left: none; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 10px 0; }
-    .p-title { align-self: center; }
+    
+    /* 手机端取消竖排，改为普通居中 */
+    .hero-text { flex-direction: column; gap: 16px; }
+    .p-quote-container { border-right: none; padding-right: 0; height: auto; justify-content: center; }
+    .p-quote { writing-mode: horizontal-tb; text-orientation: mixed; }
+    .p-quote::before, .p-quote::after { display: none; }
+    
     .content-grid { grid-template-columns: 1fr; gap: 40px; }
     .info-item .k { width: 70px; }
   }
@@ -205,9 +224,7 @@
   </header>
 
   <div class="directory-section">
-    <div class="dir-header">
-      <h2>CHARACTERS</h2>
-    </div>
+    <div class="dir-header">人 物 索 引</div>
     <div class="grid" id="dir-grid"></div>
   </div>
 </div>
@@ -215,58 +232,52 @@
 <!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
   <div class="nav-top">
-    <div class="back-btn" onclick="switchView('view-main')">← INDEX</div>
-    <div style="font-size:11px; color:var(--muted); letter-spacing:.1em; font-family:var(--eng)" id="p-top-id">ARCHIVE</div>
+    <div class="back-btn" onclick="switchView('view-main')">← 返回卷宗</div>
+    <div style="font-size:12px; color:var(--muted); letter-spacing:.1em; font-family:var(--serif)" id="p-top-id">档案号</div>
   </div>
   
   <div class="profile-wrap">
     
-    <!-- 头部：图文拼贴区 -->
     <div class="hero-section">
-      <!-- 背景大字 -->
-      <div class="bg-pinyin" id="p-pinyin">NAME</div>
+      <div class="avatar-box" id="p-avatar-box"></div>
       
-      <div class="avatar-box" id="p-avatar-box">
-        <!-- 图片由JS注入 -->
-      </div>
-      
-      <div class="hero-text">
-        <h1 class="p-name" id="p-name"></h1>
-        <div class="p-quote" id="p-quote"></div>
+      <div>
+        <div class="hero-text">
+          <h1 class="p-name" id="p-name"></h1>
+          <div class="p-quote-container">
+            <div class="p-quote" id="p-quote"></div>
+          </div>
+        </div>
         <div class="p-title" id="p-title"></div>
       </div>
     </div>
 
-    <!-- 中部网格 -->
     <div class="content-grid">
       
-      <!-- 左列：基础信息与雷达图 -->
       <div>
-        <div class="sec-title">FILE INFO</div>
+        <div class="sec-title">基础卷宗</div>
         <div class="info-box" id="p-info-grid"></div>
         
-        <div class="sec-title" style="margin-top: 40px;">STATS</div>
+        <div class="sec-title" style="margin-top: 40px;">命理六维</div>
         <div class="stats-box" id="p-stats"></div>
       </div>
 
-      <!-- 右列：性格与生平 -->
       <div>
-        <div class="sec-title">PROFILE</div>
+        <div class="sec-title">性格侧写</div>
         <div class="text-box" id="p-personality"></div>
 
-        <div class="sec-title" style="margin-top: 40px;">TIMELINE</div>
+        <div class="sec-title" style="margin-top: 40px;">生平轨迹</div>
         <div class="timeline" id="p-timeline"></div>
       </div>
 
-      <!-- 全宽：人际关系 -->
       <div class="full-width">
-        <div class="sec-title">RELATIONS</div>
+        <div class="sec-title">人际羁绊</div>
         <div class="relations-grid" id="p-relations"></div>
       </div>
 
     </div>
     
-    <footer><p>SUYUAN GUISHI · ARCHIVE</p></footer>
+    <footer>俗缘诡事 · 秘档库</footer>
   </div>
 </div>
 
@@ -276,7 +287,7 @@
   function renderDirectory() {
     const grid = document.getElementById('dir-grid');
     if (typeof ocDatabase === 'undefined') {
-      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #c9423b; padding: 40px; border: 1px dashed #c9423b;"><h3 style="margin-bottom: 10px; font-family:var(--kai)">加载失败</h3><p>未找到 data.js</p></div>`;
+      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #c9423b; padding: 40px; border: 1px dashed #c9423b; font-family:var(--serif)"><h3>卷宗加载失败</h3><p>未找到 data.js 文件</p></div>`;
       return;
     }
     grid.innerHTML = '';
@@ -308,7 +319,6 @@
     
     let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:300px; overflow:visible;">`;
     
-    // 背景网格
     for (let level = 1; level <= maxVal; level++) {
       let points = [];
       let currentR = (r * level) / maxVal;
@@ -322,7 +332,6 @@
       svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" />`;
     }
     
-    // 轴线
     for (let i = 0; i < n; i++) {
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
       let x = cx + r * Math.cos(angle);
@@ -330,7 +339,6 @@
       svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(43, 41, 39, 0.1)" stroke-width="1" />`;
     }
     
-    // 数据
     let dataPoints = [];
     for (let i = 0; i < n; i++) {
       let val = stats[keys[i]];
@@ -340,9 +348,8 @@
       let y = cy + currentR * Math.sin(angle);
       dataPoints.push(`${x},${y}`);
     }
-    svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(179, 58, 51, 0.15)" stroke="#b33a33" stroke-width="2" stroke-linejoin="round" />`;
+    svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(61, 115, 105, 0.15)" stroke="#c9423b" stroke-width="2" stroke-linejoin="round" />`;
     
-    // 节点与文字
     for (let i = 0; i < n; i++) {
       let key = keys[i];
       let val = stats[key];
@@ -351,7 +358,7 @@
       let x = cx + currentR * Math.cos(angle);
       let y = cy + currentR * Math.sin(angle);
       
-      svg += `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#b33a3b" stroke-width="1.5" />`;
+      svg += `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#c9423b" stroke-width="1.5" />`;
       
       let labelR = r + 20;
       let lx = cx + labelR * Math.cos(angle);
@@ -361,8 +368,8 @@
       if (Math.cos(angle) > 0.1) textAnchor = "start";
       else if (Math.cos(angle) < -0.1) textAnchor = "end";
       
-      svg += `<text x="${lx}" y="${ly}" fill="#2b2927" font-size="12" font-family="Noto Serif SC, serif" font-weight="bold" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
-      svg += `<text x="${lx}" y="${ly + 14}" fill="#7a756e" font-size="10" font-family="Oswald, sans-serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val}/${maxVal}</text>`;
+      svg += `<text x="${lx}" y="${ly}" fill="#2b2927" font-size="13" font-family="Noto Serif SC, serif" font-weight="bold" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
+      svg += `<text x="${lx}" y="${ly + 15}" fill="#7a756e" font-size="11" font-family="Noto Serif SC, serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
     }
     
     svg += `</svg>`;
@@ -373,29 +380,25 @@
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
-    // 图片渲染
     const avatarBox = document.getElementById('p-avatar-box');
     if (oc.avatar) {
       avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
       const imgEl = avatarBox.querySelector('img');
       imgEl.onerror = function() {
         this.style.display = 'none';
-        avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`;
+        avatarBox.innerHTML = `<div class="empty-text">暂无画像</div>`;
       };
     } else {
-      avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`;
+      avatarBox.innerHTML = `<div class="empty-text">暂无画像</div>`;
     }
 
     document.getElementById('p-name').textContent = oc.name;
-    // 生成假拼音装饰
-    document.getElementById('p-pinyin').textContent = oc.id.toUpperCase(); 
     document.getElementById('p-title').textContent = oc.title;
     
-    // 提取性格中的第一句话作为引语（模拟图2的排版效果）
-    const quoteStr = oc.personality ? oc.personality.split('。')[0] + '。' : '“档案记录缺失。”';
+    const quoteStr = oc.personality ? oc.personality.split('。')[0] + '。' : '档案记录缺失';
     document.getElementById('p-quote').textContent = quoteStr;
 
-    document.getElementById('p-top-id').textContent = `ID: ${oc.id.toUpperCase()}`;
+    document.getElementById('p-top-id').textContent = `档案：${oc.id.toUpperCase()}`;
 
     const infoGrid = document.getElementById('p-info-grid');
     infoGrid.innerHTML = '';
