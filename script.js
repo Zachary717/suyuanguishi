@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchInterval, glitchTimeout;
+let glitchTimeout;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -44,12 +44,12 @@ function switchView(viewId) {
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
-    clearInterval(glitchInterval);
     clearTimeout(glitchTimeout);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
 
+// Zalgo 乱码生成
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
@@ -63,52 +63,48 @@ function makeZalgo(text) {
     return result;
 }
 
-// 触发循环特效
-function startGlitchLoop() {
-  function loop() {
+// 核心：触发闪现
+function triggerGlitchCycle() {
+  if (!isGlitchMode) return;
+  
+  const container = document.getElementById('glitch-matrix');
+  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+  
+  // 用全角空格铺满
+  let fullText = (poem + "　").repeat(25); 
+  
+  // 全屏文字墙渲染
+  container.innerHTML = `<div class="glitch-scanlines"></div><div class="glitch-text-wall" data-text="${fullText}">${fullText}</div>`;
+  // 底层变乱码
+  renderDataUI(true);
+  
+  clearTimeout(glitchTimeout);
+  // 停留 1.5 秒
+  glitchTimeout = setTimeout(() => {
     if (!isGlitchMode) return;
-    
-    const container = document.getElementById('glitch-matrix');
-    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    
-    // 文字重复铺满屏幕
-    let fullText = (poem + "<br><br>").repeat(5);
-    
-    // 1. 插入满屏诗词
-    container.innerHTML = `<div class="glitch-text-box" data-text="${fullText.replace(/<br>/g, ' ')}">${fullText}</div>`;
-    // 2. 底层文字变乱码
-    renderDataUI(true);
-    
-    // 3. 停留 2 秒后消失并恢复
-    clearTimeout(glitchTimeout);
-    glitchTimeout = setTimeout(() => {
-      if (!isGlitchMode) return;
-      container.innerHTML = '';
-      renderDataUI(false);
-      
-      // 4. 等 3 秒后再次循环
-      glitchTimeout = setTimeout(loop, 3000);
-    }, 2000);
-  }
-  loop();
+    container.innerHTML = '';
+    // 底层恢复
+    renderDataUI(false);
+    // 等待 3 秒后继续
+    glitchTimeout = setTimeout(triggerGlitchCycle, 3000);
+  }, 1500);
 }
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
-  clearInterval(glitchInterval);
   clearTimeout(glitchTimeout);
   document.getElementById('glitch-matrix').innerHTML = '';
 
   if (isGlitchMode) {
-    startGlitchLoop();
+    triggerGlitchCycle();
   } else {
     renderDataUI(false);
   }
 }
 
-// 渲染里世界数据，可自由控制是否乱码
+// 底层文字渲染控制
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -134,7 +130,6 @@ function renderDataUI(isZalgo) {
   oc.mutated_relations.forEach((rel, i) => { 
     let name = isZalgo ? makeZalgo(rel.name) : rel.name;
     let desc = isZalgo ? makeZalgo(rel.desc) : rel.desc;
-    // 如果不是乱码状态，且包含我爱你，则变红
     if (!isZalgo && desc.indexOf("我爱你") > -1) {
       desc = `<span style="color: var(--red);">${desc}</span>`;
     }
@@ -151,7 +146,6 @@ function showProfile(id, isToggle) {
     currentActiveId = id;
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
-    clearInterval(glitchInterval);
     clearTimeout(glitchTimeout);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
