@@ -68,7 +68,7 @@ function makeZalgo(text) {
     return result;
 }
 
-// 初次点开：浮现诗词，同时文字变乱码
+// 初次点开：浮现诗词（缩短了停留时间），同时文字变乱码
 function triggerOpening() {
   const container = document.getElementById('glitch-matrix');
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
@@ -79,7 +79,7 @@ function triggerOpening() {
   document.body.classList.add('seizure-active');
   renderDataUI(true);
   
-  // 3. 停留 2.5 秒，诗词消失，页面平稳，文字恢复
+  // 3. 核心修改：停留 1000 毫秒（1 秒）后消失，进入闪烁循环
   poetryTimer = setTimeout(() => {
     container.innerHTML = '';
     document.body.classList.remove('seizure-active');
@@ -87,7 +87,7 @@ function triggerOpening() {
     
     // 4. 开启后续的“文字偶尔闪烁”循环
     startTextFlicker();
-  }, 2500);
+  }, 1000); 
 }
 
 // 后续节奏：诗词不再出现，只有文字偶尔闪烁
@@ -104,7 +104,7 @@ function startTextFlicker() {
     textFlashTimer = setTimeout(() => {
       document.body.classList.remove('seizure-active');
       renderDataUI(false);
-    }, 1200); // 闪 1.2 秒就恢复
+    }, 1000); // 闪 1 秒就恢复
   }, 4000); // 每 4 秒闪一次
 }
 
@@ -130,7 +130,6 @@ function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
 
-  // 标题和问号处理
   document.getElementById('p-name').textContent = "叶 瑶 ？";
   document.getElementById('p-title').textContent = isZalgo ? makeZalgo("是我做错了吗?") : "是我做错了吗?";
 
