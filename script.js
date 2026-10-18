@@ -5,6 +5,7 @@ window.onload = function() {
     return;
   }
 
+  // 渲染左侧列表
   let html = '';
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
@@ -30,6 +31,7 @@ function switchView(viewId) {
   }
 }
 
+// 切换叶瑶的里世界
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
@@ -55,7 +57,7 @@ function showProfile(id, isToggle) {
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
 
-  // 防止蓝色问号出现：利用 onerror 替换为纯文本
+  // 头像渲染（带防破图处理）
   const avatarBox = document.getElementById('p-avatar-box');
   if (oc.avatar) {
     avatarBox.innerHTML = '<img src="' + oc.avatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=&quot;empty-text&quot;>NO IMAGE</div>\';">';
@@ -70,6 +72,7 @@ function showProfile(id, isToggle) {
 
   let statsToRender = oc.stats;
 
+  // 里世界特殊渲染逻辑
   if (id === 'yeyao' && isGlitchMode) {
     document.getElementById('glitch-btn').style.display = 'block';
     document.getElementById('p-name').textContent = "叶 瑶 ？";
@@ -86,9 +89,11 @@ function showProfile(id, isToggle) {
     });
     
   } else {
+    // 正常渲染逻辑
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
+    
     oc.basic.forEach(b => { infoList.innerHTML += '<div class="info-item"><span class="k">' + b.k + '</span><span class="v">' + b.v + '</span></div>'; });
     oc.timeline.forEach(item => { timelineBox.innerHTML += '<div class="tl-item"><div class="tl-time">' + item.time + '</div><div class="tl-event">' + item.event + '</div></div>'; });
     
@@ -108,10 +113,12 @@ function showProfile(id, isToggle) {
   else window.scrollTo(0, 0);
 }
 
+// 雷达图渲染
 function renderRadarChart(stats) {
   const cx = 150, cy = 140, r = 90, maxVal = 6; 
   const keys = Object.keys(stats), n = keys.length;
   let svg = '<svg viewBox="0 0 300 280" style="width:100%; max-width:350px; overflow:visible;">';
+  
   for (let level = 1; level <= maxVal; level++) {
     let points = [];
     for (let i = 0; i < n; i++) {
