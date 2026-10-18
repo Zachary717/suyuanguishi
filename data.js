@@ -37,10 +37,7 @@ const ocDatabase = [
     ],
     personality: "随心所欲，慵懒随性。与时俱进的非传统意义老古董。",
     timeline: [
-      { time: "出生", event: "江浙沪富商之子。" },
-      { time: "过去", event: "道观接收难民，师兄弟参军死伤无数，道观覆灭后独自逃亡。" }, 
-      { time: "-", event: "-" },
-      { time: "现代", event: "喝茶遛鸟捞徒弟。" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "梁青", id: "liangqing", desc: "吃白饭的徒弟。因为某种原因，并不想斥责他不学无术。" },
@@ -60,10 +57,7 @@ const ocDatabase = [
     ],
     personality: "说话之乎者也，行为习惯相当原始。是一个脱离人的视角的存在。情感反应、语言系统、认知方式都和正常人不一样。像野兽。读经但不往脑子里去，只惦念成仙。",
     timeline: [
-      { time: "6岁", event: "旅游大巴侧翻坠河，从河中爬出，大脑受创失忆。" },
-      { time: "-", event: "被老道士带回道观。无法忍受清规戒律，半夜遁逃。" },
-      { time: "-", event: "搭救叶瑶。" },
-      { time: "26岁", event: "自刎。" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "叶瑶", id: "yeyao", desc: "家人。" }
@@ -83,10 +77,7 @@ const ocDatabase = [
     ],
     personality: "无记录",
     timeline: [
-      { time: "出生", event: "贵州贫困农村女孩。" },
-      { time: "14岁", event: "送入精神卫生所。对电子设备产生PTSD。" },
-      { time: "-", event: "逃入山中被叶阮收留。" },
-      { time: "17岁", event: "自杀。为叶阮入药。" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "叶阮", id: "yeruan", desc: "活着的理由。" },
@@ -104,7 +95,7 @@ const ocDatabase = [
     ],
     personality: "无记录",
     timeline: [
-      { time: "过去", event: "无记录" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "原行逸", id: "yuanxingyi", desc: "莫逆之交。" }
@@ -123,7 +114,7 @@ const ocDatabase = [
     ],
     personality: "无记录",
     timeline: [
-      { time: "过去", event: "无记录" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" }
@@ -142,7 +133,7 @@ const ocDatabase = [
     ],
     personality: "无记录",
     timeline: [
-      { time: "过去", event: "无记录" }
+      { time: "无记录", event: "暂无详细生平轨迹" }
     ],
     relations: [
       { name: "梁青", id: "liangqing", desc: "倒霉没用但好玩的前男友。" }
