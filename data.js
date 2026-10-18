@@ -36,9 +36,7 @@ const ocDatabase = [
       { k: "原名", v: "许天成" }
     ],
     personality: "随心所欲，慵懒随性。与时俱进的非传统意义老古董。",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
     relations: [
       { name: "梁青", id: "liangqing", desc: "吃白饭的徒弟。因为某种原因，并不想斥责他不学无术。" },
       { name: "沈秀菊", id: "shenxiuju", desc: "红颜知己。" }
@@ -56,12 +54,8 @@ const ocDatabase = [
       { k: "身高", v: "约190cm" }
     ],
     personality: "说话之乎者也，行为习惯相当原始。是一个脱离人的视角的存在。情感反应、语言系统、认知方式都和正常人不一样。像野兽。读经但不往脑子里去，只惦念成仙。",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
-    relations: [
-      { name: "叶瑶", id: "yeyao", desc: "家人。" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
+    relations: [{ name: "叶瑶", id: "yeyao", desc: "家人。" }],
     stats: { 力量: 5, 敏捷: 6, 体质: 5, 智力: 2, 意志: 1, 幸运: 5 }
   },
   {
@@ -76,14 +70,15 @@ const ocDatabase = [
       { k: "原名", v: "李招娣" }
     ],
     personality: "无记录",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
     relations: [
       { name: "叶阮", id: "yeruan", desc: "活着的理由。" },
       { name: "原行逸", id: "yuanxingyi", desc: "敌人。" }
     ],
     stats: { 力量: 3, 敏捷: 4, 体质: 2, 智力: 5, 意志: 3, 幸运: 4 },
+    
+    // --- 里世界专属数据 ---
+    mutated_avatar: "yeyao_mutated.jpg", 
     mutated_basic: [
       { k: "状态", v: "已逝" },
       { k: "执念", v: "我们 要一起活下去" }
@@ -101,16 +96,10 @@ const ocDatabase = [
     name: "沈秀菊",
     avatar: "",
     title: "八路军",
-    basic: [
-      { k: "性别", v: "女" }
-    ],
+    basic: [{ k: "性别", v: "女" }],
     personality: "无记录",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
-    relations: [
-      { name: "原行逸", id: "yuanxingyi", desc: "莫逆之交。" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
+    relations: [{ name: "原行逸", id: "yuanxingyi", desc: "莫逆之交。" }],
     stats: { 力量: 5, 敏捷: 3, 体质: 6, 智力: 4, 意志: 6, 幸运: 3 }
   },
   {
@@ -124,12 +113,8 @@ const ocDatabase = [
       { k: "身高", v: "172cm" }
     ],
     personality: "无记录",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
-    relations: [
-      { name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
+    relations: [{ name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" }],
     stats: { 力量: 6, 敏捷: 4, 体质: 5, 智力: 4, 意志: 6, 幸运: 3 }
   },
   {
@@ -143,12 +128,8 @@ const ocDatabase = [
       { k: "身高", v: "168cm" }
     ],
     personality: "无记录",
-    timeline: [
-      { time: "无记录", event: "暂无详细生平轨迹" }
-    ],
-    relations: [
-      { name: "梁青", id: "liangqing", desc: "倒霉没用但好玩的前男友。" }
-    ],
+    timeline: [{ time: "无记录", event: "暂无详细生平轨迹" }],
+    relations: [{ name: "梁青", id: "liangqing", desc: "倒霉没用但好玩的前男友。" }],
     stats: { 力量: 5, 敏捷: 5, 体质: 4, 智力: 5, 意志: 4, 幸运: 6 }
   }
 ];
