@@ -18,7 +18,8 @@ window.onload = function() {
   if (btn) {
     const warning = document.createElement('div');
     warning.className = 'epilepsy-warning';
-    warning.innerHTML = 'WARNING: FLASHING LIGHTS';
+    // 【修改这里】将警告改为中文
+    warning.innerHTML = '警告：光敏性癫痫患者请勿点击';
     btn.parentNode.insertBefore(warning, btn);
     
     const observerBtn = new MutationObserver(() => {
