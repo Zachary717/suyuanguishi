@@ -3,92 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>俗缘诡事 · 角色档案库</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- 强制浏览器不缓存，每次刷新必须拉取最新代码 -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+<title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#f7f6f1; --paper:#1a1a1a; --muted:#888; --cinnabar:#b84040; --jade:#4a6255; --line:rgba(26,26,26,.15); --serif:"Noto Serif SC","Songti SC",serif; --eng:"Oswald",sans-serif; }
+  :root { --bg:#f7f6f1; --paper:#1a1a1a; --muted:#888; --red:#b84040; --green:#4a6255; --line:rgba(26,26,26,.15); }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{ background-color:var(--bg); color:var(--paper); font-family:var(--serif); line-height:2; overflow-x:hidden; transition: background-color 0.8s, color 0.8s; }
-  .view { display:none; opacity:0; transition:opacity .5s; min-height:100vh; }
+  body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",serif; line-height:2; overflow-x:hidden; transition:.8s; }
+  .view { display:none; opacity:0; transition:.5s; min-height:100vh; }
   .view.active { display:block; opacity:1; }
   
+  /* 首页 */
   #view-main { padding: 80px 40px; }
   .main-header { text-align: center; margin-bottom: 80px; }
   .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
   .directory-wrap { max-width: 900px; margin: 0 auto; }
-  .dir-header { font-family:var(--eng); font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
+  .dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
   .dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
+  
   .list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
   .list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
   .item-left { display:flex; align-items:baseline; gap:30px; }
-  .item-index { font-family:var(--eng); font-size:16px; color:var(--muted); width:30px; }
-  .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; color:var(--paper); }
-  .item-title { font-size:13px; color:var(--jade); text-align:right; max-width:50%; }
+  .item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
+  .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; }
+  .item-title { font-size:13px; color:var(--green); text-align:right; max-width:50%; }
 
-  #view-profile { padding-bottom: 100px; background: var(--bg); transition: background-color 0.8s; }
+  /* 详情页 */
+  #view-profile { padding-bottom: 100px; }
   .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
-  .back-btn { font-family:var(--eng); font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
-  .nav-top .id-tag { font-family:var(--eng); font-size:12px; color:#fff; }
+  .back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
+  .id-tag { font-family:"Oswald",sans-serif; font-size:12px; color:#fff; }
   
+  /* 叶瑶的隐藏暗纹 */
   .glitch-trigger { position:fixed; top:70px; right:40px; z-index:999; width:30px; height:30px; cursor:pointer; opacity:.15; transition:.4s; display:none; }
-  .glitch-trigger::before, .glitch-trigger::after { content:""; position:absolute; top:50%; left:50%; border-radius:50%; border:1px solid var(--paper); }
-  .glitch-trigger::before { width:20px; height:20px; transform:translate(-50%,-50%); border-style:dashed; }
-  .glitch-trigger::after { width:10px; height:10px; transform:translate(-50%,-50%); background:var(--paper); }
+  .glitch-trigger::before, .glitch-trigger::after { content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1px solid var(--paper); }
+  .glitch-trigger::before { width:20px; height:20px; border-style:dashed; }
+  .glitch-trigger::after { width:10px; height:10px; background:var(--paper); }
   .glitch-trigger:hover { opacity:1; transform:rotate(90deg); }
 
   .profile-wrap { max-width:1000px; margin:0 auto; padding:120px 30px 40px; }
   .hero-section { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:80px; }
   .avatar-box { width:300px; aspect-ratio:3/4; box-shadow:20px 20px 0px rgba(74,98,85,.1); transition:.6s; }
   .avatar-box img { width:100%; height:100%; object-fit:cover; transition:.6s; }
-  .avatar-box .empty-text { display:flex; height:100%; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--line); }
+  .empty-text { display:flex; height:100%; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--line); }
   .hero-text { text-align:right; padding-bottom:20px; }
-  .p-name { font-size:clamp(60px,10vw,100px); font-weight:900; letter-spacing:.15em; color:var(--paper); margin-bottom:20px; transition:.6s; }
-  .p-title { font-size:14px; color:var(--jade); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; transition:.6s; }
+  .p-name { font-size:clamp(60px,10vw,100px); font-weight:900; letter-spacing:.15em; margin-bottom:20px; transition:.6s; }
+  .p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; transition:.6s; }
 
   .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; }
-  .sec-title { font-family:var(--eng); font-size:24px; font-weight:200; color:var(--paper); margin-bottom:30px; display:flex; align-items:center; gap:15px; transition:.6s;}
-  .sec-title::before { content:""; width:20px; height:1px; background:var(--cinnabar); transition:.6s;}
-  .sec-title span { font-size:12px; color:var(--muted); font-family:var(--serif); transition:.6s;}
+  .sec-title { font-family:"Oswald",sans-serif; font-size:24px; font-weight:200; margin-bottom:30px; display:flex; align-items:center; gap:15px; transition:.6s; }
+  .sec-title::before { content:""; width:20px; height:1px; background:var(--red); transition:.6s; }
+  .sec-title span { font-size:12px; color:var(--muted); font-family:"Noto Serif SC",serif; }
 
   .info-list { display:flex; flex-direction:column; }
-  .info-item { display:flex; padding:15px 0; border-bottom:1px dashed var(--line); align-items:baseline; transition:.6s;}
-  .info-item .k { width:80px; color:var(--muted); font-size:13px; flex-shrink:0; transition:.6s;}
-  .info-item .v { font-size:15px; color:var(--paper); font-weight:600; transition:.6s;}
+  .info-item { display:flex; padding:15px 0; border-bottom:1px dashed var(--line); align-items:baseline; transition:.6s; }
+  .info-item .k { width:80px; color:var(--muted); font-size:13px; flex-shrink:0; }
+  .info-item .v { font-size:15px; font-weight:600; }
 
   .stats-container { padding:20px 0; display:flex; justify-content:flex-start; }
   .timeline { position:relative; padding-left:20px; }
-  .timeline::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:1px; background:var(--line); transition:.6s;}
+  .timeline::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:1px; background:var(--line); transition:.6s; }
   .tl-item { position:relative; margin-bottom:40px; }
-  .tl-item::before { content:""; position:absolute; left:-24px; top:8px; width:9px; height:9px; border-radius:50%; border:1px solid var(--jade); background:var(--bg); transition:.6s;}
-  .tl-time { font-family:var(--eng); font-size:16px; color:var(--cinnabar); margin-bottom:5px; transition:.6s;}
-  .tl-event { font-size:14px; color:var(--muted); line-height:1.8; transition:.6s;}
+  .tl-item::before { content:""; position:absolute; left:-24px; top:8px; width:9px; height:9px; border-radius:50%; border:1px solid var(--green); background:var(--bg); transition:.6s; }
+  .tl-time { font-family:"Oswald",sans-serif; font-size:16px; color:var(--red); margin-bottom:5px; transition:.6s; }
+  .tl-event { font-size:14px; color:var(--muted); line-height:1.8; }
 
   .relations-list { display:flex; flex-direction:column; }
-  .rel-item { padding:20px 0; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:20px; transition:.6s;}
+  .rel-item { padding:20px 0; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:20px; transition:.6s; }
   .rel-item.has-link { cursor:pointer; }
-  .rel-name { font-size:18px; font-weight:600; color:var(--paper); min-width:80px; transition:.6s;}
-  .rel-desc { font-size:13px; color:var(--muted); flex:1; transition:.6s;}
-  footer { margin-top:120px; text-align:center; font-family:var(--eng); font-size:12px; color:var(--muted); transition:.6s;}
-
-  .reveal { opacity:0; transform:translateY(30px); transition:all .8s ease; }
-  .reveal.active { opacity:1; transform:translateY(0); }
-  .delay-item { opacity:0; transform:translateY(20px); transition:all .6s ease; }
-  .delay-item.active { opacity:1; transform:translateY(0); }
-  .radar-text { opacity:0; transition:opacity .5s ease; }
-  .radar-text.show { opacity:1; }
+  .rel-name { font-size:18px; font-weight:600; min-width:80px; }
+  .rel-desc { font-size:13px; color:var(--muted); flex:1; }
+  footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); transition:.6s; }
 
   /* 里世界特效 */
   body.glitch-mode {
-    --bg: #050a08; --paper: #ff3333; --muted: #5e8c6a; --cinnabar: #00ff00; --jade: #ff3333; --line: rgba(0,255,0,.2);
+    --bg: #050a08; --paper: #ff3333; --muted: #5e8c6a; --red: #00ff00; --green: #ff3333; --line: rgba(0,255,0,.2);
     background-image: radial-gradient(circle, #0a1c14 0%, #050a08 100%);
     animation: screen-glitch 0.15s infinite; 
   }
   body.glitch-mode .p-name { animation: text-glitch 1.5s infinite; text-shadow:2px 0 #00ff00, -2px 0 #ff3333; }
   body.glitch-mode .avatar-box { border:1px solid #00ff00; }
   body.glitch-mode .avatar-box img { filter: contrast(1.5) hue-rotate(90deg) sepia(0.5); }
-
   @keyframes screen-glitch { 0%,100%{transform:translate(0)} 20%{transform:translate(-1px,1px)} 40%{transform:translate(-1px,-1px)} 60%{transform:translate(1px,1px)} 80%{transform:translate(1px,-1px)} }
   @keyframes text-glitch { 0%,100%{transform:skew(0)} 10%{transform:skew(-5deg);opacity:.8} 12%{transform:skew(5deg);opacity:1} 50%{transform:skew(0)} 52%{transform:skew(3deg);opacity:.9} 54%{transform:skew(0);opacity:1} }
 
@@ -113,7 +111,9 @@
   </header>
   <div class="directory-wrap">
     <div class="dir-header">Character Index / 人物卷宗</div>
-    <div id="dir-list"></div>
+    <div id="dir-list">
+      <!-- 列表会在这里生成，如果加载失败，会显示红字 -->
+    </div>
   </div>
 </div>
 
@@ -131,8 +131,7 @@
         <div class="p-title" id="p-title"></div>
       </div>
     </div>
-    <div`;
- class="content-grid">
+    <div class="content-grid">
       <div>
         <div class="sec-title">PROFILE <span>基础卷宗</span></div>
         <div class="info-list" id="p-info-list"></div>
@@ -150,30 +149,37 @@
   </div>
 </div>
 
+<!-- 这里用最原始的方式加载 data.js -->
+<script src="data.js"></script>
+
 <script>
   let isGlitchMode = false;
   let currentActiveId = "";
 
-  function loadData() {
-    const script = document.createElement('script');
-    script.src = 'data.js?v=' + new Date().getTime(); 
-    script.onload = function() { renderDirectory(); };
-    document.head.appendChild(script);
-  }
-
-  function renderDirectory() {
+  // 核心检测：如果 data.js 没加载成功，直接在屏幕上爆红字！
+  window.onload = function() {
     const list = document.getElementById('dir-list');
+    if (typeof ocDatabase === 'undefined') {
+      list.innerHTML = `
+        <div style="color: #b84040; background: #fff; border: 1px dashed #b84040; padding: 20px; text-align: center; font-weight: bold; font-family: sans-serif;">
+          ❌ 数据读取失败！<br>
+          说明你的 data.js 有格式错误（比如混入了中文逗号），或者文件不存在。
+        </div>
+      `;
+      return;
+    }
+
+    // 如果成功读取，渲染列表
     list.innerHTML = '';
     ocDatabase.forEach((oc, index) => {
       const item = document.createElement('div');
-      item.className = 'list-item reveal';
+      item.className = 'list-item';
       item.onclick = function() { showProfile(oc.id); };
-      item.style.transitionDelay = `${index * 0.1}s`; 
       const num = String(index + 1).padStart(2, '0');
-      item.innerHTML = `<div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div>      list.appendChild(item);
-      setTimeout(() => item.classList.add('active'), 100);
+      item.innerHTML = `<div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div>`;
+      list.appendChild(item);
     });
-  }
+  };
 
   function switchView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -192,16 +198,15 @@
   }
 
   function renderRadarChart(stats, containerId) {
-    const width = 300, height = 280, cx = 150, cy = 140, r = 90; 
-    const keys = Object.keys(stats), n = keys.length, maxVal = 6; 
-    let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:350px; overflow:visible;">`;
-    
+    const cx = 150, cy = 140, r = 90, maxVal = 6; 
+    const keys = Object.keys(stats), n = keys.length;
+    let svg = `<svg viewBox="0 0 300 280" style="width:100%; max-width:350px; overflow:visible;">`;
     for (let level = 1; level <= maxVal; level++) {
       let points = [];
-      let currentR = (r * level) / maxVal;
       for (let i = 0; i < n; i++) {
         let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-        points.push(`${cx + currentR * Math.cos(angle)},${cy + currentR * Math.sin(angle)}`);
+        let cr = (r * level) / maxVal;
+        points.push(`${cx + cr * Math.cos(angle)},${cy + cr * Math.sin(angle)}`);
       }
       let strokeColor = level === maxVal ? (isGlitchMode ? "rgba(0,255,0,0.3)" : "rgba(26,26,26,0.2)") : (isGlitchMode ? "rgba(0,255,0,0.1)" : "rgba(26,26,26,0.05)");
       svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="${level === maxVal ? '0' : '2 2'}" />`;
@@ -210,25 +215,22 @@
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
       svg += `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(angle)}" y2="${cy + r * Math.sin(angle)}" stroke="${isGlitchMode ? 'rgba(0,255,0,0.15)' : 'rgba(26,26,26,0.08)'}" stroke-width="1" />`;
     }
-
-    let dataPoints = [], circleTags = '';
+    let dataPoints = [];
     for (let i = 0; i < n; i++) {
-      let val = stats[keys[i]], currentR = (r * val) / maxVal;
+      let cr = (r * stats[keys[i]]) / maxVal;
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-      let x = cx + currentR * Math.cos(angle), y = cy + currentR * Math.sin(angle);
-      dataPoints.push(`${x},${y}`);
-      circleTags += `<circle data-tx="${x}" data-ty="${y}" cx="${x}" cy="${y}" r="2.5" fill="${isGlitchMode ? '#050a08' : '#f7f6f1'}" stroke="${isGlitchMode ? '#00ff00' : '#b84040'}" stroke-width="1.5" />`;
+      dataPoints.push(`${cx + cr * Math.cos(angle)},${cy + cr * Math.sin(angle)}`);
     }
     svg += `<polygon points="${dataPoints.join(' ')}" fill="${isGlitchMode ? 'rgba(255,51,51,0.15)' : 'rgba(74,98,85,0.1)'}" stroke="${isGlitchMode ? '#ff3333' : '#4a6255'}" stroke-width="1.5" stroke-linejoin="round" />`;
-    svg += circleTags;
-
     for (let i = 0; i < n; i++) {
-      let key = keys[i], val = stats[key], currentR = (r * val) / maxVal;
+      let key = keys[i], cr = (r * stats[key]) / maxVal;
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
+      svg += `<circle cx="${x}" cy="${y}" r="2.5" fill="${isGlitchMode ? '#050a08' : '#f7f6f1'}" stroke="${isGlitchMode ? '#00ff00' : '#b84040'}" stroke-width="1.5" />`;
       let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
       let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
       svg += `<text x="${lx}" y="${ly}" fill="${isGlitchMode ? '#ff3333' : '#1a1a1a'}" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
-      svg += `<text x="${lx}" y="${ly + 16}" fill="${isGlitchMode ? '#5e8c6a' : '#888'}" font-size="11" font-family="Oswald" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
+      svg += `<text x="${lx}" y="${ly + 16}" fill="${isGlitchMode ? '#5e8c6a' : '#888'}" font-size="11" font-family="Oswald" text-anchor="${textAnchor}" dominant-baseline="middle">${stats[key]} / 6</text>`;
     }
     document.getElementById(containerId).innerHTML = svg + `</svg>`;
   }
@@ -239,7 +241,6 @@
       document.body.classList.remove('glitch-mode');
       isGlitchMode = false;
     }
-
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
@@ -252,32 +253,21 @@
     const infoList = document.getElementById('p-info-list');
     const timelineBox = document.getElementById('p-timeline');
     const relationsBox = document.getElementById('p-relations');
-    infoList.innerHTML = '';
-    timelineBox.innerHTML = '';
-    relationsBox.innerHTML = '';
+    infoList.innerHTML = ''; timelineBox.innerHTML = ''; relationsBox.innerHTML = '';
 
     if (id === 'yeyao' && isGlitchMode) {
       document.getElementById('glitch-btn').style.display = 'block';
       document.getElementById('p-name').textContent = "叶 瑶 ？";
-      document.getElementById('p-title').textContent = "错误代码：虫化地缚灵 // 怨念溢满";
-      
-      const mBasic = oc.mutated_basic || [{ k: "状态", v: "档案被幽冥掩盖，等待补全..." }];
-      mBasic.forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k" style="color:#00ff00">${b.k}</span><span class="v">${b.v}</span></div>`; });
-
-      const mTime = oc.mutated_timeline || [{ time: "ERROR", event: "数据已被篡改，无法读取。" }];
-      mTime.forEach(item => { timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time" style="color:#00ff00">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
-
-      const mRel = oc.mutated_relations || [{ name: "？？", desc: "关系数据丢失。" }];
-      mRel.forEach(rel => { relationsBox.innerHTML += `<div class="rel-item"><div class="rel-name">${rel.name}</div><div class="rel-desc">${rel.desc}</div></div>`; });
-
+      document.getElementById('p-title').textContent = "是我做错了吗?";
+      (oc.mutated_basic || [{ k: "状态", v: "档案被掩盖..." }]).forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k" style="color:#00ff00">${b.k}</span><span class="v">${b.v}</span></div>`; });
+      (oc.mutated_timeline || [{ time: "ERROR", event: "无法读取" }]).forEach(item => { timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time" style="color:#00ff00">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
+      (oc.mutated_relations || [{ name: "？？", desc: "丢失" }]).forEach(rel => { relationsBox.innerHTML += `<div class="rel-item"><div class="rel-name">${rel.name}</div><div class="rel-desc">${rel.desc}</div></div>`; });
     } else {
       document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
       document.getElementById('p-name').textContent = oc.name;
       document.getElementById('p-title').textContent = oc.title;
-
       oc.basic.forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`; });
       oc.timeline.forEach(item => { timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
-      
       if (oc.relations) {
         oc.relations.forEach(rel => {
           const hasLink = ocDatabase.find(o => o.id === rel.id) && rel.id !== '';
@@ -285,16 +275,11 @@
         });
       }
     }
-
-    document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN ENTITY" : `ID: ${oc.id.toUpperCase()}`;
-    
+    document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
     renderRadarChart(oc.stats, 'p-stats');
-    
     if (!isToggle) switchView('view-profile');
     else window.scrollTo(0, 0);
   }
-
-  window.onload = function() { loadData(); };
 </script>
 </body>
 </html>
