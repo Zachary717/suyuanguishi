@@ -6,129 +6,191 @@
 <title>俗缘诡事 · 角色档案库</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&display=swap" rel="stylesheet">
+<!-- 引入更有国风感的字体 -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#090a0c; --bg2:#121419; --line:rgba(232,226,214,.1);
-    --paper:#e8e2d6; --muted:#8b8f98;
-    --jade:#5ba39a; --cinnabar:#c03b36; --gold:#c9a227;
-    --serif:"Noto Serif SC","Songti SC",serif;
-    --sans:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
+    /* 玄青墨色背景 */
+    --bg: #06080a; 
+    --bg2: #101317; 
+    --line: rgba(227, 223, 211, 0.08);
+    /* 宣纸白文字 */
+    --paper: #e3dfd3; 
+    --muted: #7a828c;
+    /* 朱砂红、暗金、青玉 */
+    --cinnabar: #d93b3b; 
+    --gold: #b89754; 
+    --jade: #4a837b;
+    
+    --serif: "Noto Serif SC", "Songti SC", serif;
+    --kai: "ZCOOL XiaoWei", "Ma Shan Zheng", "KaiTi", serif; /* 国风标题字体 */
+    --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{
     background:var(--bg); color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
+  /* 纸张噪点 */
   body::before{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.04;
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   
-  .view { display: none; opacity: 0; transition: opacity .3s ease; position:relative; z-index:1; }
+  .view { display: none; opacity: 0; transition: opacity .4s ease; position:relative; z-index:1; }
   .view.active { display: block; opacity: 1; }
 
-  /* 首页 */
+  /* ---------------- 首页（竖排卷宗风） ---------------- */
   #view-home {
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; padding: 20px;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle at center, #11161c 0%, var(--bg) 70%);
   }
-  .home-title{
-    font-family:var(--serif); font-size:clamp(50px, 12vw, 90px); font-weight:900;
-    letter-spacing:.2em; margin-bottom:20px; text-shadow:0 0 20px rgba(192,69,58,.3);
-    background:linear-gradient(180deg, #fff, #c9a227); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  }
-  .home-subtitle{font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:60px}
-  .btn{
-    display:inline-block; padding:12px 36px; border:1px solid var(--cinnabar);
-    color:var(--cinnabar); font-family:var(--serif); font-size:16px; letter-spacing:.2em;
-    cursor:pointer; background:transparent; transition:.3s; border-radius: 4px;
-  }
-  .btn:hover{background:var(--cinnabar); color:var(--bg)}
-
-  /* 索引目录 - 修复了顶部留白 */
-  #view-directory { padding: 40px 20px 80px 20px; }
-  .dir-header { text-align:center; margin-bottom:40px; }
-  .dir-header h1 { font-family:var(--serif); font-size:28px; letter-spacing:.2em; color:var(--paper) }
-  .dir-header p { font-size:12px; color:var(--muted); letter-spacing:.2em; margin-top:10px }
   
-  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; max-width:1000px; margin:0 auto }
+  .home-wrap {
+    display: flex; align-items: flex-start; gap: 40px; 
+    /* 竖排布局 */
+    flex-direction: row-reverse;
+  }
+  
+  .v-title-box {
+    writing-mode: vertical-rl; /* 文字竖排 */
+    text-orientation: upright;
+    display: flex; align-items: center; gap: 30px;
+  }
+  
+  .home-title {
+    font-family: var(--kai); font-size: clamp(60px, 10vw, 90px);
+    font-weight: 900; letter-spacing: .2em; color: var(--paper);
+    text-shadow: 0 0 20px rgba(184, 151, 84, 0.2);
+    margin-bottom: 20px;
+  }
+  
+  .home-subtitle {
+    font-family: var(--serif); font-size: clamp(14px, 2vw, 18px); 
+    letter-spacing: .4em; color: var(--gold);
+    border-right: 1px solid rgba(184, 151, 84, 0.3); 
+    padding-right: 15px;
+  }
+
+  /* 朱砂印章 */
+  .seal {
+    writing-mode: vertical-rl; font-family: var(--kai);
+    display: inline-block; border: 2px solid var(--cinnabar);
+    color: var(--cinnabar); font-size: 16px; padding: 8px 4px;
+    letter-spacing: .3em; border-radius: 2px; margin-top: 20px;
+    opacity: 0.85; transform: rotate(3deg);
+  }
+
+  /* 入口按钮 */
+  .btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 60px; height: 200px;
+    border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+    color: var(--paper); font-family: var(--kai); font-size: 20px;
+    letter-spacing: .3em; writing-mode: vertical-rl;
+    cursor: pointer; transition: .4s; border-radius: 2px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+    margin-top: 60px;
+  }
+  .btn:hover {
+    background: rgba(217, 59, 59, 0.1); border-color: var(--cinnabar);
+    color: var(--cinnabar); box-shadow: 0 0 20px rgba(217, 59, 59, 0.2);
+  }
+
+  /* ---------------- 索引目录 ---------------- */
+  #view-directory { padding: 50px 20px 80px 20px; }
+  .dir-header { text-align: center; margin-bottom: 40px; }
+  .dir-header h1 { font-family: var(--kai); font-size: 32px; letter-spacing: .2em; color: var(--paper); }
+  .dir-header p { font-size: 12px; color: var(--gold); letter-spacing: .3em; margin-top: 10px; }
+  
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; }
   .card {
-    border:1px solid var(--line); background:var(--bg2); padding:20px; cursor:pointer;
-    transition:.3s; position:relative; overflow:hidden; border-radius:4px;
+    border: 1px solid var(--line); background: var(--bg2); padding: 24px; cursor: pointer;
+    transition: .3s; position: relative; overflow: hidden; border-radius: 4px;
   }
-  .card:hover { border-color:rgba(91,163,154,.4); transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.3) }
-  .card-name { font-family:var(--serif); font-size:22px; font-weight:600; letter-spacing:.1em; margin-bottom:6px }
-  .card-title { font-size:12px; color:var(--jade); margin-bottom:14px; letter-spacing:.05em }
-  .card-tags { display:flex; flex-wrap:wrap; gap:6px }
-  .card-tags span { font-size:10px; border:1px solid var(--line); padding:2px 8px; border-radius:999px; color:var(--muted) }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); opacity: 0; transition: .3s; }
+  .card:hover { border-color: rgba(184, 151, 84, 0.4); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .card:hover::before { opacity: 1; }
+  .card-name { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); }
+  .card-title { font-size: 12px; color: var(--jade); margin-bottom: 16px; letter-spacing: .05em; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .card-tags span { font-size: 10px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); }
 
-  /* 详情页 */
-  #view-profile { padding-bottom:60px; }
+  /* ---------------- 详情页 ---------------- */
+  #view-profile { padding-bottom: 60px; background: var(--bg); }
   .nav-top {
-    position:sticky; top:0; z-index:50; background:rgba(9,10,12,.95);
-    backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
-    padding:15px 20px; display:flex; justify-content:space-between; align-items:center;
+    position: sticky; top: 0; z-index: 50; background: rgba(6, 8, 10, 0.95);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
+    padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
   }
-  .back-btn { font-size:13px; color:var(--muted); cursor:pointer; letter-spacing:.1em; display:flex; align-items:center; gap:6px; padding:5px; }
+  .back-btn { font-size: 13px; color: var(--muted); cursor: pointer; letter-spacing: .1em; display: flex; align-items: center; gap: 6px; padding: 5px; }
+  .back-btn:hover { color: var(--gold); }
   
-  .profile-wrap { max-width:800px; margin:0 auto; padding:30px 20px; }
-  .p-header { border-bottom:1px solid var(--line); padding-bottom:20px; margin-bottom:30px; position:relative }
-  .p-header::after { content:""; position:absolute; left:0; bottom:-1px; width:50px; height:2px; background:var(--cinnabar) }
-  .p-name { font-family:var(--serif); font-size:clamp(32px, 6vw, 48px); font-weight:900; letter-spacing:.15em; margin-bottom:8px }
-  .p-title { font-family:var(--serif); font-size:15px; color:var(--jade); letter-spacing:.1em; margin-bottom:16px }
-  .p-tags { display:flex; gap:8px; flex-wrap:wrap }
-  .p-tags span { font-size:11px; background:rgba(192,69,58,.1); color:var(--cinnabar); border:1px solid rgba(192,69,58,.3); padding:2px 10px; border-radius:999px }
+  .profile-wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+  .p-header { border-bottom: 1px solid var(--line); padding-bottom: 30px; margin-bottom: 40px; position: relative; }
+  .p-header::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 60px; height: 2px; background: var(--cinnabar); }
+  .p-name { font-family: var(--kai); font-size: clamp(36px, 6vw, 52px); font-weight: 900; letter-spacing: .15em; margin-bottom: 12px; color: var(--paper); }
+  .p-title { font-family: var(--serif); font-size: 15px; color: var(--jade); letter-spacing: .1em; margin-bottom: 20px; }
+  .p-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .p-tags span { font-size: 11px; background: rgba(217, 59, 59, 0.08); color: var(--cinnabar); border: 1px solid rgba(217, 59, 59, 0.25); padding: 3px 12px; border-radius: 999px; }
 
-  .p-sec { margin-bottom:35px }
-  .p-sec h3 { font-family:var(--serif); font-size:17px; letter-spacing:.1em; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:10px }
-  .p-sec h3::after { content:""; flex:1; height:1px; background:var(--line) }
+  .p-sec { margin-bottom: 40px; }
+  .p-sec h3 { font-family: var(--kai); font-size: 18px; letter-spacing: .15em; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+  .p-sec h3::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
   
-  .info-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:4px; overflow:hidden; }
-  .info-item { background:var(--bg2); padding:12px 16px }
-  .info-item .k { font-size:11px; color:var(--muted); letter-spacing:.1em; margin-bottom:4px; display:block }
-  .info-item .v { font-family:var(--serif); font-size:14.5px }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .info-item { background: var(--bg2); padding: 16px 18px; }
+  .info-item .k { font-size: 11px; color: var(--muted); letter-spacing: .1em; margin-bottom: 4px; display: block; }
+  .info-item .v { font-family: var(--serif); font-size: 15px; color: var(--paper); }
 
-  .p-text { font-size:14px; color:#c9c4b8; line-height:1.9; text-align:justify }
+  .p-text { font-size: 14.5px; color: #b8b3a7; line-height: 2; text-align: justify; }
 
   /* 时间线 */
-  .timeline { position:relative; padding-left:16px; margin-top:10px }
-  .timeline::before { content:""; position:absolute; left:4px; top:8px; bottom:8px; width:1px; background:linear-gradient(180deg, var(--gold), rgba(201,162,39,.1)) }
-  .tl-item { position:relative; padding-bottom:24px; padding-left:20px }
-  .tl-item:last-child { padding-bottom:0 }
-  .tl-item::before { content:""; position:absolute; left:-20px; top:7px; width:9px; height:9px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,.15) }
-  .tl-time { font-family:var(--serif); font-size:13px; font-weight:600; color:var(--gold); letter-spacing:.1em; margin-bottom:4px }
-  .tl-event { font-size:13.5px; color:#c9c4b8; line-height:1.8; text-align:justify }
+  .timeline { position: relative; padding-left: 16px; margin-top: 10px; }
+  .timeline::before { content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold), rgba(184, 151, 84, 0.05)); }
+  .tl-item { position: relative; padding-bottom: 28px; padding-left: 20px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before { content: ""; position: absolute; left: -20px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(184, 151, 84, 0.1); }
+  .tl-time { font-family: var(--kai); font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .1em; margin-bottom: 6px; }
+  .tl-event { font-size: 14px; color: #b8b3a7; line-height: 1.9; text-align: justify; }
 
   /* 六维图 */
-  .stats-box { border:1px solid var(--line); padding:20px; background:rgba(255,255,255,.01); border-radius:4px; }
-  .stat-row { display:flex; align-items:center; margin-bottom:10px; gap:12px }
-  .stat-row:last-child { margin-bottom:0 }
-  .stat-label { width:40px; font-family:var(--serif); font-size:13px; color:var(--muted) }
-  .stat-bar-bg { flex:1; height:4px; background:rgba(232,226,214,.1); position:relative; border-radius:2px; overflow:hidden }
-  .stat-bar { position:absolute; left:0; top:0; bottom:0; background:var(--jade); border-radius:2px; transition:width .8s ease }
-  .stat-val { width:18px; font-family:ui-monospace,monospace; font-size:12px; color:var(--paper); text-align:right }
+  .stats-box { border: 1px solid var(--line); padding: 24px; background: rgba(255,255,255,0.01); border-radius: 4px; }
+  .stat-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-label { width: 40px; font-family: var(--serif); font-size: 14px; color: var(--muted); }
+  .stat-bar-bg { flex: 1; height: 4px; background: rgba(227, 223, 211, 0.08); position: relative; border-radius: 2px; overflow: hidden; }
+  .stat-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--jade); border-radius: 2px; transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .stat-val { width: 20px; font-family: ui-monospace, monospace; font-size: 13px; color: var(--paper); text-align: right; }
 
-  footer { padding:30px 0; text-align:center; font-size:11px; letter-spacing:.2em; color:var(--muted); border-top:1px solid var(--line); margin-top:40px }
+  footer { padding: 40px 0; text-align: center; font-size: 11px; letter-spacing: .3em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 40px; font-family: var(--kai); }
 </style>
 </head>
 <body>
 
 <!-- 视图 1：首页 -->
 <div id="view-home" class="view active">
-  <h1 class="home-title">俗缘诡事</h1>
-  <p class="home-subtitle">玄门异闻 · 尘世诡录</p>
-  <button class="btn" onclick="showDirectory()">启封档案</button>
+  <div class="home-wrap">
+    <!-- 按钮 -->
+    <button class="btn" onclick="showDirectory()">启封档案</button>
+    
+    <!-- 竖排标题 -->
+    <div class="v-title-box">
+      <div class="home-subtitle">玄门异闻 · 尘世诡录</div>
+      <h1 class="home-title">俗缘诡事</h1>
+      <div class="seal">阅</div>
+    </div>
+  </div>
 </div>
 
 <!-- 视图 2：索引目录 -->
 <div id="view-directory" class="view">
   <div class="dir-header">
     <h1>人物索引</h1>
-    <p>档案卷宗 · 点击查阅</p>
+    <p>卷宗秘录 · 点击查阅</p>
   </div>
   <div class="grid" id="dir-grid">
-    <!-- 如果JS加载失败，这里会显示一段报错文字 -->
+    <!-- 动态生成 -->
   </div>
 </div>
 
@@ -136,7 +198,7 @@
 <div id="view-profile" class="view">
   <div class="nav-top">
     <div class="back-btn" onclick="showDirectory()">← 返回索引</div>
-    <div style="font-size:11px; color:var(--muted); letter-spacing:.1em" id="p-top-id">档案号</div>
+    <div style="font-size:11px; color:var(--muted); letter-spacing:.1em; font-family:var(--serif)" id="p-top-id">档案号</div>
   </div>
   
   <div class="profile-wrap">
@@ -150,32 +212,26 @@
     <div class="p-sec"><h3>外貌特征</h3><p class="p-text" id="p-appearance"></p></div>
     <div class="p-sec"><h3>性格侧写</h3><p class="p-text" id="p-personality"></p></div>
     <div class="p-sec"><h3>生平轨迹</h3><div class="timeline" id="p-timeline"></div></div>
-    <div class="('p-sec"><h3>人际羁');
-
-绊</h3><    const infop class="p-text" id="p-relations"></p></div>
-    <footer><p>俗缘诡事 · 档案库</p></footer>
+    <div class="p-sec"><h3>人际羁绊</h3><p class="p-text" id="p-relations"></p></div>
+    <footer><p>俗缘诡事 · 秘档库</p></footer>
   </div>
 </div>
 
-<!-- 关键：加载数据文件 -->
 <script src="data.js"></script>
 
 <script>
   function renderDirectory() {
     const grid = document.getElementById('dir-grid');
-    
-    // 检查数据是否加载成功
     if (typeof ocDatabase === 'undefined') {
       grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; color: #ff6b6b; padding: 40px; border: 1px dashed #ff6b6b; border-radius: 8px;">
-          <h3 style="margin-bottom: 10px;">档案加载失败</h3>
-          <p>未能读取到 data.js 文件。</p>
-          <p style="font-size: 12px; margin-top: 10px;">可能是文件没有成功保存，或者代码里的标点符号变成了中文。</p>
+        <div style="grid-column: 1 / -1; text-align: center; color: #d93b3b; padding: 40px; border: 1px dashed #d93b3b; border-radius: 8px;">
+          <h3 style="margin-bottom: 10px; font-family:var(--kai)">档案加载失败</h3>
+          <p style="font-size: 14px;">未能读取到 data.js 文件。</p>
+          <p style="font-size: 12px; margin-top: 10px; opacity:0.8">请检查 data.js 代码是否出现了中文标点符号。</p>
         </div>
       `;
       return;
     }
-
     grid.innerHTML = '';
     ocDatabase.forEach(oc => {
       const card = document.createElement('div');
@@ -206,7 +262,9 @@
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
     document.getElementById('p-top-id').textContent = `编号: ${oc.id.toUpperCase()}`;
-    document.getElementById('p-tags').innerHTML = oc.tags.map(t => `<span>${t}</span>`).joinGrid = document.getElementById('p-info-grid');
+    document.getElementById('p-tags').innerHTML = oc.tags.map(t => `<span>${t}</span>`).join('');
+
+    const infoGrid = document.getElementById('p-info-grid');
     infoGrid.innerHTML = '';
     oc.basic.forEach(b => {
       infoGrid.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
@@ -238,10 +296,7 @@
     switchView('view-profile');
   }
 
-  window.onload = function() {
-    // 如果加载 data.js 用了极短的时间，这里直接渲染
-    renderDirectory();
-  };
+  window.onload = function() { renderDirectory(); };
 </script>
 </body>
 </html>
