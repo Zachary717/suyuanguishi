@@ -93,7 +93,8 @@ const ocDatabase = [
     ],
     mutated_relations: [
       { name: "叶阮", desc: "我爱你。" }
-    ]
+    ],
+    mutated_stats: { 力量: 6, 敏捷: 6, 体质: 6, 智力: 3, 意志: 0, 幸运: 0 }
   },
   {
     id: "shenxiuju",
