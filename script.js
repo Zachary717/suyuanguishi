@@ -46,16 +46,16 @@ function switchView(viewId) {
     isGlitchMode = false;
     clearTimeout(glitchTimer);
     clearTimeout(waitTimer);
-    document.getElementById('glitch-matrix').innerHTML = '';
+    const container = document.getElementById('glitch-matrix');
+    if(container) container.innerHTML = '';
   }
 }
 
-// 【核心修改】极致密集的深渊乱码生成器
+// 极致深渊乱码生成器：彻底覆盖原字，无法辨认
 function makeZalgo(text) {
-    // 更多、更诡异的重叠符号
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
-    const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛', '̷', '̸', '̡', '̢', '̧'];
+    const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛'];
     
     let result = "";
     for(let i=0; i<text.length; i++) {
@@ -74,21 +74,16 @@ function triggerGlitchCycle() {
   if (!isGlitchMode) return;
   
   const container = document.getElementById('glitch-matrix');
-  // 诗词正常显示
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
   container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${poem}</div>`;
-  // 底层数据瞬间变为不可名状的重叠乱码
   renderDataUI(true);
   
   clearTimeout(glitchTimer);
-  // 停留 2.5 秒
   glitchTimer = setTimeout(() => {
     if (!isGlitchMode) return;
-    container.innerHTML = ''; // 诗词消失
-    renderDataUI(false); // 底层恢复
-    
-    // 等待 4 秒后再次循环
+    container.innerHTML = '';
+    renderDataUI(false);
     waitTimer = setTimeout(triggerGlitchCycle, 4000);
   }, 2500);
 }
@@ -108,7 +103,6 @@ function toggleGlitch() {
   }
 }
 
-// 渲染底层数据
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -122,13 +116,15 @@ function renderDataUI(isZalgo) {
   (oc.mutated_basic || []).forEach((b, i) => { 
     let k = isZalgo ? makeZalgo(b.k) : b.k;
     let v = isZalgo ? makeZalgo(b.v) : b.v;
-    b_list += `<div class="info-item delay-item active" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
+    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 40px;' : '';
+    b_list += `<div class="info-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
   });
   
   (oc.mutated_timeline || []).forEach((item, i) => { 
     let time = isZalgo ? makeZalgo(item.time) : item.time;
     let event = isZalgo ? makeZalgo(item.event) : item.event;
-    t_list += `<div class="tl-item delay-item active" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
+    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 60px;' : '';
+    t_list += `<div class="tl-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
   });
   
   (oc.mutated_relations || []).forEach((rel, i) => { 
@@ -137,7 +133,8 @@ function renderDataUI(isZalgo) {
     if (!isZalgo && desc.indexOf("我爱你") > -1) {
       desc = `<span style="color: var(--red);">${desc}</span>`;
     }
-    r_list += `<div class="rel-item delay-item active" style="transition-delay:${i*0.1}s"><div class="rel-name">${name}</div><div class="rel-desc">${desc}</div></div>`; 
+    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 40px;' : '';
+    r_list += `<div class="rel-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><div class="rel-name">${name}</div><div class="rel-desc">${desc}</div></div>`; 
   });
 
   infoList.innerHTML = b_list;
