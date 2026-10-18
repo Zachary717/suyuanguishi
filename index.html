@@ -9,11 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* 米白纸张配色 */
     --bg: #f4f1ea; 
     --bg2: #ffffff; 
     --line: rgba(51, 48, 46, 0.12);
-    --paper: #33302e; /* 深墨色文字 */
+    --paper: #33302e; 
     --muted: #88837c; 
     --cinnabar: #c9423b; 
     --gold: #a87e3f; 
@@ -28,7 +27,6 @@
     background:var(--bg); color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
-  /* 纸张噪点（降低透明度以适应白底） */
   body::before{
     content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.025;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -37,41 +35,48 @@
   .view { display: none; opacity: 0; transition: opacity .4s ease; position: relative; z-index: 1; }
   .view.active { display: block; opacity: 1; }
 
-  /* 首页 */
-  #view-home { min-height: 100vh; background: radial-gradient(circle at center, #fff 0%, var(--bg) 70%); }
-  #view-home.active { display: flex; align-items: center; justify-content: center; }
-  .home-wrap { display: flex; align-items: flex-start; gap: 40px; flex-direction: row-reverse; }
-  .v-title-box { writing-mode: vertical-rl; text-orientation: upright; display: flex; align-items: center; gap: 30px; }
-  .home-title {
-    font-family: var(--kai); font-size: clamp(60px, 10vw, 90px);
-    font-weight: 900; letter-spacing: .2em; color: var(--paper);
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08); margin-bottom: 20px;
-  }
-  .home-subtitle {
-    font-family: var(--serif); font-size: clamp(14px, 2vw, 18px); 
-    letter-spacing: .4em; color: var(--gold);
-    border-right: 1px solid rgba(168, 126, 63, 0.4); padding-right: 15px;
-  }
-  .seal {
-    writing-mode: vertical-rl; font-family: var(--kai);
-    display: inline-block; border: 2px solid var(--cinnabar);
-    color: var(--cinnabar); font-size: 16px; padding: 8px 4px;
-    letter-spacing: .3em; border-radius: 2px; margin-top: 20px;
-    opacity: 0.85; transform: rotate(3deg);
-  }
-  .btn {
+  /* ---------------- 主页面（标题 + 索引） ---------------- */
+  #view-main { padding-bottom: 60px; }
+  
+  .main-header {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 60px; height: 200px; border: 1px solid var(--line); background: rgba(255,255,255,0.6);
-    color: var(--paper); font-family: var(--kai); font-size: 20px;
-    letter-spacing: .3em; writing-mode: vertical-rl; cursor: pointer; transition: .4s; border-radius: 2px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 60px;
+    padding: 70px 20px 50px 20px; 
+    background: radial-gradient(circle at center, #fff 0%, var(--bg) 80%);
+    border-bottom: 1px solid var(--line);
   }
-  .btn:hover { background: rgba(201, 66, 59, 0.08); border-color: var(--cinnabar); color: var(--cinnabar); box-shadow: 0 4px 20px rgba(201, 66, 59, 0.15); }
+  
+  .header-content { 
+    display: flex; flex-direction: column; align-items: center; 
+    gap: 24px; width: 100%;
+  }
+  
+  /* 横版古风副标题 */
+  .home-subtitle {
+    font-family: var(--serif); font-size: 14px; 
+    letter-spacing: .4em; color: var(--gold);
+    display: flex; align-items: center; gap: 16px;
+    white-space: nowrap;
+  }
+  .home-subtitle::before, .home-subtitle::after {
+    content: ""; display: block; width: 50px; height: 1px; 
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .home-subtitle::after {
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
 
-  /* 索引目录 */
-  #view-directory { padding: 20px 20px 60px 20px; }
-  .dir-header { text-align: center; margin-bottom: 24px; }
-  .dir-header h1 { font-family: var(--kai); font-size: 32px; letter-spacing: .2em; color: var(--paper); }
+  /* 图片标题专属样式 */
+  .home-title-img {
+    max-width: 90vw; /* 适应手机屏幕 */
+    max-height: 180px; /* 限制高度，防止横版图片过大 */
+    object-fit: contain; 
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); /* 给图片加一点淡淡阴影，更立体 */
+  }
+
+  /* 索引目录区 */
+  .directory-section { padding: 40px 20px 0 20px; }
+  .dir-header { text-align: center; margin-bottom: 30px; }
+  .dir-header h2 { font-family: var(--kai); font-size: 28px; letter-spacing: .2em; color: var(--paper); }
   .dir-header p { font-size: 12px; color: var(--gold); letter-spacing: .3em; margin-top: 10px; }
   
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; }
@@ -88,19 +93,18 @@
   .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .card-tags span { font-size: 10px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); background: var(--bg); }
 
-  /* 详情页 */
+  /* ---------------- 详情页 ---------------- */
   #view-profile { padding-bottom: 60px; background: var(--bg); }
   .nav-top {
     position: sticky; top: 0; z-index: 50; background: rgba(244, 241, 234, 0.95);
     backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
   }
-  .back-btn { font-size: 13px; color: var(--muted); cursor: pointer; letter-spacing: .1em; display: flex; align-items: center; gap: 6px; padding: 5px; }
-  .back-btn:hover { color: var(--gold); }
+  .back-btn { font-size: 13px; color: var(--muted); cursor: pointer; letter-spacing: .1em; display: flex; align-items: center; gap: 6px; padding: 5px; font-weight: 600;}
+  .back-btn:hover { color: var(--cinnabar); }
   
   .profile-wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
   
-  /* 头部布局 */
   .p-header { 
     display: flex; gap: 30px; align-items: flex-start; 
     border-bottom: 1px solid var(--line); padding-bottom: 30px; margin-bottom: 40px; position: relative;
@@ -122,7 +126,6 @@
   .p-tags { display: flex; gap: 8px; flex-wrap: wrap; }
   .p-tags span { font-size: 11px; background: rgba(201, 66, 59, 0.08); color: var(--cinnabar); border: 1px solid rgba(201, 66, 59, 0.25); padding: 3px 12px; border-radius: 999px; }
 
-  /* 关系卡片网格 */
   .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .rel-card {
     border: 1px solid var(--line); background: var(--bg2);
@@ -166,38 +169,39 @@
 
   footer { padding: 40px 0; text-align: center; font-size: 11px; letter-spacing: .3em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 40px; font-family: var(--kai); }
 
-  /* 手机端适配 */
   @media (max-width: 600px) {
     .p-header { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
     .p-avatar { width: 140px; height: 186px; }
     .p-tags { justify-content: center; }
+    .home-subtitle::before, .home-subtitle::after { width: 30px; }
   }
 </style>
 </head>
 <body>
 
-<div id="view-home" class="view active">
-  <div class="home-wrap">
-    <button class="btn" onclick="showDirectory()">启封档案</button>
-    <div class="v-title-box">
+<!-- 视图 1：主页面 -->
+<div id="view-main" class="view active">
+  <header class="main-header">
+    <div class="header-content">
       <div class="home-subtitle">玄门异闻 · 尘世诡录</div>
-      <h1 class="home-title">俗缘诡事</h1>
-      <div class="seal">阅</div>
+      <!-- 这里原本是文字，现在变成了图片 -->
+      <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
     </div>
+  </header>
+
+  <div class="directory-section">
+    <div class="dir-header">
+      <h2>人物索引</h2>
+      <p>卷宗秘录 · 点击查阅</p>
+    </div>
+    <div class="grid" id="dir-grid"></div>
   </div>
 </div>
 
-<div id="view-directory" class="view">
-  <div class="dir-header">
-    <h1>人物索引</h1>
-    <p>卷宗秘录 · 点击查阅</p>
-  </div>
-  <div class="grid" id="dir-grid"></div>
-</div>
-
+<!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
   <div class="nav-top">
-    <div class="back-btn" onclick="showDirectory()">← 返回索引</div>
+    <div class="back-btn" onclick="switchView('view-main')">← 返回索引</div>
     <div style="font-size:11px; color:var(--muted); letter-spacing:.1em; font-family:var(--serif)" id="p-top-id">档案号</div>
   </div>
   
@@ -213,7 +217,6 @@
 
     <div class="p-sec"><h3>基础信息</h3><div class="info-grid" id="p-info-grid"></div></div>
     <div class="p-sec"><h3>六维属性</h3><div class="stats-box" id="p-stats"></div></div>
-    <!-- 外貌特征已删除 -->
     <div class="p-sec"><h3>性格侧写</h3><p class="p-text" id="p-personality"></p></div>
     <div class="p-sec"><h3>生平轨迹</h3><div class="timeline" id="p-timeline"></div></div>
     <div class="p-sec"><h3>人际羁绊</h3><div class="relations-grid" id="p-relations"></div></div>
@@ -235,7 +238,8 @@
     ocDatabase.forEach(oc => {
       const card = document.createElement('div');
       card.className = 'card';
-      card.onclick = () => showProfile(oc.id);
+      card.onclick = function() { showProfile(oc.id); };
+      
       const tagsHtml = oc.tags.map(t => `<span>${t}</span>`).join('');
       card.innerHTML = `<div class="card-name">${oc.name}</div><div class="card-title">${oc.title}</div><div class="card-tags">${tagsHtml}</div>`;
       grid.appendChild(card);
@@ -248,15 +252,18 @@
     window.scrollTo(0, 0);
   }
 
-  function showDirectory() { switchView('view-directory'); }
-
   function showProfile(id) {
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
     const avatarBox = document.getElementById('p-avatar-box');
     if (oc.avatar) {
-      avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>图片未找到</span>'">`;
+      avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
+      const imgEl = avatarBox.querySelector('img');
+      imgEl.onerror = function() {
+        this.style.display = 'none';
+        avatarBox.innerHTML = `<span>暂无画像</span>`;
+      };
     } else {
       avatarBox.innerHTML = `<span>暂无画像</span>`;
     }
@@ -272,7 +279,6 @@
       infoGrid.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
     });
 
-    // 外貌已删除，直接渲染性格
     document.getElementById('p-personality').textContent = oc.personality || '暂无记录';
 
     const timelineBox = document.getElementById('p-timeline');
@@ -288,14 +294,14 @@
         const exists = ocDatabase.find(o => o.id === rel.id);
         const hasLink = exists && rel.id !== '';
         const cardClass = hasLink ? 'rel-card has-link' : 'rel-card no-link';
-        const onClickStr = hasLink ? `onclick="showProfile('${rel.id}')"` : '';
         
-        relationsBox.innerHTML += `
-          <div class="${cardClass}" ${onClickStr}>
-            <div class="rel-name">${rel.name}</div>
-            <div class="rel-desc">${rel.desc}</div>
-          </div>
-        `;
+        const relCard = document.createElement('div');
+        relCard.className = cardClass;
+        if (hasLink) {
+          relCard.onclick = function() { showProfile(rel.id); };
+        }
+        relCard.innerHTML = `<div class="rel-name">${rel.name}</div><div class="rel-desc">${rel.desc}</div>`;
+        relationsBox.appendChild(relCard);
       });
     } else {
       relationsBox.innerHTML = '<div class="p-text">暂无记录</div>';
@@ -314,10 +320,13 @@
         </div>
       `;
     }
+    
     switchView('view-profile');
   }
 
-  window.onload = function() { renderDirectory(); };
+  window.onload = function() { 
+    renderDirectory(); 
+  };
 </script>
 </body>
 </html>
