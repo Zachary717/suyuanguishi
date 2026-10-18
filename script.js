@@ -18,6 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
+let glitchInterval, glitchTimeout;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -43,10 +44,12 @@ function switchView(viewId) {
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
+    clearInterval(glitchInterval);
+    clearTimeout(glitchTimeout);
+    document.getElementById('glitch-matrix').innerHTML = '';
   }
 }
 
-// 生成底层乱码的函数
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
@@ -60,17 +63,87 @@ function makeZalgo(text) {
     return result;
 }
 
+// 触发循环特效
+function startGlitchLoop() {
+  function loop() {
+    if (!isGlitchMode) return;
+    
+    const container = document.getElementById('glitch-matrix');
+    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+    
+    // 文字重复铺满屏幕
+    let fullText = (poem + "<br><br>").repeat(5);
+    
+    // 1. 插入满屏诗词
+    container.innerHTML = `<div class="glitch-text-box" data-text="${fullText.replace(/<br>/g, ' ')}">${fullText}</div>`;
+    // 2. 底层文字变乱码
+    renderDataUI(true);
+    
+    // 3. 停留 2 秒后消失并恢复
+    clearTimeout(glitchTimeout);
+    glitchTimeout = setTimeout(() => {
+      if (!isGlitchMode) return;
+      container.innerHTML = '';
+      renderDataUI(false);
+      
+      // 4. 等 3 秒后再次循环
+      glitchTimeout = setTimeout(loop, 3000);
+    }, 2000);
+  }
+  loop();
+}
+
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
-  const container = document.getElementById('glitch-matrix');
+  
+  clearInterval(glitchInterval);
+  clearTimeout(glitchTimeout);
+  document.getElementById('glitch-matrix').innerHTML = '';
+
   if (isGlitchMode) {
-    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${poem}</div>`;
+    startGlitchLoop();
   } else {
-    container.innerHTML = '';
+    renderDataUI(false);
   }
-  showProfile(currentActiveId, true);
+}
+
+// 渲染里世界数据，可自由控制是否乱码
+function renderDataUI(isZalgo) {
+  const oc = ocDatabase.find(o => o.id === currentActiveId);
+  if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
+
+  const infoList = document.getElementById('p-info-list');
+  const timelineBox = document.getElementById('p-timeline');
+  const relationsBox = document.getElementById('p-relations');
+  
+  let b_list = '', t_list = '', r_list = '';
+
+  oc.mutated_basic.forEach((b, i) => { 
+    let k = isZalgo ? makeZalgo(b.k) : b.k;
+    let v = isZalgo ? makeZalgo(b.v) : b.v;
+    b_list += `<div class="info-item delay-item active" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
+  });
+  
+  oc.mutated_timeline.forEach((item, i) => { 
+    let time = isZalgo ? makeZalgo(item.time) : item.time;
+    let event = isZalgo ? makeZalgo(item.event) : item.event;
+    t_list += `<div class="tl-item delay-item active" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
+  });
+  
+  oc.mutated_relations.forEach((rel, i) => { 
+    let name = isZalgo ? makeZalgo(rel.name) : rel.name;
+    let desc = isZalgo ? makeZalgo(rel.desc) : rel.desc;
+    // 如果不是乱码状态，且包含我爱你，则变红
+    if (!isZalgo && desc.indexOf("我爱你") > -1) {
+      desc = `<span style="color: var(--red);">${desc}</span>`;
+    }
+    r_list += `<div class="rel-item delay-item active" style="transition-delay:${i*0.1}s"><div class="rel-name">${name}</div><div class="rel-desc">${desc}</div></div>`; 
+  });
+
+  infoList.innerHTML = b_list;
+  timelineBox.innerHTML = t_list;
+  relationsBox.innerHTML = r_list;
 }
 
 function showProfile(id, isToggle) {
@@ -78,6 +151,8 @@ function showProfile(id, isToggle) {
     currentActiveId = id;
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
+    clearInterval(glitchInterval);
+    clearTimeout(glitchTimeout);
     document.getElementById('glitch-matrix').innerHTML = '';
   }
   const oc = ocDatabase.find(o => o.id === id);
@@ -87,10 +162,6 @@ function showProfile(id, isToggle) {
   let currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
   avatarBox.innerHTML = currentAvatar ? `<img src="${currentAvatar}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'empty-text\\'>NO IMAGE</div>';">` : '<div class="empty-text">NO IMAGE</div>';
 
-  const infoList = document.getElementById('p-info-list');
-  const timelineBox = document.getElementById('p-timeline');
-  const relationsBox = document.getElementById('p-relations');
-  infoList.innerHTML = ''; timelineBox.innerHTML = ''; relationsBox.innerHTML = '';
   let statsToRender = oc.stats;
 
   if (id === 'yeyao' && isGlitchMode) {
@@ -98,23 +169,17 @@ function showProfile(id, isToggle) {
     document.getElementById('p-name').textContent = "叶 瑶 ？";
     document.getElementById('p-title').textContent = "是我做错了吗?";
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
-
-    // 【核心】其他文字绝对是正常的，没有乱码
-    oc.mutated_basic.forEach((b, i) => { infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${b.k}</span><span class="v">${b.v}</span></div>`; });
-    oc.mutated_timeline.forEach((item, i) => { timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
-    
-    oc.mutated_relations.forEach((rel, i) => { 
-      let desc = rel.desc;
-      // 【核心】只有“我爱你”变红，其他完全正常！
-      if (desc.indexOf("我爱你") > -1) {
-        desc = `<span style="color: var(--red);">${desc}</span>`;
-      }
-      relationsBox.innerHTML += `<div class="rel-item delay-item" style="transition-delay:${i*0.1}s"><div class="rel-name">${rel.name}</div><div class="rel-desc">${desc}</div></div>`; 
-    });
+    renderDataUI(false); 
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
+    
+    const infoList = document.getElementById('p-info-list');
+    const timelineBox = document.getElementById('p-timeline');
+    const relationsBox = document.getElementById('p-relations');
+    infoList.innerHTML = ''; timelineBox.innerHTML = ''; relationsBox.innerHTML = '';
+    
     oc.basic.forEach((b, i) => { infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`; });
     oc.timeline.forEach((item, i) => { timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
     oc.relations.forEach((rel, i) => {
