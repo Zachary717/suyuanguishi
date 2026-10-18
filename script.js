@@ -61,17 +61,30 @@ function toggleGlitch() {
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let html = '';
-    for(let i=0; i<30; i++) {
-        let start = Math.floor(Math.random() * (poem.length - 15));
-        let snippet = poem.substring(start, start + 10 + Math.random() * 10); 
-        let top = Math.random() * 80 + 10;
-        let left = Math.random() * 80 + 10;
-        let rotate = Math.random() * 30 - 15;
-        let delay = Math.random() * 0.5; 
-        html += `<div class="glitch-text-piece" style="top: ${top}%; left: ${left}%; transform: rotate(${rotate}deg); animation-delay: ${delay}s, ${delay + 1.5}s;">${snippet}</div>`;
+    let glitchChars = "█▓▒░#@%$&*!?<>";
+    
+    // 洗牌：打碎文字并掺入乱码
+    let glitchText = "";
+    for(let i=0; i<300; i++) {
+        let char = poem[Math.floor(Math.random() * poem.length)];
+        if(Math.random() > 0.8) {
+            char = glitchChars[Math.floor(Math.random() * glitchChars.length)];
+        }
+        glitchText += char;
+        if(Math.random() > 0.8) glitchText += " ";
     }
-    container.innerHTML = html; 
+
+    // 将乱码文本复制多份填满
+    let fullText = glitchText.repeat(10);
+
+    // 生成三层叠加的乱码层
+    container.innerHTML = `
+      <div class="glitch-wrapper">
+        <div class="glitch-layer layer-3">${fullText}</div>
+        <div class="glitch-layer layer-2">${fullText}</div>
+        <div class="glitch-layer layer-1">${fullText}</div>
+      </div>
+    `;
   } else {
     container.innerHTML = '';
   }
@@ -163,7 +176,6 @@ function animateRadarLines(group, textGroup) {
   const targets = [];
   const cx = 150, cy = 140;
   
-  // 核心修复：一开始把整个数据组隐藏，防止闪现满格
   group.style.opacity = 0;
 
   circles.forEach(c => {
@@ -174,7 +186,6 @@ function animateRadarLines(group, textGroup) {
   });
 
   const maxDistance = Math.hypot(90, 0); 
-  // 核心修复：速度加快！从 1500 改为 800
   const speed = maxDistance / 800; 
   
   let maxTime = 0;
@@ -184,12 +195,9 @@ function animateRadarLines(group, textGroup) {
   });
 
   const startTime = performance.now();
-  
-  // 把点先放到中心
   circles.forEach(c => { c.setAttribute('cx', cx); c.setAttribute('cy', cy); });
   poly.setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy}`);
 
-  // 重置好后，立马显示出来
   group.style.opacity = 1;
 
   function update(now) {
@@ -243,7 +251,6 @@ function renderRadarChart(stats) {
     circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
   }
   
-  // 核心修复：在这里加上 style="opacity: 0;"，隐藏满格的初始状态
   svg += '<g class="radar-anim-group" style="opacity: 0;">';
   svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
