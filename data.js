@@ -32,7 +32,7 @@ const ocDatabase = [
     basic: [
       { k: "性别", v: "男" },
       { k: "年龄", v: "106" },
-      { k: "身高", v: "182cm" }   
+      { k: "身高", v: "182cm" },   
       { k: "原名", v: "许天成" }
     ],
     personality: "随心所欲，慵懒随性。与时俱进的非传统意义老古董。",
@@ -44,7 +44,7 @@ const ocDatabase = [
     ],
     relations: [
       { name: "梁青", id: "liangqing", desc: "吃白饭的徒弟。因为某种原因，并不想斥责他不学无术。" },
-      { name: "沈秀菊", id: "shenxiuju", desc: "红颜知己。" },
+      { name: "沈秀菊", id: "shenxiuju", desc: "红颜知己。" }
     ],
     stats: { 力量: 6, 敏捷: 6, 体质: 6, 智力: 5, 意志: 4, 幸运: 3 }
   },
@@ -56,7 +56,7 @@ const ocDatabase = [
     basic: [
       { k: "性别", v: "男" },    
       { k: "享年", v: "26" },
-      { k: "身高", v: "约190cm" },
+      { k: "身高", v: "约190cm" }
     ],
     personality: "说话之乎者也，行为习惯相当原始。是一个脱离人的视角的存在。情感反应、语言系统、认知方式都和正常人不一样。像野兽。读经但不往脑子里去，只惦念成仙。",
     timeline: [
@@ -78,7 +78,7 @@ const ocDatabase = [
     title: "苗医",
     basic: [
       { k: "性别", v: "女" },   
-      { k: "享年", v: "17" }
+      { k: "享年", v: "17" },
       { k: "身高", v: "156cm" },
       { k: "原名", v: "李招娣" }
     ],
@@ -102,11 +102,11 @@ const ocDatabase = [
     avatar: "",
     title: "八路军",
     basic: [
-      { k: "性别", v: "女" },
+      { k: "性别", v: "女" }
     ],
     personality: "-",
     timeline: [
-      { time: "-", event: "-" },
+      { time: "-", event: "-" }
     ],
     relations: [
       { name: "原行逸", id: "yuanxingyi", desc: "莫逆之交。" }
@@ -121,13 +121,14 @@ const ocDatabase = [
     basic: [
       { k: "性别", v: "女" },
       { k: "年龄", v: "24" },
-      { k: "身高", v: "172cm" },
+      { k: "身高", v: "172cm" }
     ],
     personality: "-",
     timeline: [
-      { time: "-", event: "-" },
+      { time: "-", event: "-" }
+    ],
     relations: [
-      { name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" },
+      { name: "？？", id: "", desc: "妹妹。她的手足、她的珍宝。" }
     ],
     stats: { 力量: 6, 敏捷: 4, 体质: 5, 智力: 4, 意志: 6, 幸运: 3 }
   },
@@ -141,7 +142,7 @@ const ocDatabase = [
       { k: "年龄", v: "21" },
       { k: "身高", v: "168cm" }
     ],
-    personality: "-。",
+    personality: "-",
     timeline: [
       { time: "-", event: "-" },
       { time: "-", event: "-" },
