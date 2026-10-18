@@ -8,9 +8,9 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .main-header { text-align: center; margin-bottom: 80px; }
 .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
 .directory-wrap { max-width: 900px; margin: 0 auto; }
-.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
-.dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
-.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
+.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-sp-bottomacing:.4em; color:var:(--muted); margin-bottom:40px1; display:flex; align-itemspx:center; gap:20px solid; }
+.dir-header::after var { content:""; flex:1; height:1px; background:var(--line); }
+.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border(--line); cursor:pointer; transition:.4s; }
 .list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
 .item-left { display:flex; align-items:baseline; gap:30px; }
 .item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
@@ -63,41 +63,38 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
 
 /* =========================================
-   满屏特效核心修改（避免被遮挡，强制高亮）
+   修复后的满屏特效
    ========================================= */
 .glitch-overlay { 
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
-  background: transparent; 
-  z-index: 9999; /* 提到最顶层，绝对不可能是被挡住 */
+  background: transparent; z-index: 9999;
   display: none; overflow: hidden; pointer-events: none; 
 }
-body.glitch-mode .glitch-overlay { display: flex; }
+body.glitch-mode .glitch-overlay { display: block; }
 
 .matrix-container { 
-  width: 100%; height: 100%; 
-  display: flex; flex-direction: row-reverse; flex-wrap: wrap; 
-  overflow: hidden; align-items: flex-start;
+  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+  display: flex; flex-wrap: wrap; flex-direction: row-reverse;
+  justify-content: flex-start; align-items: flex-start;
 }
 
-/* 改用普通的文字列，兼容性更好 */
 .matrix-col { 
   writing-mode: vertical-rl; text-orientation: upright;
-  font-family: "Noto Serif SC", serif; font-size: 18px; line-height: 1.2; font-weight: 900; 
-  color: rgba(255, 0, 0, 0.9); /* 极其显眼的猩红 */
+  font-family: "Noto Serif SC", serif; font-size: 16px; line-height: 1.2; font-weight: 900; 
+  color: rgba(255, 0, 0, 0.9);
   text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.8); 
-  padding: 5px 4px; white-space: nowrap; opacity: 0; 
+  padding: 5px 3px; white-space: nowrap; 
+  
+  /* 修复：默认不显示，不在这里写死动画 */
+  opacity: 0; 
 }
 
-/* 随机错位闪现 */
-.matrix-col:nth-child(1) { animation: flash 4s 0s infinite steps(2); }
-.matrix-col:nth-child(2) { animation: flash 5s 1s infinite steps(2); }
-.matrix-col:nth-child(3) { animation: flash 6s 0.5s infinite steps(2); }
-.matrix-col:nth-child(4) { animation: flash 3.5s 2s infinite steps(2); }
-.matrix-col:nth-child(5) { animation: flash 5.5s 1.5s infinite steps(2); }
+/* 当父级加上 active 类时，触发“开门杀” */
+.matrix-container.active-anim .matrix-col {
+  animation: entrance 1.5s steps(2) forwards;
+}
 
-/* 开门杀 */
-body.glitch-mode .matrix-container { animation: entrance 1.5s steps(2) forwards; }
-
+/* 开门杀动画 */
 @keyframes entrance {
   0% { opacity: 1; transform: scale(1.05); }
   20% { opacity: 0.1; transform: translate(-5px, 5px); }
@@ -105,13 +102,6 @@ body.glitch-mode .matrix-container { animation: entrance 1.5s steps(2) forwards;
   60% { opacity: 0.2; transform: translate(5px, -5px); }
   80% { opacity: 0.8; transform: translate(0); }
   100% { opacity: 0; transform: scale(1); }
-}
-
-@keyframes flash {
-  0%, 70% { opacity: 0; }
-  75% { opacity: 1; transform: translate(2px, -2px); }
-  80% { opacity: 0.2; transform: translate(-2px, 2px); }
-  85%, 100% { opacity: 0; transform: translate(0); }
 }
 
 /* 基础里世界配色 */
