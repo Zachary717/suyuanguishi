@@ -50,42 +50,47 @@ function switchView(viewId) {
   }
 }
 
-// 生成深渊乱码（只用底层抽搐时）
+// 【核心修改】极致密集的深渊乱码生成器
 function makeZalgo(text) {
-    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
-    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
+    // 更多、更诡异的重叠符号
+    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
+    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
+    const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛', '̷', '̸', '̡', '̢', '̧'];
+    
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        for(let j=0; j<Math.floor(Math.random()*3)+2; j++) {
-            result += up[Math.floor(Math.random() * up.length)] + down[Math.floor(Math.random() * down.length)];
+        // 核心暴击：每个字随机叠加 10 到 20 个乱码符号，从各个方向拉扯
+        for(let j=0; j<Math.floor(Math.random() * 10) + 10; j++) {
+            result += up[Math.floor(Math.random() * up.length)];
+            result += down[Math.floor(Math.random() * down.length)];
+            if(Math.random() > 0.5) result += mid[Math.floor(Math.random() * mid.length)];
         }
     }
     return result;
 }
 
-// 触发单次抽搐
-function triggerSeizure() {
+function triggerGlitchCycle() {
   if (!isGlitchMode) return;
   
   const container = document.getElementById('glitch-matrix');
-  // 不重叠的诗句显示
-  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。<br>三载悠悠魂梦杳，是梦久应醒矣。<br>料也觉、人间无味。不及夜台尘土隔，<br>清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。<br>我自中宵成转侧，忍听湘弦重理。<br>待结个、他生知己。还怕两人俱薄命，<br>再缘悭、剩月零风里。清泪尽，纸灰起。";
+  // 诗词正常显示
+  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
-  // 闪现诗词，底层数据变乱码
-  container.innerHTML = `<div class="glitch-text-wall" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
+  container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${poem}</div>`;
+  // 底层数据瞬间变为不可名状的重叠乱码
   renderDataUI(true);
   
-  // 1.5秒后恢复
   clearTimeout(glitchTimer);
+  // 停留 2.5 秒
   glitchTimer = setTimeout(() => {
     if (!isGlitchMode) return;
-    container.innerHTML = ''; // 闪掉诗词
-    renderDataUI(false); // 恢复底层文字
+    container.innerHTML = ''; // 诗词消失
+    renderDataUI(false); // 底层恢复
     
-    // 再等 4 秒后重新抽搐
-    waitTimer = setTimeout(triggerSeizure, 4000);
-  }, 1500);
+    // 等待 4 秒后再次循环
+    waitTimer = setTimeout(triggerGlitchCycle, 4000);
+  }, 2500);
 }
 
 function toggleGlitch() {
@@ -97,13 +102,13 @@ function toggleGlitch() {
   document.getElementById('glitch-matrix').innerHTML = '';
 
   if (isGlitchMode) {
-    triggerSeizure();
+    triggerGlitchCycle();
   } else {
     renderDataUI(false);
   }
 }
 
-// 渲染底层数据（isZalgo 控制是否变成乱码）
+// 渲染底层数据
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -114,22 +119,21 @@ function renderDataUI(isZalgo) {
   
   let b_list = '', t_list = '', r_list = '';
 
-  oc.mutated_basic.forEach((b, i) => { 
+  (oc.mutated_basic || []).forEach((b, i) => { 
     let k = isZalgo ? makeZalgo(b.k) : b.k;
     let v = isZalgo ? makeZalgo(b.v) : b.v;
     b_list += `<div class="info-item delay-item active" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
   });
   
-  oc.mutated_timeline.forEach((item, i) => { 
+  (oc.mutated_timeline || []).forEach((item, i) => { 
     let time = isZalgo ? makeZalgo(item.time) : item.time;
     let event = isZalgo ? makeZalgo(item.event) : item.event;
     t_list += `<div class="tl-item delay-item active" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
   });
   
-  oc.mutated_relations.forEach((rel, i) => { 
+  (oc.mutated_relations || []).forEach((rel, i) => { 
     let name = isZalgo ? makeZalgo(rel.name) : rel.name;
     let desc = isZalgo ? makeZalgo(rel.desc) : rel.desc;
-    // 只要不是乱码状态，就把我爱你变红
     if (!isZalgo && desc.indexOf("我爱你") > -1) {
       desc = `<span style="color: var(--red);">${desc}</span>`;
     }
@@ -164,7 +168,6 @@ function showProfile(id, isToggle) {
     document.getElementById('p-name').textContent = "叶 瑶 ？";
     document.getElementById('p-title').textContent = "是我做错了吗?";
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
-    // 初始化时，渲染正常文字
     renderDataUI(false); 
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
