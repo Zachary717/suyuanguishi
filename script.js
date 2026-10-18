@@ -1,150 +1,124 @@
-let isGlitchMode = false;
-let currentActiveId = "";
+:root { --bg:#f7f6f1; --paper:#1a1a1a; --muted:#888; --red:#b84040; --green:#4a6255; --line:rgba(26,26,26,.15); }
+*{margin:0;padding:0;box-sizing:border-box}
+body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",serif; line-height:2; overflow-x:hidden; transition:0.5s; }
+.view { display:none; opacity:0; transition:.5s; min-height:100vh; }
+.view.active { display:block; opacity:1; }
 
-window.onload = function() {
-  const poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-  let html = '';
-  // 使用 innerHTML 快速填充
-  for(let i=0; i<25; i++) html += `<div class="matrix-col">${poem}</div>`;
-  document.getElementById('glitch-matrix').innerHTML = html;
+#view-main { padding: 80px 40px; }
+.main-header { text-align: center; margin-bottom: 80px; }
+.home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
+.directory-wrap { max-width: 900px; margin: 0 auto; }
+.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
+.dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
+.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
+.list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
+.item-left { display:flex; align-items:baseline; gap:30px; }
+.item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
+.item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; }
+.item-title { font-size:13px; color:var(--green); text-align:right; }
 
-  const list = document.getElementById('dir-list');
-  if (typeof ocDatabase === 'undefined') {
-    list.innerHTML = `<div style="color: red; font-weight: bold; padding: 20px;">❌ data.js 加载失败，请检查格式。</div>`;
-    return;
-  }
-  list.innerHTML = '';
-  ocDatabase.forEach((oc, index) => {
-    const item = document.createElement('div');
-    item.className = 'list-item';
-    item.onclick = function() { showProfile(oc.id); };
-    const num = String(index + 1).padStart(2, '0');
-    item.innerHTML = `<div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div>`;
-    list.appendChild(item);
-  });
-};
+#view-profile { padding-bottom: 100px; }
+.nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
+.back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
+.id-tag { font-family:"Oswald",sans-serif; font-size:12px; color:#fff; }
 
-function switchView(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
-  window.scrollTo(0, 0);
-  if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode');
-    isGlitchMode = false;
-  }
+.glitch-trigger { position:fixed; top:70px; right:40px; z-index:999; width:30px; height:30px; cursor:pointer; opacity:.15; transition:.4s; display:none; }
+.glitch-trigger::before, .glitch-trigger::after { content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1px solid var(--paper); }
+.glitch-trigger::before { width:20px; height:20px; border-style:dashed; }
+.glitch-trigger::after { width:10px; height:10px; background:var(--paper); }
+.glitch-trigger:hover { opacity:1; transform:rotate(90deg); }
+
+.profile-wrap { max-width:1000px; margin:0 auto; padding:120px 30px 40px; }
+.hero-section { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:80px; }
+.avatar-box { width:300px; aspect-ratio:3/4; box-shadow:20px 20px 0px rgba(74,98,85,.1); transition:.6s; }
+.avatar-box img { width:100%; height:100%; object-fit:cover; transition:.6s; }
+.empty-text { display:flex; height:100%; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--line); }
+.hero-text { text-align:right; padding-bottom:20px; }
+.p-name { font-size:clamp(60px,10vw,100px); font-weight:900; letter-spacing:.15em; margin-bottom:20px; }
+.p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; }
+
+.content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; position: relative; z-index: 20; }
+.sec-title { font-family:"Oswald",sans-serif; font-size:24px; font-weight:200; margin-bottom:30px; display:flex; align-items:center; gap:15px; }
+.sec-title::before { content:""; width:20px; height:1px; background:var(--red); }
+.sec-title span { font-size:12px; color:var(--muted); font-family:"Noto Serif SC",serif; }
+
+.info-list { display:flex; flex-direction:column; }
+.info-item { display:flex; padding:15px 0; border-bottom:1px dashed var(--line); align-items:baseline; }
+.info-item .k { width:80px; color:var(--muted); font-size:13px; flex-shrink:0; }
+.info-item .v { font-size:15px; font-weight:600; }
+
+.stats-container { padding:20px 0; display:flex; justify-content:flex-start; }
+.timeline { position:relative; padding-left:20px; }
+.timeline::before { content:""; position:absolute; left:0; top:10px; bottom:10px; width:1px; background:var(--line); }
+.tl-item { position:relative; margin-bottom:40px; }
+.tl-item::before { content:""; position:absolute; left:-24px; top:8px; width:9px; height:9px; border-radius:50%; border:1px solid var(--green); background:var(--bg); }
+.tl-time { font-family:"Oswald",sans-serif; font-size:16px; color:var(--red); margin-bottom:5px; }
+.tl-event { font-size:14px; color:var(--muted); line-height:1.8; }
+
+.relations-list { display:flex; flex-direction:column; }
+.rel-item { padding:20px 0; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:20px; }
+.rel-item.has-link { cursor:pointer; }
+.rel-name { font-size:18px; font-weight:600; min-width:80px; }
+.rel-desc { font-size:13px; color:var(--muted); flex:1; }
+footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
+
+/* =========================================
+   核心硬编码满屏特效，绝对能显示
+   ========================================= */
+.glitch-overlay { 
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+  background: transparent; 
+  z-index: 9999;
+  display: none; overflow: hidden; pointer-events: none; 
+}
+body.glitch-mode .glitch-overlay { display: block; }
+
+/* 改用绝对定位铺满 */
+.matrix-container { 
+  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+  display: flex; flex-wrap: wrap; flex-direction: row-reverse;
+  justify-content: flex-start; align-items: flex-start;
 }
 
-function toggleGlitch() {
-  isGlitchMode = !isGlitchMode;
-  document.body.classList.toggle('glitch-mode', isGlitchMode);
+.matrix-col { 
+  writing-mode: vertical-rl; text-orientation: upright;
+  font-family: "Noto Serif SC", serif; font-size: 16px; line-height: 1.2; font-weight: 900; 
+  color: rgba(255, 0, 0, 0.9);
+  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.8); 
+  padding: 5px 3px; white-space: nowrap; 
   
-  // 强制重置所有列的动画，确保每次点击都能触发开门杀
-  const container = document.getElementById('glitch-matrix');
-  container.style.animation = 'none';
-  const cols = container.querySelectorAll('.matrix-col');
-  cols.forEach(col => { col.style.animation = 'none'; });
-  
-  container.offsetHeight; // 强制浏览器重绘
-  
-  if (isGlitchMode) {
-    container.style.animation = ''; 
-    cols.forEach(col => { col.style.animation = ''; });
-  }
-  
-  showProfile(currentActiveId, true);
+  /* 默认直接显示开门杀，防呆设计 */
+  animation: entrance 2s ease-out forwards;
 }
 
-function renderRadarChart(stats) {
-  const cx = 150, cy = 140, r = 90, maxVal = 6; 
-  const keys = Object.keys(stats), n = keys.length;
-  let svg = `<svg viewBox="0 0 300 280" style="width:100%; max-width:350px; overflow:visible;">`;
-  for (let level = 1; level <= maxVal; level++) {
-    let points = [];
-    for (let i = 0; i < n; i++) {
-      let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-      let cr = (r * level) / maxVal;
-      points.push(`${cx + cr * Math.cos(angle)},${cy + cr * Math.sin(angle)}`);
-    }
-    let strokeColor = level === maxVal ? (isGlitchMode ? "rgba(232,226,214,0.3)" : "rgba(26,26,26,0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(26,26,26,0.05)");
-    svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="${level === maxVal ? '0' : '2 2'}" />`;
-  }
-  for (let i = 0; i < n; i++) {
-    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    svg += `<line x1="${cx}" y1="${cy}" x2="${cx + r * Math.cos(angle)}" y2="${cy + r * Math.sin(angle)}" stroke="${isGlitchMode ? 'rgba(232,226,214,0.15)' : 'rgba(26,26,26,0.08)'}" stroke-width="1" />`;
-  }
-  let dataPoints = [];
-  for (let i = 0; i < n; i++) {
-    let cr = (r * stats[keys[i]]) / maxVal;
-    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    dataPoints.push(`${cx + cr * Math.cos(angle)},${cy + cr * Math.sin(angle)}`);
-  }
-  svg += `<polygon points="${dataPoints.join(' ')}" fill="${isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)'}" stroke="${isGlitchMode ? '#cc3344' : '#4a6255'}" stroke-width="1.5" stroke-linejoin="round" />`;
-  for (let i = 0; i < n; i++) {
-    let key = keys[i], cr = (r * stats[key]) / maxVal;
-    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
-    svg += `<circle cx="${x}" cy="${y}" r="2.5" fill="${isGlitchMode ? '#090a0c' : '#f7f6f1'}" stroke="${isGlitchMode ? '#cc3344' : '#b84040'}" stroke-width="1.5" />`;
-    let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
-    let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
-    svg += `<text x="${lx}" y="${ly}" fill="${isGlitchMode ? '#e8e2d6' : '#1a1a1a'}" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
-    svg += `<text x="${lx}" y="${ly + 16}" fill="${isGlitchMode ? '#6a7a73' : '#888'}" font-size="11" font-family="Oswald" text-anchor="${textAnchor}" dominant-baseline="middle">${stats[key]} / 6</text>`;
-  }
-  document.getElementById('p-stats').innerHTML = svg + `</svg>`;
+/* 开门杀 */
+@keyframes entrance {
+  0% { opacity: 1; transform: scale(1.05); }
+  40% { opacity: 0.5; transform: translate(-2px, 2px); }
+  70% { opacity: 1; transform: scale(0.98); }
+  100% { opacity: 0; transform: scale(1); }
 }
 
-function showProfile(id, isToggle = false) {
-  if (!isToggle) {
-    currentActiveId = id;
-    document.body.classList.remove('glitch-mode');
-    isGlitchMode = false;
-  }
-  const oc = ocDatabase.find(o => o.id === id);
-  if(!oc) return;
+/* 基础里世界配色 */
+body.glitch-mode {
+  --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
+}
+body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
+body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
 
-  const avatarBox = document.getElementById('p-avatar-box');
-  if (oc.avatar) {
-    avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
-    avatarBox.querySelector('img').onerror = function() { this.style.display='none'; avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; };
-  } else { avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; }
-
-  const infoList = document.getElementById('p-info-list');
-  const timelineBox = document.getElementById('p-timeline');
-  const relationsBox = document.getElementById('p-relations');
-  infoList.innerHTML = ''; timelineBox.innerHTML = ''; relationsBox.innerHTML = '';
-
-  let statsToRender = oc.stats;
-
-  if (id === 'yeyao' && isGlitchMode) {
-    document.getElementById('glitch-btn').style.display = 'block';
-    document.getElementById('p-name').textContent = "叶 瑶 ？";
-    document.getElementById('p-title').textContent = "是我做错了吗?";
-    if (oc.mutated_stats) statsToRender = oc.mutated_stats;
-
-    (oc.mutated_basic || []).forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k" style="color:var(--red)">${b.k}</span><span class="v">${b.v}</span></div>`; });
-    (oc.mutated_timeline || []).forEach(item => { timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time" style="color:var(--red)">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
-    
-    (oc.mutated_relations || []).forEach(rel => { 
-      let descHtml = rel.desc;
-      if (rel.desc.includes("我爱你")) descHtml = `<span style="color: var(--red);">${rel.desc}</span>`;
-      relationsBox.innerHTML += `<div class="rel-item"><div class="rel-name">${rel.name}</div><div class="rel-desc">${descHtml}</div></div>`; 
-    });
-    
-  } else {
-    document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
-    document.getElementById('p-name').textContent = oc.name;
-    document.getElementById('p-title').textContent = oc.title;
-    oc.basic.forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`; });
-    oc.timeline.forEach(item => { timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
-    if (oc.relations) {
-      oc.relations.forEach(rel => {
-        const hasLink = ocDatabase.find(o => o.id === rel.id) && rel.id !== '';
-        relationsBox.innerHTML += `<div class="rel-item ${hasLink ? 'has-link' : ''}" ${hasLink ? `onclick="showProfile('${rel.id}')"` : ''}><div class="rel-name">${rel.name}</div><div class="rel-desc">${rel.desc}</div></div>`;
-      });
-    }
-  }
-  document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
-  renderRadarChart(statsToRender);
-  
-  if (!isToggle) switchView('view-profile');
-  else window.scrollTo(0, 0);
+@media (max-width:768px) {
+  #view-main { padding:50px 20px; }
+  .list-item { flex-direction:column; align-items:flex-start; gap:8px; padding: 24px 10px; }
+  .item-left { width: 100%; gap: 20px; }
+  .item-name { font-size:28px; }
+  .item-title { font-size:12px; text-align:left; width: 100%; padding-left: 50px; margin-top: -5px;}
+  .profile-wrap { padding-top:80px; }
+  .hero-section { flex-direction:column; align-items:flex-start; gap:20px; margin-bottom:50px; }
+  .avatar-box { width:100%; max-width:200px; }
+  .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
+  .content-grid { grid-template-columns:1fr; gap:50px; }
+  .glitch-trigger { top:80px; right:20px; }
+  .matrix-col { font-size: 14px; }
 }
