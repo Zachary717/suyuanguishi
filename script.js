@@ -16,10 +16,8 @@ window.onload = function() {
   }
   list.innerHTML = html;
   
-  // 初始化滚动监听
   setupObserver();
   
-  // 触发一次列表滑入
   setTimeout(() => {
     document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
   }, 100);
@@ -28,7 +26,6 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 
-// 滚动监听器
 let observer;
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -36,7 +33,6 @@ function setupObserver() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
-        // 如果触发的是雷达图容器，启动匀速拉线动画
         if (entry.target.id === 'p-stats') {
           const radarData = entry.target.querySelector('.radar-anim-group');
           const radarText = entry.target.querySelector('.radar-text');
@@ -72,16 +68,13 @@ function toggleGlitch() {
         let top = Math.random() * 80 + 10;
         let left = Math.random() * 80 + 10;
         let rotate = Math.random() * 30 - 15;
-        let delay = Math.random() * 0.5;
-        html += `<div class="glitch-text-piece" style="top: ${top}%; left: ${left}%; transform: rotate(${rotate}deg); animation-delay: ${delay}s;">${snippet}</div>`;
+        let delay = Math.random() * 0.5; // 错开一点点起始时间
+        // 直接注入带随机延迟的动画元素
+        html += `<div class="glitch-text-piece" style="top: ${top}%; left: ${left}%; transform: rotate(${rotate}deg); animation-delay: ${delay}s, ${delay + 1.5}s;">${snippet}</div>`;
     }
-    container.innerHTML = html;
-    container.classList.remove('active-anim');
-    void container.offsetWidth; 
-    container.classList.add('active-anim');
+    container.innerHTML = html; 
   } else {
     container.innerHTML = '';
-    container.classList.remove('active-anim');
   }
   showProfile(currentActiveId, true);
 }
@@ -149,7 +142,6 @@ function showProfile(id, isToggle) {
   if (isToggle !== true) switchView('view-profile');
   else window.scrollTo(0, 0);
   
-  // 视图切换后，重置动画状态并触发
   const radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   document.querySelectorAll('.delay-item').forEach(el => el.classList.remove('active'));
@@ -166,7 +158,6 @@ function showProfile(id, isToggle) {
   }, 100);
 }
 
-// 匀速拉线动画
 function animateRadarLines(group, textGroup) {
   const circles = group.querySelectorAll('circle');
   const poly = group.querySelector('polygon');
@@ -216,7 +207,6 @@ function animateRadarLines(group, textGroup) {
   requestAnimationFrame(update);
 }
 
-// 雷达图 SVG 渲染
 function renderRadarChart(stats) {
   const cx = 150, cy = 140, r = 90, maxVal = 6; 
   const keys = Object.keys(stats), n = keys.length;
@@ -245,13 +235,11 @@ function renderRadarChart(stats) {
     circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
   }
   
-  // 将多边形和节点打包进 radar-anim-group
   svg += '<g class="radar-anim-group">';
   svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
 
-  // 文字组
   svg += '<g class="radar-text">';
   for (let i = 0; i < n; i++) {
     let key = keys[i], cr = (r * stats[key]) / maxVal;
