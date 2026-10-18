@@ -8,11 +8,20 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
-    html += `<div class="list-item reveal" onclick="showProfile('${oc.id}')"><div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div></div>`;
+    html += '<div class="list-item reveal" onclick="showProfile(\'' + oc.id + '\')"><div class="item-left"><span class="item-index">' + num + '</span><span class="item-name">' + oc.name + '</span></div><div class="item-title">' + oc.title + '</div></div>';
   }
   list.innerHTML = html;
-  
-  const observer = new IntersectionObserver((entries) => {
+  setupObserver();
+  setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')), 100);
+};
+
+let isGlitchMode = false;
+let currentActiveId = "";
+let observer;
+
+function setupObserver() {
+  const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
+  observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
@@ -21,16 +30,11 @@ window.onload = function() {
           const radarText = entry.target.querySelector('.radar-text');
           if (radarData) animateRadarLines(radarData, radarText);
         }
+        obs.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.1 });
-  
-  setTimeout(() => document.querySelectorAll('.reveal').forEach(el => observer.observe(el)), 100);
-  window.globalObserver = observer;
-};
-
-let isGlitchMode = false;
-let currentActiveId = "";
+  }, observerOptions);
+}
 
 function switchView(viewId) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -42,28 +46,29 @@ function switchView(viewId) {
   }
 }
 
-// 触发全屏诗词闪现
+// 生成底层乱码的函数
+function makeZalgo(text) {
+    const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
+    const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
+    let result = "";
+    for(let i=0; i<text.length; i++) {
+        result += text[i];
+        for(let j=0; j<Math.floor(Math.random()*3)+2; j++) {
+            result += up[Math.floor(Math.random() * up.length)] + down[Math.floor(Math.random() * down.length)];
+        }
+    }
+    return result;
+}
+
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    // 生成铺满全屏的文字
-    let fullText = (poem + "<br><br>").repeat(6);
-    container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${fullText}</div>`;
-    
-    // 强制重播特效
-    const view = document.querySelector('#view-profile');
-    const box = container.querySelector('.glitch-text-box');
-    view.style.animation = 'none';
-    box.style.animation = 'none';
-    void view.offsetWidth; box.offsetWidth;
-    view.style.animation = null;
-    box.style.animation = null;
+    container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${poem}</div>`;
   } else {
     container.innerHTML = '';
-    document.querySelector('#view-profile').style.animation = null;
   }
   showProfile(currentActiveId, true);
 }
@@ -94,13 +99,16 @@ function showProfile(id, isToggle) {
     document.getElementById('p-title').textContent = "是我做错了吗?";
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
 
-    // 【核心修改】文字恢复成干干净净的正常文字，不再渲染 Zalgo
+    // 【核心】其他文字绝对是正常的，没有乱码
     oc.mutated_basic.forEach((b, i) => { infoList.innerHTML += `<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><span class="k" style="color:var(--red)">${b.k}</span><span class="v">${b.v}</span></div>`; });
     oc.mutated_timeline.forEach((item, i) => { timelineBox.innerHTML += `<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time" style="color:var(--red)">${item.time}</div><div class="tl-event">${item.event}</div></div>`; });
+    
     oc.mutated_relations.forEach((rel, i) => { 
-      // 单独给“我爱你”变红，但文字保持正常，绝不乱码
       let desc = rel.desc;
-      if (desc.indexOf("我爱你") > -1) desc = `<span style="color: var(--red);">${desc}</span>`;
+      // 【核心】只有“我爱你”变红，其他完全正常！
+      if (desc.indexOf("我爱你") > -1) {
+        desc = `<span style="color: var(--red);">${desc}</span>`;
+      }
       relationsBox.innerHTML += `<div class="rel-item delay-item" style="transition-delay:${i*0.1}s"><div class="rel-name">${rel.name}</div><div class="rel-desc">${desc}</div></div>`; 
     });
   } else {
@@ -115,7 +123,7 @@ function showProfile(id, isToggle) {
     });
   }
   
-  document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR" : `ID: ${oc.id.toUpperCase()}`;
+  document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
   renderRadarChart(statsToRender);
   
   if (isToggle !== true) switchView('view-profile');
@@ -129,8 +137,8 @@ function showProfile(id, isToggle) {
   void radarContainer.offsetWidth; 
 
   setTimeout(() => {
-    if(window.globalObserver) window.globalObserver.observe(radarContainer);
-    document.querySelectorAll('.delay-item').forEach(el => { if(window.globalObserver) window.globalObserver.observe(el); });
+    observer.observe(radarContainer);
+    document.querySelectorAll('.delay-item').forEach(el => observer.observe(el));
   }, 100);
 }
 
@@ -143,7 +151,8 @@ function animateRadarLines(group, textGroup) {
   circles.forEach(c => {
     const tx = parseFloat(c.getAttribute('data-tx'));
     const ty = parseFloat(c.getAttribute('data-ty'));
-    targets.push({ el: c, tx, ty, distance: Math.hypot(tx - cx, ty - cy) });
+    const distance = Math.hypot(tx - cx, ty - cy);
+    targets.push({ el: c, tx, ty, distance });
   });
   const speed = Math.hypot(90, 0) / 800; 
   const startTime = performance.now();
