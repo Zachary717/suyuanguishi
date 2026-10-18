@@ -9,9 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;900&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #06080a; --bg2: #101317; --line: rgba(227, 223, 211, 0.08);
-    --paper: #e3dfd3; --muted: #7a828c; --cinnabar: #d93b3b; 
-    --gold: #b89754; --jade: #4a837b;
+    /* 米白纸张配色 */
+    --bg: #f4f1ea; 
+    --bg2: #ffffff; 
+    --line: rgba(51, 48, 46, 0.12);
+    --paper: #33302e; /* 深墨色文字 */
+    --muted: #88837c; 
+    --cinnabar: #c9423b; 
+    --gold: #a87e3f; 
+    --jade: #468075;
+    
     --serif: "Noto Serif SC", "Songti SC", serif;
     --kai: "ZCOOL XiaoWei", "Ma Shan Zheng", "KaiTi", serif;
     --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
@@ -21,36 +28,29 @@
     background:var(--bg); color:var(--paper); font-family:var(--sans);
     line-height:1.8; -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
+  /* 纸张噪点（降低透明度以适应白底） */
   body::before{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035;
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.025;
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   
-  /* 页面切换基础逻辑 */
   .view { display: none; opacity: 0; transition: opacity .4s ease; position: relative; z-index: 1; }
   .view.active { display: block; opacity: 1; }
 
-  /* ---------------- 首页 ---------------- */
-  #view-home {
-    min-height: 100vh;
-    background: radial-gradient(circle at center, #11161c 0%, var(--bg) 70%);
-  }
-  /* 修复核心：只有加上 .active 时才变成 flex 居中，不加时乖乖隐藏 */
-  #view-home.active {
-    display: flex; align-items: center; justify-content: center;
-  }
-  
+  /* 首页 */
+  #view-home { min-height: 100vh; background: radial-gradient(circle at center, #fff 0%, var(--bg) 70%); }
+  #view-home.active { display: flex; align-items: center; justify-content: center; }
   .home-wrap { display: flex; align-items: flex-start; gap: 40px; flex-direction: row-reverse; }
   .v-title-box { writing-mode: vertical-rl; text-orientation: upright; display: flex; align-items: center; gap: 30px; }
   .home-title {
     font-family: var(--kai); font-size: clamp(60px, 10vw, 90px);
     font-weight: 900; letter-spacing: .2em; color: var(--paper);
-    text-shadow: 0 0 20px rgba(184, 151, 84, 0.2); margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08); margin-bottom: 20px;
   }
   .home-subtitle {
     font-family: var(--serif); font-size: clamp(14px, 2vw, 18px); 
     letter-spacing: .4em; color: var(--gold);
-    border-right: 1px solid rgba(184, 151, 84, 0.3); padding-right: 15px;
+    border-right: 1px solid rgba(168, 126, 63, 0.4); padding-right: 15px;
   }
   .seal {
     writing-mode: vertical-rl; font-family: var(--kai);
@@ -61,17 +61,14 @@
   }
   .btn {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 60px; height: 200px; border: 1px solid var(--line); background: rgba(255,255,255,0.02);
+    width: 60px; height: 200px; border: 1px solid var(--line); background: rgba(255,255,255,0.6);
     color: var(--paper); font-family: var(--kai); font-size: 20px;
     letter-spacing: .3em; writing-mode: vertical-rl; cursor: pointer; transition: .4s; border-radius: 2px;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.5); margin-top: 60px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 60px;
   }
-  .btn:hover {
-    background: rgba(217, 59, 59, 0.1); border-color: var(--cinnabar);
-    color: var(--cinnabar); box-shadow: 0 0 20px rgba(217, 59, 59, 0.2);
-  }
+  .btn:hover { background: rgba(201, 66, 59, 0.08); border-color: var(--cinnabar); color: var(--cinnabar); box-shadow: 0 4px 20px rgba(201, 66, 59, 0.15); }
 
-  /* ---------------- 索引目录 ---------------- */
+  /* 索引目录 */
   #view-directory { padding: 20px 20px 60px 20px; }
   .dir-header { text-align: center; margin-bottom: 24px; }
   .dir-header h1 { font-family: var(--kai); font-size: 32px; letter-spacing: .2em; color: var(--paper); }
@@ -81,19 +78,20 @@
   .card {
     border: 1px solid var(--line); background: var(--bg2); padding: 24px; cursor: pointer;
     transition: .3s; position: relative; overflow: hidden; border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   }
   .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); opacity: 0; transition: .3s; }
-  .card:hover { border-color: rgba(184, 151, 84, 0.4); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  .card:hover { border-color: rgba(168, 126, 63, 0.4); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
   .card:hover::before { opacity: 1; }
   .card-name { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: .1em; margin-bottom: 8px; color: var(--paper); }
   .card-title { font-size: 12px; color: var(--jade); margin-bottom: 16px; letter-spacing: .05em; }
   .card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .card-tags span { font-size: 10px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); }
+  .card-tags span { font-size: 10px; border: 1px solid var(--line); padding: 2px 8px; border-radius: 999px; color: var(--muted); background: var(--bg); }
 
-  /* ---------------- 详情页 ---------------- */
+  /* 详情页 */
   #view-profile { padding-bottom: 60px; background: var(--bg); }
   .nav-top {
-    position: sticky; top: 0; z-index: 50; background: rgba(6, 8, 10, 0.95);
+    position: sticky; top: 0; z-index: 50; background: rgba(244, 241, 234, 0.95);
     backdrop-filter: blur(10px); border-bottom: 1px solid var(--line);
     padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
   }
@@ -101,46 +99,83 @@
   .back-btn:hover { color: var(--gold); }
   
   .profile-wrap { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
-  .p-header { border-bottom: 1px solid var(--line); padding-bottom: 30px; margin-bottom: 40px; position: relative; }
+  
+  /* 头部布局 */
+  .p-header { 
+    display: flex; gap: 30px; align-items: flex-start; 
+    border-bottom: 1px solid var(--line); padding-bottom: 30px; margin-bottom: 40px; position: relative;
+  }
   .p-header::after { content: ""; position: absolute; left: 0; bottom: -1px; width: 60px; height: 2px; background: var(--cinnabar); }
-  .p-name { font-family: var(--kai); font-size: clamp(36px, 6vw, 52px); font-weight: 900; letter-spacing: .15em; margin-bottom: 12px; color: var(--paper); }
+  
+  .p-avatar {
+    width: 160px; height: 213px; flex-shrink: 0;
+    border: 1px solid var(--line); background: var(--bg2); border-radius: 4px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  }
+  .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .p-avatar span { color: var(--muted); font-size: 12px; letter-spacing: .2em; font-family: var(--serif); }
+
+  .p-info-box { flex: 1; padding-top: 10px; }
+  .p-name { font-family: var(--kai); font-size: clamp(36px, 6vw, 52px); font-weight: 900; letter-spacing: .15em; margin-bottom: 12px; color: var(--paper); line-height: 1.1; }
   .p-title { font-family: var(--serif); font-size: 15px; color: var(--jade); letter-spacing: .1em; margin-bottom: 20px; }
   .p-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-  .p-tags span { font-size: 11px; background: rgba(217, 59, 59, 0.08); color: var(--cinnabar); border: 1px solid rgba(217, 59, 59, 0.25); padding: 3px 12px; border-radius: 999px; }
+  .p-tags span { font-size: 11px; background: rgba(201, 66, 59, 0.08); color: var(--cinnabar); border: 1px solid rgba(201, 66, 59, 0.25); padding: 3px 12px; border-radius: 999px; }
+
+  /* 关系卡片网格 */
+  .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .rel-card {
+    border: 1px solid var(--line); background: var(--bg2);
+    padding: 16px; border-radius: 4px; position: relative; transition: .3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  }
+  .rel-card.has-link { cursor: pointer; border-color: rgba(168, 126, 63, 0.3); }
+  .rel-card.has-link:hover { background: #fffdf8; border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .rel-card.no-link { opacity: 0.6; background: rgba(255,255,255,0.5); }
+  .rel-name { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--paper); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+  .rel-card.has-link .rel-name::after { content: "→"; color: var(--gold); font-size: 14px; }
+  .rel-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .rel-card.no-link .rel-desc::after { content: " (未建档)"; font-size: 10px; color: rgba(0,0,0,0.2); }
 
   .p-sec { margin-bottom: 40px; }
   .p-sec h3 { font-family: var(--kai); font-size: 18px; letter-spacing: .15em; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
   .p-sec h3::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
   
-  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
   .info-item { background: var(--bg2); padding: 16px 18px; }
   .info-item .k { font-size: 11px; color: var(--muted); letter-spacing: .1em; margin-bottom: 4px; display: block; }
   .info-item .v { font-family: var(--serif); font-size: 15px; color: var(--paper); }
 
-  .p-text { font-size: 14.5px; color: #b8b3a7; line-height: 2; text-align: justify; }
+  .p-text { font-size: 14.5px; color: #4a4642; line-height: 2; text-align: justify; }
 
   .timeline { position: relative; padding-left: 16px; margin-top: 10px; }
-  .timeline::before { content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold), rgba(184, 151, 84, 0.05)); }
+  .timeline::before { content: ""; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold), rgba(168, 126, 63, 0.1)); }
   .tl-item { position: relative; padding-bottom: 28px; padding-left: 20px; }
   .tl-item:last-child { padding-bottom: 0; }
-  .tl-item::before { content: ""; position: absolute; left: -20px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(184, 151, 84, 0.1); }
+  .tl-item::before { content: ""; position: absolute; left: -20px; top: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(168, 126, 63, 0.15); }
   .tl-time { font-family: var(--kai); font-size: 14px; font-weight: 600; color: var(--gold); letter-spacing: .1em; margin-bottom: 6px; }
-  .tl-event { font-size: 14px; color: #b8b3a7; line-height: 1.9; text-align: justify; }
+  .tl-event { font-size: 14px; color: #4a4642; line-height: 1.9; text-align: justify; }
 
-  .stats-box { border: 1px solid var(--line); padding: 24px; background: rgba(255,255,255,0.01); border-radius: 4px; }
+  .stats-box { border: 1px solid var(--line); padding: 24px; background: var(--bg2); border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
   .stat-row { display: flex; align-items: center; margin-bottom: 14px; gap: 16px; }
   .stat-row:last-child { margin-bottom: 0; }
   .stat-label { width: 40px; font-family: var(--serif); font-size: 14px; color: var(--muted); }
-  .stat-bar-bg { flex: 1; height: 4px; background: rgba(227, 223, 211, 0.08); position: relative; border-radius: 2px; overflow: hidden; }
+  .stat-bar-bg { flex: 1; height: 4px; background: rgba(0,0,0,0.06); position: relative; border-radius: 2px; overflow: hidden; }
   .stat-bar { position: absolute; left: 0; top: 0; bottom: 0; background: var(--jade); border-radius: 2px; transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
   .stat-val { width: 20px; font-family: ui-monospace, monospace; font-size: 13px; color: var(--paper); text-align: right; }
 
   footer { padding: 40px 0; text-align: center; font-size: 11px; letter-spacing: .3em; color: var(--muted); border-top: 1px solid var(--line); margin-top: 40px; font-family: var(--kai); }
+
+  /* 手机端适配 */
+  @media (max-width: 600px) {
+    .p-header { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
+    .p-avatar { width: 140px; height: 186px; }
+    .p-tags { justify-content: center; }
+  }
 </style>
 </head>
 <body>
 
-<!-- 视图 1：首页 -->
 <div id="view-home" class="view active">
   <div class="home-wrap">
     <button class="btn" onclick="showDirectory()">启封档案</button>
@@ -152,7 +187,6 @@
   </div>
 </div>
 
-<!-- 视图 2：索引目录 -->
 <div id="view-directory" class="view">
   <div class="dir-header">
     <h1>人物索引</h1>
@@ -161,7 +195,6 @@
   <div class="grid" id="dir-grid"></div>
 </div>
 
-<!-- 视图 3：角色详情 -->
 <div id="view-profile" class="view">
   <div class="nav-top">
     <div class="back-btn" onclick="showDirectory()">← 返回索引</div>
@@ -170,16 +203,21 @@
   
   <div class="profile-wrap">
     <div class="p-header">
-      <h1 class="p-name" id="p-name"></h1>
-      <div class="p-title" id="p-title"></div>
-      <div class="p-tags" id="p-tags"></div>
+      <div class="p-avatar" id="p-avatar-box"></div>
+      <div class="p-info-box">
+        <h1 class="p-name" id="p-name"></h1>
+        <div class="p-title" id="p-title"></div>
+        <div class="p-tags" id="p-tags"></div>
+      </div>
     </div>
+
     <div class="p-sec"><h3>基础信息</h3><div class="info-grid" id="p-info-grid"></div></div>
     <div class="p-sec"><h3>六维属性</h3><div class="stats-box" id="p-stats"></div></div>
-    <div class="p-sec"><h3>外貌特征</h3><p class="p-text" id="p-appearance"></p></div>
+    <!-- 外貌特征已删除 -->
     <div class="p-sec"><h3>性格侧写</h3><p class="p-text" id="p-personality"></p></div>
     <div class="p-sec"><h3>生平轨迹</h3><div class="timeline" id="p-timeline"></div></div>
-    <div class="p-sec"><h3>人际羁绊</h3><p class="p-text" id="p-relations"></p></div>
+    <div class="p-sec"><h3>人际羁绊</h3><div class="relations-grid" id="p-relations"></div></div>
+    
     <footer><p>俗缘诡事 · 秘档库</p></footer>
   </div>
 </div>
@@ -189,28 +227,17 @@
 <script>
   function renderDirectory() {
     const grid = document.getElementById('dir-grid');
-    
     if (typeof ocDatabase === 'undefined') {
-      grid.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; color: #d93b3b; padding: 40px; border: 1px dashed #d93b3b; border-radius: 8px;">
-          <h3 style="margin-bottom: 10px; font-family:var(--kai)">档案加载失败</h3>
-          <p style="font-size: 14px;">未能读取到 data.js 文件，请检查文件是否存在。</p>
-        </div>
-      `;
+      grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: #c9423b; padding: 40px; border: 1px dashed #c9423b; border-radius: 8px; background: #fff;"><h3 style="margin-bottom: 10px; font-family:var(--kai)">档案加载失败</h3><p style="font-size: 14px;">未能读取到 data.js 文件。</p></div>`;
       return;
     }
-
     grid.innerHTML = '';
     ocDatabase.forEach(oc => {
       const card = document.createElement('div');
       card.className = 'card';
       card.onclick = () => showProfile(oc.id);
       const tagsHtml = oc.tags.map(t => `<span>${t}</span>`).join('');
-      card.innerHTML = `
-        <div class="card-name">${oc.name}</div>
-        <div class="card-title">${oc.title}</div>
-        <div class="card-tags">${tagsHtml}</div>
-      `;
+      card.innerHTML = `<div class="card-name">${oc.name}</div><div class="card-title">${oc.title}</div><div class="card-tags">${tagsHtml}</div>`;
       grid.appendChild(card);
     });
   }
@@ -227,6 +254,13 @@
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
+    const avatarBox = document.getElementById('p-avatar-box');
+    if (oc.avatar) {
+      avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}" onerror="this.style.display='none'; this.parentElement.innerHTML='<span>图片未找到</span>'">`;
+    } else {
+      avatarBox.innerHTML = `<span>暂无画像</span>`;
+    }
+
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
     document.getElementById('p-top-id').textContent = `编号: ${oc.id.toUpperCase()}`;
@@ -238,15 +272,34 @@
       infoGrid.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
     });
 
-    document.getElementById('p-appearance').textContent = oc.appearance || '暂无记录';
+    // 外貌已删除，直接渲染性格
     document.getElementById('p-personality').textContent = oc.personality || '暂无记录';
-    document.getElementById('p-relations').textContent = oc.relations || '暂无记录';
 
     const timelineBox = document.getElementById('p-timeline');
     timelineBox.innerHTML = '';
     oc.timeline.forEach(item => {
       timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`;
     });
+
+    const relationsBox = document.getElementById('p-relations');
+    relationsBox.innerHTML = '';
+    if (oc.relations && oc.relations.length > 0) {
+      oc.relations.forEach(rel => {
+        const exists = ocDatabase.find(o => o.id === rel.id);
+        const hasLink = exists && rel.id !== '';
+        const cardClass = hasLink ? 'rel-card has-link' : 'rel-card no-link';
+        const onClickStr = hasLink ? `onclick="showProfile('${rel.id}')"` : '';
+        
+        relationsBox.innerHTML += `
+          <div class="${cardClass}" ${onClickStr}>
+            <div class="rel-name">${rel.name}</div>
+            <div class="rel-desc">${rel.desc}</div>
+          </div>
+        `;
+      });
+    } else {
+      relationsBox.innerHTML = '<div class="p-text">暂无记录</div>';
+    }
 
     const statsBox = document.getElementById('p-stats');
     statsBox.innerHTML = '';
