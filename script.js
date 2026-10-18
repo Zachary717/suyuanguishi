@@ -18,7 +18,7 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
-let glitchTimer, waitTimer;
+let glitchInterval;
 
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
@@ -29,7 +29,7 @@ function setupObserver() {
         if (entry.target.id === 'p-stats') {
           const radarData = entry.target.querySelector('.radar-anim-group');
           const radarText = entry.target.querySelector('.radar-text');
-          if (radarData) animateRadarLines(radarData, radarText);
+          ifRadarLines(radarData, radarText);
         }
         obs.unobserve(entry.target);
       }
@@ -42,67 +42,63 @@ function switchView(viewId) {
   document.getElementById(viewId).classList.add('active');
   window.scrollTo(0, 0);
   if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode');
+    document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearTimeout(glitchTimer);
-    clearTimeout(waitTimer);
-    const container = document.getElementById('glitch-matrix');
-    if(container) container.innerHTML = '';
+    clearInterval(glitchInterval);
   }
 }
 
-// 极致深渊乱码生成器：彻底覆盖原字，无法辨认
+// 深渊乱码生成器
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
     const mid = ['̴', '̵', '̶', '̷', '̸', '̡', '̢', '̧', '̨', '̛'];
-    
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        // 核心暴击：每个字随机叠加 10 到 20 个乱码符号，从各个方向拉扯
-        for(let j=0; j<Math.floor(Math.random() * 10) + 10; j++) {
+        for(let j=0; j<Math.floor(Math.random() * 10) + 15; j++) {
             result += up[Math.floor(Math.random() * up.length)];
             result += down[Math.floor(Math.random() * down.length)];
-            if(Math.random() > 0.5) result += mid[Math.floor(Math.random() * mid.length)];
+            if(Math.random() > 0.3) result += mid[Math.floor(Math.random() * mid.length)];
         }
     }
     return result;
 }
 
-function triggerGlitchCycle() {
+// 核心：触发页面抽搐与文字异变
+function triggerSeizure() {
   if (!isGlitchMode) return;
   
-  const container = document.getElementById('glitch-matrix');
-  let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-  
-  container.innerHTML = `<div class="glitch-text-box" data-text="${poem}">${poem}</div>`;
+  // 1. 开启全局屏幕微抖与模糊
+  document.body.classList.add('seizure-active');
+  // 2. 底层文字立刻变异成乱码
   renderDataUI(true);
   
-  clearTimeout(glitchTimer);
-  glitchTimer = setTimeout(() => {
+  // 1.5 秒后恢复
+  setTimeout(() => {
     if (!isGlitchMode) return;
-    container.innerHTML = '';
+    document.body.classList.remove('seizure-active');
     renderDataUI(false);
-    waitTimer = setTimeout(triggerGlitchCycle, 4000);
-  }, 2500);
+  }, 1500);
 }
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
-  clearTimeout(glitchTimer);
-  clearTimeout(waitTimer);
-  document.getElementById('glitch-matrix').innerHTML = '';
-
   if (isGlitchMode) {
-    triggerGlitchCycle();
+    // 进入里世界立刻抽搐一次
+    triggerSeizure();
+    // 之后每隔 4 秒抽搐一次
+    glitchInterval = setInterval(triggerSeizure, 4000);
   } else {
+    clearInterval(glitchInterval);
+    document.body.classList.remove('seizure-active');
     renderDataUI(false);
   }
 }
 
+// 渲染底层数据（isZalgo 控制是否变乱码）
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -116,15 +112,16 @@ function renderDataUI(isZalgo) {
   (oc.mutated_basic || []).forEach((b, i) => { 
     let k = isZalgo ? makeZalgo(b.k) : b.k;
     let v = isZalgo ? makeZalgo(b.v) : b.v;
-    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 40px;' : '';
-    b_list += `<div class="info-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
+    // 稍微限制一下乱码的溢出，防止把排版顶飞
+    let styleFix = isZalgo ? 'line-height: 1.5;' : '';
+    b_list += `<div class="info-item delay-item active" style="${styleFix}"><span class="k" style="color:var(--red)">${k}</span><span class="v">${v}</span></div>`; 
   });
   
   (oc.mutated_timeline || []).forEach((item, i) => { 
     let time = isZalgo ? makeZalgo(item.time) : item.time;
     let event = isZalgo ? makeZalgo(item.event) : item.event;
-    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 60px;' : '';
-    t_list += `<div class="tl-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
+    let styleFix = isZalgo ? 'line-height: 1.5;' : '';
+    t_list += `<div class="tl-item delay-item active" style="${styleFix}"><div class="tl-time" style="color:var(--red)">${time}</div><div class="tl-event">${event}</div></div>`; 
   });
   
   (oc.mutated_relations || []).forEach((rel, i) => { 
@@ -133,8 +130,8 @@ function renderDataUI(isZalgo) {
     if (!isZalgo && desc.indexOf("我爱你") > -1) {
       desc = `<span style="color: var(--red);">${desc}</span>`;
     }
-    let styleFix = isZalgo ? 'line-height: 1.2; overflow: hidden; max-height: 40px;' : '';
-    r_list += `<div class="rel-item delay-item active" style="transition-delay:${i*0.1}s; ${styleFix}"><div class="rel-name">${name}</div><div class="rel-desc">${desc}</div></div>`; 
+    let styleFix = isZalgo ? 'line-height: 1.5;' : '';
+    r_list += `<div class="rel-item delay-item active" style="${styleFix}"><div class="rel-name">${name}</div><div class="rel-desc">${desc}</div></div>`; 
   });
 
   infoList.innerHTML = b_list;
@@ -145,11 +142,9 @@ function renderDataUI(isZalgo) {
 function showProfile(id, isToggle) {
   if (isToggle !== true) {
     currentActiveId = id;
-    document.body.classList.remove('glitch-mode');
+    document.body.classList.remove('glitch-mode', 'seizure-active');
     isGlitchMode = false;
-    clearTimeout(glitchTimer);
-    clearTimeout(waitTimer);
-    document.getElementById('glitch-matrix').innerHTML = '';
+    clearInterval(glitchInterval);
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
