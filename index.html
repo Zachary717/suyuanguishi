@@ -96,19 +96,19 @@
   
   /* 头部：错落排版 */
   .hero-section {
-    position: relative; margin-bottom: 100px;
+    position: relative; margin-bottom: 80px;
     display: flex; justify-content: space-between; align-items: flex-end;
   }
   
   .avatar-box {
     width: 300px; aspect-ratio: 3/4; 
     background: transparent; position: relative; 
-    /* 图片做轻微做旧和错位效果 */
+    /* 图片做轻微错位效果 */
     box-shadow: 20px 20px 0px rgba(74, 98, 85, 0.1);
   }
+  /* 去掉了所有滤镜，保证原图无曝光问题 */
   .avatar-box img { 
     width: 100%; height: 100%; object-fit: cover; 
-    filter: grayscale(20%) contrast(110%);
   }
   .avatar-box .empty-text { 
     display: flex; height: 100%; align-items: center; justify-content: center; 
@@ -126,23 +126,11 @@
     margin-bottom: 20px; position: relative;
   }
   
-  /* 名字后面的红色印章点缀 */
-  .p-name::after {
-    content: "錄"; position: absolute; right: -40px; bottom: 10px;
-    width: 30px; height: 30px; border: 1px solid var(--cinnabar); color: var(--cinnabar);
-    font-size: 14px; display: flex; align-items: center; justify-content: center;
-    font-family: var(--serif); transform: rotate(5deg); opacity: 0.8;
-  }
+  /* 去掉了红框印章 */
   
   .p-title { 
     font-size: 14px; color: var(--jade); letter-spacing: .3em; 
     border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 20px;
-  }
-  
-  .p-quote {
-    font-size: 13px; color: var(--muted); letter-spacing: .1em;
-    writing-mode: vertical-rl; position: absolute; left: -60px; top: 20px;
-    border-right: 1px solid var(--line); padding-right: 15px;
   }
 
   /* 网格内容区：大量留白 */
@@ -218,11 +206,9 @@
     .item-title { text-align: left; max-width: 100%; }
     
     .profile-wrap { padding-top: 80px; }
-    .hero-section { flex-direction: column; align-items: flex-start; gap: 30px; margin-bottom: 60px; }
+    .hero-section { flex-direction: column; align-items: flex-start; gap: 20px; margin-bottom: 50px; }
     .avatar-box { width: 100%; max-width: 280px; box-shadow: 10px 10px 0 rgba(74,98,85,0.1); }
-    .hero-text { align-items: flex-start; text-align: left; padding-bottom: 0; }
-    .p-quote { position: relative; left: 0; top: 0; writing-mode: horizontal-tb; border-right: none; border-left: 1px solid var(--line); padding-left: 10px; margin-top: 10px; }
-    .p-name::after { right: -30px; bottom: 0; }
+    .hero-text { align-items: flex-start; text-align: left; padding-bottom: 0; width: 100%; }
     
     .content-grid { grid-template-columns: 1fr; gap: 50px; }
     .rel-item { flex-direction: column; gap: 5px; }
@@ -245,7 +231,6 @@
 
 <!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
-  <!-- 反色导航 -->
   <div class="nav-top">
     <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
     <div class="id-tag" id="p-top-id"></div>
@@ -253,21 +238,18 @@
   
   <div class="profile-wrap">
     
-    <!-- 错落错位的艺术头部 -->
     <div class="hero-section">
       <div class="avatar-box" id="p-avatar-box"></div>
       
+      <!-- 只保留名字和身份，去掉了引语 -->
       <div class="hero-text">
-        <div class="p-quote" id="p-quote"></div>
         <h1 class="p-name" id="p-name"></h1>
         <div class="p-title" id="p-title"></div>
       </div>
     </div>
 
-    <!-- 内容网格 -->
     <div class="content-grid">
       
-      <!-- 左列 -->
       <div>
         <div class="sec-title">PROFILE <span>基础卷宗</span></div>
         <div class="info-list" id="p-info-list"></div>
@@ -276,7 +258,6 @@
         <div class="stats-container" id="p-stats"></div>
       </div>
 
-      <!-- 右列 -->
       <div>
         <div class="sec-title">TIMELINE <span>生平轨迹</span></div>
         <div class="timeline" id="p-timeline"></div>
@@ -306,7 +287,6 @@
       item.className = 'list-item';
       item.onclick = function() { showProfile(oc.id); };
       
-      // 生成序号，比如 01, 02
       const num = String(index + 1).padStart(2, '0');
       
       item.innerHTML = `
@@ -345,7 +325,6 @@
         let y = cy + currentR * Math.sin(angle);
         points.push(`${x},${y}`);
       }
-      // 极细的虚线框
       let strokeColor = level === maxVal ? "rgba(26, 26, 26, 0.2)" : "rgba(26, 26, 26, 0.05)";
       svg += `<polygon points="${points.join(' ')}" fill="none" stroke="${strokeColor}" stroke-width="1" stroke-dasharray="${level === maxVal ? '0' : '2 2'}" />`;
     }
@@ -367,7 +346,6 @@
       dataPoints.push(`${x},${y}`);
     }
     
-    // 极淡的墨绿填充，深绿描边
     svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(74, 98, 85, 0.1)" stroke="#4a6255" stroke-width="1.5" stroke-linejoin="round" />`;
     
     for (let i = 0; i < n; i++) {
@@ -388,7 +366,7 @@
       if (Math.cos(angle) > 0.1) textAnchor = "start";
       else if (Math.cos(angle) < -0.1) textAnchor = "end";
       
-      svg += `<text x="${lx}" y="${ly}" fill="#1a1a1a" font-size="13" font-family="Noto Serif SC, serif" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
+      svg += `<text x="${lx}" y="${ly}" ( fill="#1a1a1a" font-size="13" font-family="Noto Serif SC, serif" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
       svg += `<text x="${lx}" y="${ly + 16}" fill="#888" font-size="11" font-family="Oswald, sans-serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
     }
     
@@ -400,9 +378,8 @@
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
-    // 图片渲染
     const avatarBox = document.getElementById('p-avatar-box');
-    if (oc.avatar) {
+    ifoc.avatar) {
       avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
       const imgEl = avatarBox.querySelector('img');
       imgEl.onerror = function() {
@@ -415,26 +392,20 @@
 
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
-    
-    const quoteStr = oc.personality ? oc.personality.split('。')[0] + '。' : '档案缺失';
-    document.getElementById('p-quote').textContent = quoteStr;
     document.getElementById('p-top-id').textContent = `ID: ${oc.id.toUpperCase()}`;
 
-    // 基础信息
     const infoList = document.getElementById('p-info-list');
     infoList.innerHTML = '';
     oc.basic.forEach(b => {
       infoList.innerHTML += `<div class="info-item"><span class="k">${b.k}</span><span class="v">${b.v}</span></div>`;
     });
 
-    // 时间线
     const timelineBox = document.getElementById('p-timeline');
     timelineBox.innerHTML = '';
     oc.timeline.forEach(item => {
       timelineBox.innerHTML += `<div class="tl-item"><div class="tl-time">${item.time}</div><div class="tl-event">${item.event}</div></div>`;
     });
 
-    // 关系
     const relationsBox = document.getElementById('p-relations');
     relationsBox.innerHTML = '';
     if (oc.relations && oc.relations.length > 0) {
