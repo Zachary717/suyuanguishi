@@ -5,7 +5,6 @@ window.onload = function() {
     return;
   }
 
-  // 渲染左侧列表
   let html = '';
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
@@ -31,19 +30,27 @@ function switchView(viewId) {
   }
 }
 
-// 切换叶瑶的里世界
+// 核心修改点：完美触发开屏特效
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
   
   const container = document.getElementById('glitch-matrix');
+  
   if (isGlitchMode) {
     let html = '';
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
     for(let i=0; i<15; i++) html += '<div class="matrix-col">' + poem + '</div>';
     container.innerHTML = html;
+    
+    // 强制移除类名并重绘，确保每次点开都有“开门杀”
+    container.classList.remove('active-anim');
+    void container.offsetWidth; 
+    container.classList.add('active-anim');
+    
   } else {
     container.innerHTML = '';
+    container.classList.remove('active-anim');
   }
   showProfile(currentActiveId, true);
 }
@@ -53,11 +60,12 @@ function showProfile(id, isToggle) {
     currentActiveId = id;
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
+    const container = document.getElementById('glitch-matrix');
+    if(container) { container.innerHTML = ''; container.classList.remove('active-anim'); }
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
 
-  // 头像渲染（带防破图处理）
   const avatarBox = document.getElementById('p-avatar-box');
   if (oc.avatar) {
     avatarBox.innerHTML = '<img src="' + oc.avatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=&quot;empty-text&quot;>NO IMAGE</div>\';">';
@@ -72,7 +80,6 @@ function showProfile(id, isToggle) {
 
   let statsToRender = oc.stats;
 
-  // 里世界特殊渲染逻辑
   if (id === 'yeyao' && isGlitchMode) {
     document.getElementById('glitch-btn').style.display = 'block';
     document.getElementById('p-name').textContent = "叶 瑶 ？";
@@ -89,7 +96,6 @@ function showProfile(id, isToggle) {
     });
     
   } else {
-    // 正常渲染逻辑
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
@@ -113,12 +119,10 @@ function showProfile(id, isToggle) {
   else window.scrollTo(0, 0);
 }
 
-// 雷达图渲染
 function renderRadarChart(stats) {
   const cx = 150, cy = 140, r = 90, maxVal = 6; 
   const keys = Object.keys(stats), n = keys.length;
   let svg = '<svg viewBox="0 0 300 280" style="width:100%; max-width:350px; overflow:visible;">';
-  
   for (let level = 1; level <= maxVal; level++) {
     let points = [];
     for (let i = 0; i < n; i++) {
