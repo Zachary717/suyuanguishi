@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
 <style>
@@ -15,13 +13,13 @@
   .view { display:none; opacity:0; transition:.5s; min-height:100vh; }
   .view.active { display:block; opacity:1; }
   
+  /* 首页 */
   #view-main { padding: 80px 40px; }
-  .main-header { text-align: center; margin-bottom: 80px; }
+  .main-header { text-align: center; margin-bottom padding: 80px;-bottom:10px; }
   .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
   .directory-wrap { max-width: 900px; margin: 0 auto; }
   .dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
   .dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
-  
   .list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
   .list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
   .item-left { display:flex; align-items:baseline; gap:30px; }
@@ -29,6 +27,7 @@
   .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; }
   .item-title { font-size:13px; color:var(--green); text-align:right; }
 
+  /* 详情页 */
   #view-profile { padding-bottom: 100px; }
   .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
   .back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
@@ -47,7 +46,7 @@
   .empty-text { display:flex; height:100%; align-items:center; justify-content:center; color:var(--muted); border:1px solid var(--line); }
   .hero-text { text-align:right; padding-bottom:20px; }
   .p-name { font-size:clamp(60px,10vw,100px); font-weight:900; letter-spacing:.15em; margin-bottom:20px; transition: color 0.6s; }
-  .p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); padding-bottom:10px; margin-bottom:20px; transition: color 0.6s, border-color 0.6s; }
+  .p-title { font-size:14px; color:var(--green); border-bottom:1px solid var(--line); margin-bottom:20px; transition: color 0.6s, border-color 0.6s; }
 
   .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px 60px; }
   .sec-title { font-family:"Oswald",sans-serif; font-size:24px; font-weight:200; margin-bottom:30px; display:flex; align-items:center; gap:15px; transition:.6s; }
@@ -74,7 +73,70 @@
   .rel-desc { font-size:13px; color:var(--muted); flex:1; }
   footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); transition:.6s; }
 
-  /* 里世界：幽冥墨绿与猩红 */
+  /* =========================================
+     👻 里世界全屏文字干扰层
+     ========================================= */
+  .glitch-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(5, 5, 5, 0.95); z-index: 1000;
+    display: none; align-items: center; justify-content: center;
+    pointer-events: none; /* 让鼠标/手指能穿透去点击底下的内容 */
+    overflow: hidden;
+  }
+  body.glitch-mode .glitch-overlay {
+    display: flex;
+    animation: overlay-flicker 0.15s infinite;
+  }
+
+  .glitch-text-box {
+    position: relative; width: 90%; max-width: 800px;
+    color: #b31010; font-family: "Noto Serif SC", serif;
+    font-size: 18px; line-height: 2; letter-spacing: 0.1em;
+    text-align: center;
+    /* RGB 错位阴影 */
+    text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.5), -2px 0px 0px rgba(255, 0, 0, 0.8);
+  }
+
+  /* 模拟文字重叠的乱码块 */
+  .glitch-text-box::before, .glitch-text-box::after {
+    content: attr(data-text);
+    position: absolute; top: 0; left: 0; width: 100%;
+    opacity: 0.8;
+  }
+  .glitch-text-box::before {
+    color: #00ffff; z-index: -1;
+    animation: glitch-anim-1 2s infinite linear alternate-reverse;
+  }
+  .glitch-text-box::after {
+    color: #ff0000; z-index: -2;
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+  }
+
+  @keyframes glitch-anim-1 {
+    0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 0); }
+    20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, 0); }
+    40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 0); }
+    60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, 0); }
+    80% { clip-path: inset(10% 0 70% 0); transform: translate(-2px, 0); }
+    100% { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+  }
+  @keyframes glitch-anim-2 {
+    0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, 0); }
+    20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 0); }
+    40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, 0); }
+    60% { clip-path: inset(20% 0 50% 0); transform: translate(-2px, 0); }
+    80% { clip-path: inset(50% 0 30% 0); transform: translate(2px, 0); }
+    100% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 0); }
+  }
+  @keyframes overlay-flicker {
+    0% { opacity: 0.8; }
+    50% { opacity: 0.95; }
+    100% { opacity: 0.85; }
+  }
+
+  /* =========================================
+     🐛 基础里世界配色
+     ========================================= */
   body.glitch-mode {
     --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #cc3344; --green: #3c7a6b; --line: rgba(232,226,214,.15);
     background-color: var(--bg);
@@ -83,9 +145,6 @@
   body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.7), -2px -1px 0px rgba(60,122,107,0.7); }
   body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
   body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
-  body.glitch-mode .glitch-trigger { opacity: 0.6; }
-  body.glitch-mode .glitch-trigger::before { border-color: var(--red); }
-  body.glitch-mode .glitch-trigger::after { background: var(--red); }
 
   @media (max-width:768px) {
     #view-main { padding:50px 20px; }
@@ -99,10 +158,18 @@
     .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
     .content-grid { grid-template-columns:1fr; gap:50px; }
     .glitch-trigger { top:80px; right:20px; }
+    .glitch-text-box { font-size: 13px; line-height: 1.8; } /* 手机端调整文字大小 */
   }
 </style>
 </head>
 <body>
+
+<!-- 这个全屏层默认是隐藏的，只有在 glitch-mode 开启时才会像幽灵一样浮现 -->
+<div class="glitch-overlay">
+  <div class="glitch-text-box" data-text="此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，冷清清、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。">
+    此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，冷清清、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。
+  </div>
+</div>
 
 <div id="view-main" class="view active">
   <header class="main-header">
@@ -158,7 +225,6 @@
       list.innerHTML = `<div style="color: #b84040; background: #fff; border: 1px dashed #b84040; padding: 20px; text-align: center; font-weight: bold; font-family: sans-serif;">❌ 数据读取失败！请检查 data.js 格式。</div>`;
       return;
     }
-
     list.innerHTML = '';
     ocDatabase.forEach((oc, index) => {
       const item = document.createElement('div');
@@ -233,9 +299,15 @@
     const oc = ocDatabase.find(o => o.id === id);
     if(!oc) return;
 
+    // 头像渲染（加入双头像判断）
     const avatarBox = document.getElementById('p-avatar-box');
-    if (oc.avatar) {
-      avatarBox.innerHTML = `<img src="${oc.avatar}" alt="${oc.name}">`;
+    let currentAvatar = oc.avatar;
+    if (isGlitchMode && oc.mutated_avatar) {
+      currentAvatar = oc.mutated_avatar; // 如果有里世界专属头像，就切换过去
+    }
+
+    if (currentAvatar) {
+      avatarBox.innerHTML = `<img src="${currentAvatar}" alt="${oc.name}">`;
       avatarBox.querySelector('img').onerror = function() { this.style.display='none'; avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; };
     } else { avatarBox.innerHTML = `<div class="empty-text">NO IMAGE</div>`; }
 
@@ -244,14 +316,13 @@
     const relationsBox = document.getElementById('p-relations');
     infoList.innerHTML = ''; timelineBox.innerHTML = ''; relationsBox.innerHTML = '';
 
-    let statsToRender = oc.stats; // 默认渲染普通数据
+    let statsToRender = oc.stats;
 
     if (id === 'yeyao' && isGlitchMode) {
       document.getElementById('glitch-btn').style.display = 'block';
       document.getElementById('p-name').textContent = "叶 瑶 ？";
       document.getElementById('p-title').textContent = "是我做错了吗?";
       
-      // 切换雷达图数据
       if (oc.mutated_stats) statsToRender = oc.mutated_stats;
 
       (oc.mutated_basic || [{ k: "状态", v: "档案被掩盖..." }]).forEach(b => { infoList.innerHTML += `<div class="info-item"><span class="k" style="color:var(--red)">${b.k}</span><span class="v">${b.v}</span></div>`; });
@@ -270,9 +341,9 @@
         });
       }
     }
-    document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
     
-    renderRadarChart(statsToRender, 'p-stats'); // 渲染对应的数据
+    document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
+    renderRadarChart(statsToRender, 'p-stats');
     
     if (!isToggle) switchView('view-profile');
     else window.scrollTo(0, 0);
