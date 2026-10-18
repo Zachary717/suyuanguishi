@@ -60,21 +60,19 @@ function toggleGlitch() {
   
   const container = document.getElementById('glitch-matrix');
   if (isGlitchMode) {
-    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    let glitchChars = "█▓▒░#@%$&*!?<≯̶̵̵̴̸̴̶̷̨̨̡̧̧̨̨̢̛̛̹̼̭̖̥̣̤̹̭͖̻̮͓̮̭̥̥̼̤̄̌̅̈̆̈̽̆̆̄͋̌̀͛͜͝͞"; // 包含 Zalgo 符号
+    let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+    let glitchChars = "█▓▒░#@%$&*!?<≯̶̵̵̴̸̴̶̷̨̨̡̧̧̨̨̢̛̛̹̼̭̖̥̣̤̹̭͖̻̮͓̮̭̥̥̼̤̄̌̅̈̆̈̽̆̆̄͋̌̀͛͜͝͞";
     
     let mixedText = "";
     for(let i=0; i<poem.length; i++) {
         mixedText += poem[i];
-        if(Math.random() > 0.85 && poem[i] !== '<' && poem[i] !== 'b' && poem[i] !== 'r' && poem[i] !== '>') {
+        if(Math.random() > 0.85) {
             mixedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
         }
     }
 
-    let rawText = mixedText.replace(/<[^>]*>?/gm, '');
-    container.innerHTML = `<div class="glitch-text-box" data-text="${rawText}">${mixedText}</div>`;
+    container.innerHTML = `<div class="glitch-text-box" data-text="${mixedText}">${mixedText}</div>`;
     
-    // 重置整个页面的震动动画
     const view = document.querySelector('#view-profile');
     const box = container.querySelector('.glitch-text-box');
     
@@ -82,7 +80,6 @@ function toggleGlitch() {
     box.style.animation = 'none';
     void view.offsetWidth; 
     box.offsetWidth;
-    
     view.style.animation = null;
     box.style.animation = null;
 
@@ -93,15 +90,13 @@ function toggleGlitch() {
   showProfile(currentActiveId, true);
 }
 
-// 生成 Zalgo 乱码函数
+// 🌟 核心：生成 Zalgo 乱码
 function makeZalgo(text) {
-    const zalgo_up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ', '̾', '͛', '͆', '̚'];
-    const zalgo_down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
-    
+    const zalgo_up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉'];
+    const zalgo_down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ'];
     let result = "";
     for(let i=0; i<text.length; i++) {
         result += text[i];
-        // 随机叠加 3-5 个上下乱码
         for(let j=0; j<Math.floor(Math.random()*3)+3; j++) {
             result += zalgo_up[Math.floor(Math.random() * zalgo_up.length)];
             result += zalgo_down[Math.floor(Math.random() * zalgo_down.length)];
@@ -153,7 +148,7 @@ function showProfile(id, isToggle) {
     
     if(oc.mutated_relations) oc.mutated_relations.forEach((rel, i) => { 
       let descHtml = rel.desc;
-      // 核心：检测到“我爱你”，直接将其变成 Zalgo 乱码！
+      // 检测到“我爱你”，变成 Zalgo 乱码！
       if (rel.desc.indexOf("我爱你") > -1) {
         let zalgoLove = makeZalgo("我爱你");
         descHtml = '<span class="zalgo">' + zalgoLove + '</span>';
@@ -205,7 +200,6 @@ function animateRadarLines(group, textGroup) {
   const poly = group.querySelector('polygon');
   const targets = [];
   const cx = 150, cy = 140;
-  
   group.style.opacity = 0;
 
   circles.forEach(c => {
@@ -227,7 +221,6 @@ function animateRadarLines(group, textGroup) {
   const startTime = performance.now();
   circles.forEach(c => { c.setAttribute('cx', cx); c.setAttribute('cy', cy); });
   poly.setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy}`);
-
   group.style.opacity = 1;
 
   function update(now) {
@@ -257,6 +250,7 @@ function renderRadarChart(stats) {
   const cx = 150, cy = 140, r = 90, maxVal = 6; 
   const keys = Object.keys(stats), n = keys.length;
   let svg = '<svg viewBox="0 0 300 280" style="width:100%; max-width:350px; overflow:visible;">';
+  
   for (let level = 1; level <= maxVal; level++) {
     let points = [];
     for (let i = 0; i < n; i++) {
@@ -267,12 +261,37 @@ function renderRadarChart(stats) {
     let strokeColor = level === maxVal ? (isGlitchMode ? "rgba(232,226,214,0.3)" : "rgba(26,26,26,0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(26,26,26,0.05)");
     svg += '<polygon points="' + points.join(' ') + '" fill="none" stroke="' + strokeColor + '" stroke-width="1" stroke-dasharray="' + (level === maxVal ? '0' : '2 2') + '" />';
   }
+  
   for (let i = 0; i < n; i++) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * Math.cos(angle)) + '" y2="' + (cy + r * Math.sin(angle)) + '" stroke="' + (isGlitchMode ? 'rgba(232,226,214,0.15)' : 'rgba(26,26,26,0.08)') + '" stroke-width="1" />';
   }
+  
   let dataPoints = [];
   let circleTags = '';
   for (let i = 0; i < n; i++) {
     let cr = (r * stats[keys[i]]) / maxVal;
-    let
+    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
+    dataPoints.push(x + ',' + y);
+    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
+  }
+  
+  svg += '<g class="radar-anim-group" style="opacity: 0;">';
+  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += circleTags;
+  svg += '</g>';
+
+  svg += '<g class="radar-text">';
+  for (let i = 0; i < n; i++) {
+    let key = keys[i], cr = (r * stats[key]) / maxVal;
+    let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
+    let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
+    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#1a1a1a') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#888') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+  }
+  svg += '</g>';
+
+  document.getElementById('p-stats').innerHTML = svg + '</svg>';
+}
