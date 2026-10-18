@@ -62,8 +62,6 @@ function toggleGlitch() {
   if (isGlitchMode) {
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
     let fullText = poem.repeat(30);
-    
-    // 核心：直接塞进去，强制重绘
     container.innerHTML = `<div class="glitch-matrix">${fullText}</div>`;
   } else {
     container.innerHTML = '';
@@ -83,8 +81,13 @@ function showProfile(id, isToggle) {
   if(!oc) return;
 
   const avatarBox = document.getElementById('p-avatar-box');
-  if (oc.avatar) {
-    avatarBox.innerHTML = '<img src="' + oc.avatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=&quot;empty-text&quot;>NO IMAGE</div>\';">';
+  let currentAvatar = oc.avatar;
+  if (isGlitchMode && oc.mutated_avatar) {
+    currentAvatar = oc.mutated_avatar;
+  }
+
+  if (currentAvatar) {
+    avatarBox.innerHTML = '<img src="' + currentAvatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.parentElement.innerHTML=\'<div class=&quot;empty-text&quot;>NO IMAGE</div>\';">';
   } else { 
     avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>'; 
   }
