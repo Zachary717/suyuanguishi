@@ -20,10 +20,10 @@
   body{
     background-color: var(--bg); color:var(--paper); font-family:var(--serif);
     line-height: 2; -webkit-font-smoothing: antialiased; overflow-x: hidden;
-    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  }
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.;03'/%3E%3 colorC/svg%3E");
+ : }
   
-  .view { display: none; opacity: 0; transition: opacity .5s ease; position: relative; z-index: 1; min-height: 100vh; }
+  .view { display var: none; opacity: 0;(-- transition: opacity .5s ease; positionm: relative; z-index: 1; min-height: 100vh; }
   .view.active { display: block; opacity: 1; }
 
   #view-main { padding: 80px 40px; }
@@ -44,7 +44,7 @@
   }
   .list-item:hover { padding-left: 30px; background: rgba(255,255,255,0.4); }
   .item-left { display: flex; align-items: baseline; gap: 30px; }
-  .item-index { font-family: var(--eng); font-size: 16px; color: var(--muted); width: 30px; }
+  .item-index { font-family: var(--eng); font-size: 16pxuted); width: 30px; }
   .item-name { font-size: 36px; font-weight: 900; letter-spacing: .1em; color: var(--paper); transition: .4s; }
   .list-item:hover .item-name { color: var(--cinnabar); }
   .item-title { font-size: 13px; color: var(--jade); letter-spacing: .1em; text-align: right; max-width: 50%; }
@@ -90,8 +90,8 @@
   .stats-container { padding: 20px 0; display: flex; justify-content: flex-start; }
 
   .timeline { position: relative; padding-left: 20px; }
-  .timeline::before transition { content: ""; position: absolute; left: 0:; top: 10px; bottom: 10 allpx; width: 1px; background : var(--line); }
-0  .tl-item { position: relative.; margin-bottom: 40px; }
+  .timeline::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 1px; background: var(--line); }
+  .tl-item { position: relative; margin-bottom: 40px; }
   .tl-item:last-child { margin-bottom: 0; }
   .tl-item::before { content: ""; position: absolute; left: -24px; top: 8px; width: 9px; height: 9px; border-radius: 50%; border: 1px solid var(--jade); background: var(--bg); }
   .tl-time { font-family: var(--eng); font-size: 16px; color: var(--cinnabar); letter-spacing: .1em; margin-bottom: 5px; }
@@ -116,7 +116,7 @@
   .reveal {
     opacity: 0;
     transform: translateY(30px);
-   8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
   .reveal.active {
     opacity: 1;
@@ -133,7 +133,6 @@
     transform: translateY(0);
   }
 
-  /* 雷达图容器淡入 */
   .reveal-radar {
     opacity: 0;
     transform: translateY(20px);
@@ -144,26 +143,12 @@
     transform: translateY(0);
   }
 
-  /* 核心：雷达图内部的数据多边形和点，从中心放大展开 */
-  .radar-data {
-    /* 设置缩放原点为 SVG 中设置的中心点 (150, 140) */
-    transform-origin: 150px 140px; 
-    transform: scale(0); 
-    opacity: 0;
-    /* 使用带有弹性的贝塞尔曲线，让它像“弹”出来一样 */
-    transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-  }
-  .reveal-radar.active .radar-data {
-    transform: scale(1);
-    opacity: 1;
-  }
-
-  /* 文字标签延迟出现，避免互相干扰 */
+  /* 雷达图文字默认隐藏，等动画结束再出现 */
   .radar-text {
     opacity: 0;
-    transition: opacity 0.8s ease 0.6s; /* 等展开差不多完了再出现 */
+    transition: opacity 0.5s ease;
   }
-  .reveal-radar.active .radar-text {
+  .radar-text.show {
     opacity: 1;
   }
 
@@ -257,6 +242,16 @@
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
+        
+        // 如果触发的是雷达图，启动专属的匀速拉线动画
+        if (entry.target.id === 'p-stats') {
+          const radarData = entry.target.querySelector('.radar-anim-group');
+          const radarText = entry.target.querySelector('.radar-text');
+          if (radarData) {
+            animateRadarLines(radarData, radarText);
+          }
+        }
+        
         observer.unobserve(entry.target);
       }
     });
@@ -294,12 +289,66 @@
     window.scrollTo(0, 0);
   }
 
+  // 核心算法：每根线匀速从中心点生长
+  function animateRadarLines(group, textGroup) {
+    const circles = group.querySelectorAll('circle');
+    const poly = group.querySelector('polygon');
+    
+    // 取出目标坐标点
+    const targets = [];
+    circles.forEach(c => {
+      targets.push({
+        el: c,
+        tx: parseFloat(c.getAttribute('data-tx')),
+        ty: parseFloat(c.getAttribute('data-ty'))
+      });
+    });
+
+    const cx = 150, cy = 140; // SVG 中心点
+    const duration = 1000; // 动画时长1秒
+    const startTime = performance.now();
+
+    // 把初始状态设为全部在中心点
+    circles.forEach(c => { c.setAttribute('cx', cx); c.setAttribute('cy', cy); });
+    poly.setAttribute('points', `${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy} ${cx},${cy}`);
+
+    function update(now) {
+      let progress = Math.min((now - startTime) / duration, 1); // 0 到 1 匀速
+      
+      let currentPoints = [];
+      
+      targets.forEach(t => {
+        // 计算当前点应该在的位置 (线性插值)
+        let currentX = cx + (t.tx - cx) * progress;
+        let currentY = cy + (t.ty - cy) * progress;
+        
+        // 移动红点
+        t.el.setAttribute('cx', currentX);
+        t.el.setAttribute('cy', currentY);
+        
+        // 收集坐标用来画多边形
+        currentPoints.push(`${currentX},${currentY}`);
+      });
+      
+      // 更新多边形形状
+      poly.setAttribute('points', currentPoints.join(' '));
+
+      if (progress < 1) {
+        requestAnimationFrame(update);
+      } else {
+        // 动画结束后，让文字浮现
+        textGroup.classList.add('show');
+      }
+    }
+    requestAnimationFrame(update);
+  }
+
   function renderRadarChart(stats, containerId) {
     const width = 300, height = 280, cx = width / 2, cy = height / 2, r = 90; 
     const keys = Object.keys(stats), n = keys.length, maxVal = 6; 
     let svg = `<svg viewBox="0 0 ${width} ${height}" style="width:100%; max-width:350px; overflow:visible;">`;
     
-    // 1. 画背景网格和轴线（这部分不会生长，直接出现）
+    // 1. 画静态背景网格
     for (let level = 1; level <= maxVal; level++) {
       let points = [];
       let currentR = (r * level) / maxVal;
@@ -317,28 +366,23 @@
       svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(26, 26, 26, 0.08)" stroke-width="1" />`;
     }
 
-    // 2. 画数据多边形和节点（包裹在 <g class="radar-data"> 中，用于缩放动画）
-    svg += `<g class="radar-data">`;
+    // 2. 画动画组 (点和多边形)，把真实坐标存在 data-tx, data-ty 里备用
+    svg += `<g class="radar-anim-group">`;
     let dataPoints = [];
+    let circleTags = '';
     for (let i = 0; i < n; i++) {
       let val = stats[keys[i]], currentR = (r * val) / maxVal;
       let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
       let x = cx + currentR * Math.cos(angle), y = cy + currentR * Math.sin(angle);
       dataPoints.push(`${x},${y}`);
+      
+      circleTags += `<circle data-tx="${x}" data-ty="${y}" cx="${x}" cy="${y}" r="2.5" fill="#f7f6f1" stroke="#b84040" stroke-width="1.5" />`;
     }
-    // 多边形面积
     svg += `<polygon points="${dataPoints.join(' ')}" fill="rgba(74, 98, 85, 0.1)" stroke="#4a6255" stroke-width="1.5" stroke-linejoin="round" />`;
-    
-    // 6个红点
-    for (let i = 0; i < n; i++) {
-      let key = keys[i], val = stats[key], currentR = (r * val) / maxVal;
-      let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-      let x = cx + currentR * Math.cos(angle), y = cy + currentR * Math.sin(angle);
-      svg += `<circle cx="${x}" cy="${y}" r="2.5" fill="#f7f6f1" stroke="#b84040" stroke-width="1.5" />`;
-    }
-    svg += `</g>`; // 结束数据组
+    svg += circleTags;
+    svg += `</g>`; 
 
-    // 3. 画文字标签（包裹在 <g class="radar-text"> 中，淡入）
+    // 3. 文字组（默认隐藏）
     svg += `<g class="radar-text">`;
     for (let i = 0; i < n; i++) {
       let key = keys[i], val = stats[key], currentR = (r * val) / maxVal;
@@ -350,7 +394,7 @@
       svg += `<text x="${lx}" y="${ly}" fill="#1a1a1a" font-size="13" font-family="Noto Serif SC, serif" font-weight="600" text-anchor="${textAnchor}" dominant-baseline="middle">${key}</text>`;
       svg += `<text x="${lx}" y="${ly + 16}" fill="#888" font-size="11" font-family="Oswald, sans-serif" text-anchor="${textAnchor}" dominant-baseline="middle">${val} / ${maxVal}</text>`;
     }
-    svg += `</g>`; // 结束文字组
+    svg += `</g>`; 
     
     document.getElementById(containerId).innerHTML = svg + `</svg>`;
   }
@@ -400,14 +444,18 @@
     
     switchView('view-profile');
 
-    const radar = document.getElementById('p-stats');
-    radar.classList.remove('active');
+    const radarContainer = document.getElementById('p-stats');
+    radarContainer.classList.remove('active');
     document.querySelectorAll('.delay-item').forEach(el => el.classList.remove('active'));
+    
+    // 重置文字显示状态
+    const textGroup = radarContainer.querySelector('.radar-text');
+    if (textGroup) textGroup.classList.remove('show');
 
-    void radar.offsetWidth; 
+    void radarContainer.offsetWidth; 
 
     setTimeout(() => {
-      observer.observe(radar);
+      observer.observe(radarContainer);
       document.querySelectorAll('.delay-item').forEach(el => {
         observer.observe(el);
       });
