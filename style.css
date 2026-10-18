@@ -16,11 +16,11 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .item-left { display:flex; align-items:baseline; gap:30px; flex-shrink: 0; } 
 .item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
 .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; } 
-.item-title { font-size:13px; color:var(--green); text-align:right; flex-grow: 1; }
+.item-title { font-size:13px; color:var(--green); text-align:right; flex-grow: 01; }
 
-/* 详情页排版（锁死大雷达图） */
-#view-profile { padding-bottom: 100px; }
-.nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
+/* 详情,页排版（锁死大 雷达图） */
+#view-profile { padding-bottom0: 100px; }
+.nav.-top { position:fixed; top:30; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
 .back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
 .id-tag { font-family:"Oswald",sans-serif; font-size:12px; color:#fff; }
 
@@ -29,6 +29,15 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .glitch-trigger::before { width:20px; height:20px; border-style:dashed; }
 .glitch-trigger::after { width:10px; height:10px; background:var(--paper); }
 .glitch-trigger:hover { opacity:1; transform:rotate(90deg); }
+
+/* 新增：光敏警告提示 */
+.epilepsy-warning {
+  position: fixed; top: 75px; right: 80px; z-index: 999;
+  font-size: 10px; color: var(--red); font-family: "Oswald", sans-serif;
+  letter-spacing: 0.1em; opacity: 0.6; pointer-events: none; display: none;
+  text-align: right; line-height: 1.2;
+}
+body.glitch-mode .epilepsy-warning { display: none; } /* 里世界隐藏 */
 
 .profile-wrap { max-width:1000px; margin:0 auto; padding:120px 30px 40px; }
 .hero-section { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:80px; }
@@ -72,7 +81,7 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   全屏故障滤镜与诗词浮现 (深度杂色崩坏版)
+   全屏故障滤镜与诗词浮现 (电视花屏修复版)
    ========================================= */
 .glitch-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -82,7 +91,6 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 }
 body.glitch-mode .glitch-overlay { display: flex; }
 
-/* 诗词排版：绝对居中 */
 .glitch-text-box {
   position: absolute; left: 50%; top: 50%;
   transform: translate(-50%, -50%);
@@ -90,11 +98,7 @@ body.glitch-mode .glitch-overlay { display: flex; }
   color: #ff2222; font-family: "Noto Serif SC", serif;
   font-size: 20px; line-height: 2.2; letter-spacing: 0.15em;
   text-align: center; font-weight: 900;
-  /* 极度夸张的红绿蓝错位 */
-  text-shadow: 
-    4px 0px 0px rgba(0, 255, 255, 0.9), 
-    -4px 0px 0px rgba(255, 0, 0, 0.9),
-    0px 4px 0px rgba(0, 255, 0, 0.6);
+  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.8);
   background: radial-gradient(circle, rgba(5,5,10,0.8) 0%, transparent 70%);
   padding: 50px 20px;
 }
@@ -105,10 +109,9 @@ body.glitch-mode .glitch-overlay { display: flex; }
 .glitch-text-box::before { color: #00ffff; z-index: -1; animation: glitch-slice-1 0.8s infinite linear alternate-reverse; }
 .glitch-text-box::after { color: #ff0000; z-index: -2; animation: glitch-slice-2 1.2s infinite linear alternate-reverse; }
 
-@keyframes glitch-slice-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-10px, 0); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(10px, 0); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-10px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(10px, 0); } 100% { clip-path: inset(10% 0 70% 0); transform: translate(-10px, 0); } }
-@keyframes glitch-slice-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(10px, 0); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-10px, 0); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(10px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-10px, 0); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(10px, 0); } }
+@keyframes glitch-slice-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-8px, 0); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(8px, 0); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-8px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(8px, 0); } 100% { clip-path: inset(10% 0 70% 0); transform: translate(-8px, 0); } }
+@keyframes glitch-slice-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(8px, 0); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-8px, 0); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(8px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-8px, 0); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(8px, 0); } }
 
-/* 里世界底层配色 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
@@ -118,7 +121,7 @@ body.glitch-mode {
 body::before {
   content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   pointer-events: none; z-index: 9996; opacity: 0; transition: opacity 1s ease;
-  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3) 1px, transparent 1px, transparent 3px);
+  background: repeating-linear-gradient(0deg, rgba(0, 0, ), rgba(0, 0, 0, 0.3) 1px, transparent 1px, transparent 3px);
   background-size: 100% 100vh;
 }
 body.glitch-mode::before {
@@ -130,58 +133,38 @@ body.glitch-mode::before {
   100% { background-position: 0 100vh; }
 }
 
-/* 2. 极度夸张的全屏杂色崩坏层 */
+/* 2. 电视花屏层（纯黑白灰干扰噪点，去掉混合模式，绝不缩图） */
 body::after {
-  content: ""; position: fixed; top: -20%; left: -20%; width: 140%; height: 140%;
+  content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   pointer-events: none; z-index: 9997; opacity: 0;
-  /* 错位的红绿蓝黄紫杂色条纹与斑块 */
   background: 
-    linear-gradient(90deg, rgba(255,0,0,0.4) 10%, transparent 10%, transparent 20%, rgba(0,255,255,0.4) 20%, transparent 20%, transparent 80%, rgba(0,255,0,0.3) 80%, transparent 80%),
-    radial-gradient(circle at 20% 30%, rgba(255,0,255,0.3) 0%, transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(255,255,0,0.3) 0%, transparent 40%);
-  mix-blend-mode: color-dodge; /* 使颜色极度刺眼 */
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0px, rgba(255,255,255,0.2) 2px, transparent 2px, transparent 4px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px),
+    radial-gradient(circle at 40% 60%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(0,0,0,0.4) 0%, transparent 50%);
 }
 
-/* 激活时：整个屏幕疯狂扭曲抽搐 */
+/* 激活时：全屏电视雪花抖动（无色彩，只有黑白灰高反差） */
 body.seizure-active::after {
   opacity: 1;
-  animation: screen-corruption 0.12s infinite linear alternate;
+  animation: tv-snow-glitch 0.15s infinite linear;
 }
 
-@keyframes screen-corruption {
-  0% { transform: translate(0,0) scale(1); filter: hue-rotate(0deg) contrast(2) saturate(2); background-size: 100% 100%; }
-  25% { transform: translate(-20px, 10px) scale(1.05); filter: hue-rotate(90deg) contrast(4) saturate(3); background-size: 200% 100%; }
-  50% { transform: translate(20px, -10px) scale(0.95); filter: hue-rotate(180deg) contrast(3) saturate(2); background-size: 50% 200%; }
-  75% { transform: translate(-10px, -20px) scale(1.02); filter: hue-rotate(270deg) contrast(5) saturate(4); background-size: 150% 150%; }
-  100% { transform: translate(10px, 20px) scale(1); filter: hue-rotate(360deg) contrast(2) saturate(2); background-size: 100% 100%; }
+@keyframes tv-snow-glitch {
+  0% { transform: translateY(0) scale(1.05); filter: contrast(2) brightness(1.2) grayscale(1); background-position: 0 0, 0 0, 0 0, 0 0; }
+  25% { transform: translateY(-10px) scale(1.05); filter: contrast(4) brightness(0.8) grayscale(1); background-position: 20px 0, -10px 0, 10px 10px, -20px 0; }
+  50% { transform: translateY(10px) scale(1.05); filter: contrast(3) brightness(1.5) grayscale(1); background-position: -20px 0, 10px 0, -10px -10px, 20px 0; }
+  75% { transform: translateY(-5px) scale(1.05); filter: contrast(5) brightness(1) grayscale(1); background-position: 10px 0, -20px 0, 20px 20px, -10px 0; }
+  100% { transform: translateY(0) scale(1.05); filter: contrast(2) brightness(1.2) grayscale(1); background-position: 0 0, 0 0, 0 0, 0 0; }
 }
 
-/* 3. 文字的极度杂乱崩坏重影 */
+/* 3. 文字的杂乱撕裂重影（红蓝绿错位） */
 @keyframes text-mega-corrupt {
-  0% { 
-    opacity: 1;
-    text-shadow: 5px 0 0 red, -5px 0 0 cyan, 0 5px 0 lime, 0 -5px 0 magenta; 
-  }
-  20% { 
-    opacity: 0.7;
-    text-shadow: -8px 0 0 yellow, 8px 0 0 purple, 0 -8px 0 cyan; 
-  }
-  40% { 
-    opacity: 0.9;
-    text-shadow: 6px 0 0 cyan, -6px 0 0 red, 6px 6px 0 lime; 
-  }
-  60% { 
-    opacity: 0.5;
-    text-shadow: -10px 0 0 red, 10px 0 0 blue, -5px 5px 0 white; 
-  }
-  80% { 
-    opacity: 1;
-    text-shadow: 4px 0 0 magenta, -4px 0 0 green; 
-  }
-  100% { 
-    opacity: 1;
-    text-shadow: 5px 0 0 red, -5px 0 0 cyan; 
-  }
+  0% { text-shadow: 4px 0 0 red, -4px 0 0 cyan, 0 3px 0 lime; opacity: 1; }
+  25% { text-shadow: -6px 0 0 yellow, 6px 0 0 purple, 0 -4px 0 cyan; opacity: 0.8; }
+  50% { text-shadow: 5px 0 0 cyan, -5px 0 0 red, 5px 5px 0 lime; opacity: 0.9; }
+  75% { text-shadow: -8px 0 0 red, 8px 0 0 blue, -4px 4px 0 white; opacity: 0.7; }
+  100% { text-shadow: 4px 0 0 magenta, -4px 0 0 green; opacity: 1; }
 }
 
 body.seizure-active .p-name,
@@ -199,4 +182,5 @@ body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.
 
 @media (max-width:768px) {
   .glitch-text-box { font-size: 15px; line-height: 1.8; padding: 20px 10px; }
+  .epilepsy-warning { font-size: 8px; top: 75px; right: 60px; }
 }
