@@ -30,7 +30,7 @@ function switchView(viewId) {
   }
 }
 
-// 核心修改点：完美触发开屏特效
+// 触发满屏特效
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
@@ -38,12 +38,31 @@ function toggleGlitch() {
   const container = document.getElementById('glitch-matrix');
   
   if (isGlitchMode) {
-    let html = '';
     let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
-    for(let i=0; i<15; i++) html += '<div class="matrix-col">' + poem + '</div>';
+    
+    let html = '';
+    // 生成 30 个绝对定位的文字块，随机分布在屏幕各处
+    for(let i=0; i<30; i++) {
+        // 随机截取诗的一部分，保证不重叠太长
+        let start = Math.floor(Math.random() * (poem.length - 15));
+        let snippet = poem.substring(start, start + 10 + Math.random() * 10); 
+        
+        // 随机生成坐标 (10% - 80% 之间，留出边缘)
+        let top = Math.random() * 80 + 10;
+        let left = Math.random() * 80 + 10;
+        
+        // 随机旋转角度（-15度 到 15度）
+        let rotate = Math.random() * 30 - 15;
+        
+        // 随机延迟闪烁，错落有致
+        let delay = Math.random() * 0.5;
+
+        html += `<div class="glitch-text-piece" style="top: ${top}%; left: ${left}%; transform: rotate(${rotate}deg); animation-delay: ${delay}s;">${snippet}</div>`;
+    }
+    
     container.innerHTML = html;
     
-    // 强制移除类名并重绘，确保每次点开都有“开门杀”
+    // 强制重置动画，确保每次点开都能爆闪
     container.classList.remove('active-anim');
     void container.offsetWidth; 
     container.classList.add('active-anim');
@@ -61,7 +80,7 @@ function showProfile(id, isToggle) {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
     const container = document.getElementById('glitch-matrix');
-    if(container) { container.innerHTML = ''; container.classList.remove('active-anim'); }
+    if(container) { container.innerHTML = ''; }
   }
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
