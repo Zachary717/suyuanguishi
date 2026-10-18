@@ -70,96 +70,79 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   👻 终极融合：完美排版 + 开门杀 + 幽灵循环
+   👻 满屏乱码矩阵 + 开屏爆闪/幽灵循环
    ========================================= */
-.glitch-overlay {
-  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-  background: transparent; /* 去掉黑底遮挡，只留文字 */
-  z-index: 9999; display: none; align-items: center; justify-content: center;
-  pointer-events: none; overflow: hidden;
+.glitch-overlay { 
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+  background: transparent; z-index: 9999;
+  display: none; overflow: hidden; pointer-events: none; 
 }
-body.glitch-mode .glitch-overlay { display: flex; }
+body.glitch-mode .glitch-overlay { display: block; }
 
-/* 文字容器：完美居中排版 */
-.glitch-text-box {
-  position: relative; width: 90%; max-width: 800px;
-  color: #b31010; font-family: "Noto Serif SC", serif;
-  font-size: 18px; line-height: 2; letter-spacing: 0.1em;
-  text-align: center; font-weight: 900;
-  text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.8), -2px 0px 0px rgba(255, 0, 0, 0.9);
+.glitch-matrix {
+  width: 100%; height: 100%; padding: 15px;
+  font-family: "Noto Serif SC", serif; 
+  font-size: 16px; line-height: 1.2; font-weight: 900; 
+  text-align: justify; word-break: break-all;
+  color: rgba(255, 0, 0, 0.85) !important;
+  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.9) !important;
   
-  /* 绑定开门杀和幽灵循环 */
-  animation: entrance-flash 1.5s steps(2) forwards, ghost-whisper 8s 1.5s infinite steps(2);
+  /* 核心：开屏爆闪 + 幽灵循环 */
+  animation: glitch-flash 1.5s steps(2) forwards, ghost-glitch 8s 1.5s infinite steps(2);
 }
 
-/* 核心：红蓝残影与撕裂 */
-.glitch-text-box::before, .glitch-text-box::after {
-  content: attr(data-text);
-  position: absolute; top: 0; left: 0; width: 100%;
-}
-.glitch-text-box::before {
-  color: #00ffff; z-index: -1;
-  animation: glitch-anim-1 2s infinite linear alternate-reverse;
-}
-.glitch-text-box::after {
-  color: #ff0000; z-index: -2;
-  animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
-
-/* 开门杀：前1.5秒疯狂闪烁、上下错位 */
-@keyframes entrance-flash {
-  0% { opacity: 1; transform: translateY(0); filter: contrast(150%); }
-  10% { opacity: 1; transform: translateY(-5px); filter: invert(1); }
-  20% { opacity: 0; transform: translateY(5px); }
-  30% { opacity: 1; transform: translateY(-2px); filter: invert(1); }
+/* 开屏故障闪（反色、撕裂、位移） */
+@keyframes glitch-flash {
+  0% { opacity: 1; transform: translateY(0); filter: invert(0); }
+  10% { opacity: 1; transform: translateY(-3px); filter: invert(1); text-shadow: -4px 0 red, 4px 0 cyan; }
+  20% { opacity: 0; transform: translateY(2px); }
+  30% { opacity: 1; transform: translateY(-1px); filter: invert(1); }
   40% { opacity: 0; }
-  60% { opacity: 1; transform: translateY(3px); filter: contrast(150%); }
-  80% { opacity: 0.8; transform: translateY(-2px); }
+  50% { opacity: 1; transform: translateY(1px); filter: invert(0); text-shadow: 3px 0 red, -3px 0 cyan; }
+  60% { opacity: 0; transform: translateY(-3px); }
+  80% { opacity: 0.8; transform: translateY(2px); filter: invert(1); }
   100% { opacity: 0; transform: translateY(0); }
 }
 
-/* 幽灵循环：闪完之后隐身，每隔8秒突然跳出来闪一下 */
-@keyframes ghost-whisper {
+/* 幽灵循环（平时隐身，突然跳出来闪一下） */
+@keyframes ghost-glitch {
   0%, 85% { opacity: 0; }
-  87% { opacity: 1; transform: translateY(-3px); filter: invert(1); }
-  89% { opacity: 0; transform: translateY(3px); }
-  91% { opacity: 0.8; filter: contrast(150%); transform: translateY(0); }
-  93%, 100% { opacity: 0; }
+  87% { opacity: 1; transform: translateY(-2px); filter: invert(1); text-shadow: -4px 0 red, 4px 0 cyan; }
+  89% { opacity: 0; transform: translateY(2px); }
+  91% { opacity: 1; filter: invert(0); transform: translateY(-1px); }
+  93%, 100% { opacity: 0; transform: translateY(0); }
 }
 
-/* 文字切片撕裂动画 */
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 0); }
-  20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, 0); }
-  40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); }
-  60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 0); }
-  80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); }
-  100% { clip-path: inset(30% 0 50% 0); transform: translate(3px, 0); }
-}
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, 0); }
-  20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 0); }
-  40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); }
-  60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 0); }
-  80% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); }
-  100% { clip-path: inset(5% 0 80% 0); transform: translate(-3px, 0); }
-}
-
-/* 底层里世界配色与故障 */
+/* =========================================
+   底层界面的暗流涌动
+   ========================================= */
 body.glitch-mode {
-  --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #cc3344; --green: #3c7a6b; --line: rgba(232,226,214,.15);
+  --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
+  
+  /* 底层扫描线持续下滑 */
   background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4) 1px, transparent 1px, transparent 3px);
+  background-size: 100% 100vh;
+  animation: scanline-scroll 10s linear infinite;
 }
-body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.7), -2px -1px 0px rgba(60,122,107,0.7); animation: name-breathe 2s infinite alternate; }
+
+@keyframes scanline-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+/* 名字微呼吸 */
+body.glitch-mode .p-name { 
+  color: var(--paper); 
+  text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); 
+  animation: name-breathe 2s infinite alternate;
+}
 @keyframes name-breathe {
-  0% { text-shadow: 2px 2px 0px rgba(204,51,68,0.7), -2px -1px 0px rgba(60,122,107,0.7); }
+  0% { text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
   100% { text-shadow: 3px 3px 0px rgba(204,51,68,1), -3px -2px 0px rgba(60,122,107,1); }
 }
-body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
-body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
 
-/* 底层文本微错位 */
+/* 底层文本极微弱的错位 */
 body.glitch-mode .info-item .v,
 body.glitch-mode .tl-event,
 body.glitch-mode .rel-name,
@@ -173,6 +156,9 @@ body.glitch-mode .rel-desc {
   96% { transform: translate(0); }
 }
 
+body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
+body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.3); }
+
 @media (max-width:768px) {
   #view-main { padding:50px 20px; }
   .list-item { flex-direction:column; align-items:flex-start; gap:8px; padding: 24px 10px; }
@@ -185,5 +171,5 @@ body.glitch-mode .rel-desc {
   .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
   .content-grid { grid-template-columns:1fr; gap:50px; }
   .glitch-trigger { top:80px; right:20px; }
-  .glitch-text-box { font-size: 14px; line-height: 1.8; }
+  .glitch-matrix { font-size: 14px; padding: 10px; }
 }
