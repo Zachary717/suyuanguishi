@@ -40,24 +40,14 @@
   
   .main-header {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 70px 20px 50px 20px; 
+    padding: 60px 20px 40px 20px; /* 调整了留白 */
     background: radial-gradient(circle at center, #fff 0%, var(--bg) 80%);
     border-bottom: 1px solid var(--line);
   }
   
-  .header-content { display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%; }
-  
-  .home-subtitle {
-    font-family: var(--serif); font-size: 14px; 
-    letter-spacing: .4em; color: var(--gold);
-    display: flex; align-items: center; gap: 16px; white-space: nowrap;
-  }
-  .home-subtitle::before, .home-subtitle::after {
-    content: ""; display: block; width: 50px; height: 1px; 
-    background: linear-gradient(90deg, transparent, var(--gold));
-  }
-  .home-subtitle::after { background: linear-gradient(90deg, var(--gold), transparent); }
+  .header-content { display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; }
 
+  /* 图片标题专属样式 */
   .home-title-img {
     max-width: 90vw; max-height: 180px; object-fit: contain; 
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08));
@@ -66,7 +56,6 @@
   .directory-section { padding: 40px 20px 0 20px; }
   .dir-header { text-align: center; margin-bottom: 30px; }
   .dir-header h2 { font-family: var(--kai); font-size: 28px; letter-spacing: .2em; color: var(--paper); }
-  .dir-header p { font-size: 12px; color: var(--gold); letter-spacing: .3em; margin-top: 10px; }
   
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; }
   .card {
@@ -114,10 +103,10 @@
   .relations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .rel-card {
     border: 1px solid var(--line); background: var(--bg2);
-    padding: 16px; border-radius: 4px; position: relative; transition: .3s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-  .rel-card.has-link { cursor: pointer; border-color: rgba(168, 126, 63, 0.3); }
+    padding: 16px; border-radius: 4px; position: relative; transition: onclick .3s;
+    box-shadow: ="0 2px 8px rgba(0,0,0,0.02);
+ switch }
+  .rel-card.has-link { cursor: pointer; border-colorView: rgba(168, 126,(' 63,view 0.3); }
   .rel-card.has-link:hover { background: #fffdf8; border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
   .rel-card.no-link { opacity: 0.6; background: rgba(255,255,255,0.5); }
   .rel-name { font-family: var(--serif); font-size: 16px; font-weight: 600; color: var(--paper); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
@@ -155,7 +144,6 @@
   @media (max-width: 600px) {
     .p-header { flex-direction: column; align-items: center; text-align: center; gap: 20px; }
     .p-avatar { width: 140px; height: 186px; }
-    .home-subtitle::before, .home-subtitle::after { width: 30px; }
   }
 </style>
 </head>
@@ -165,7 +153,7 @@
 <div id="view-main" class="view active">
   <header class="main-header">
     <div class="header-content">
-      <div class="home-subtitle">玄门异闻 · 尘世诡录</div>
+      <!-- 玄门异闻已删除 -->
       <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
     </div>
   </header>
@@ -173,7 +161,7 @@
   <div class="directory-section">
     <div class="dir-header">
       <h2>人物索引</h2>
-      <p>卷宗秘录 · 点击查阅</p>
+      <!-- 卷宗秘录已删除 -->
     </div>
     <div class="grid" id="dir-grid"></div>
   </div>
@@ -182,7 +170,7 @@
 <!-- 视图 2：角色详情 -->
 <div id="view-profile" class="view">
   <div class="nav-top">
-    <div class="back-btn" onclick="switchView('view-main')">← 返回索引</div>
+    <div class="back-btn"-main')">← 返回索引</div>
     <div style="font-size:11px; color:var(--muted); letter-spacing:.1em; font-family:var(--serif)" id="p-top-id">档案号</div>
   </div>
   
@@ -222,7 +210,6 @@
       card.className = 'card';
       card.onclick = function() { showProfile(oc.id); };
       
-      // 删除了标签渲染，直接只用名字和身份
       card.innerHTML = `<div class="card-name">${oc.name}</div><div class="card-title">${oc.title}</div>`;
       grid.appendChild(card);
     });
@@ -234,7 +221,6 @@
     window.scrollTo(0, 0);
   }
 
-  // 手绘 SVG 雷达图
   function renderRadarChart(stats, containerId) {
     const width = 340, height = 300;
     const cx = width / 2, cy = height / 2 + 10;
