@@ -4,7 +4,8 @@ let currentActiveId = "";
 window.onload = function() {
   const poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   let html = '';
-  for(let i=0; i<20; i++) html += `<div class="matrix-col">${poem}</div>`;
+  // 使用 innerHTML 快速填充
+  for(let i=0; i<25; i++) html += `<div class="matrix-col">${poem}</div>`;
   document.getElementById('glitch-matrix').innerHTML = html;
 
   const list = document.getElementById('dir-list');
@@ -36,10 +37,20 @@ function switchView(viewId) {
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   document.body.classList.toggle('glitch-mode', isGlitchMode);
+  
+  // 强制重置所有列的动画，确保每次点击都能触发开门杀
   const container = document.getElementById('glitch-matrix');
   container.style.animation = 'none';
-  container.offsetHeight; 
-  container.style.animation = null;
+  const cols = container.querySelectorAll('.matrix-col');
+  cols.forEach(col => { col.style.animation = 'none'; });
+  
+  container.offsetHeight; // 强制浏览器重绘
+  
+  if (isGlitchMode) {
+    container.style.animation = ''; 
+    cols.forEach(col => { col.style.animation = ''; });
+  }
+  
   showProfile(currentActiveId, true);
 }
 
