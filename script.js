@@ -51,7 +51,6 @@ function switchView(viewId) {
   }
 }
 
-// 极致深渊乱码
 function makeZalgo(text) {
     const up = ['̍', '̎', '̄', '̅', '̿', '̑', '̆', '̐', '͒', '͗', '͑', '̇', '̈', '̊', '͂', '̓', '̈́', '͊', '͋', '͌', '̃', '̂', '̌', '͐', '̀', '́', '̋', '̏', '̒', '̓', '̔', '̽', '̉', 'ͣ', 'ͤ', 'ͥ', 'ͦ', 'ͧ', 'ͨ', 'ͩ', 'ͪ', 'ͫ', 'ͬ', 'ͭ', 'ͮ', 'ͯ'];
     const down = ['̖', '̗', '̘', '̙', '̜', '̝', '̞', '̟', '̠', '̤', '̥', '̦', '̩', '̪', '̫', '̬', '̭', '̮', '̯', '̰', '̱', '̲', '̳', '̹', '̺', '̻', '̼', 'ͅ', '͇', '͈', '͉', '͍', '͎', '͓', '͔', '͕', '͖', '͙', '͚', '̣'];
@@ -68,44 +67,34 @@ function makeZalgo(text) {
     return result;
 }
 
-// 初次点开：浮现诗词（缩短了停留时间），同时文字变乱码
 function triggerOpening() {
   const container = document.getElementById('glitch-matrix');
   let poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
   
-  // 1. 浮现诗词
   container.innerHTML = `<div class="glitch-text-box" data-text="${poem.replace(/<br>/g, '')}">${poem}</div>`;
-  // 2. 底层文字变乱码，页面微颤
   document.body.classList.add('seizure-active');
   renderDataUI(true);
   
-  // 3. 核心修改：停留 1000 毫秒（1 秒）后消失，进入闪烁循环
   poetryTimer = setTimeout(() => {
     container.innerHTML = '';
     document.body.classList.remove('seizure-active');
     renderDataUI(false);
-    
-    // 4. 开启后续的“文字偶尔闪烁”循环
     startTextFlicker();
   }, 1000); 
 }
 
-// 后续节奏：诗词不再出现，只有文字偶尔闪烁
 function startTextFlicker() {
   clearInterval(textFlashInterval);
   textFlashInterval = setInterval(() => {
     if (!isGlitchMode) return;
-    
-    // 页面轻微抽搐，文字变乱码
     document.body.classList.add('seizure-active');
     renderDataUI(true);
-    
     clearTimeout(textFlashTimer);
     textFlashTimer = setTimeout(() => {
       document.body.classList.remove('seizure-active');
       renderDataUI(false);
-    }, 1000); // 闪 1 秒就恢复
-  }, 4000); // 每 4 秒闪一次
+    }, 1000); 
+  }, 4000); 
 }
 
 function toggleGlitch() {
@@ -119,13 +108,16 @@ function toggleGlitch() {
   document.body.classList.remove('seizure-active');
 
   if (isGlitchMode) {
-    triggerOpening(); // 开启时演一次全屏诗词
+    // 【核心修复】：必须调用 showProfile 来触发数据切换（获取 mutated_stats 画出 6,6,6,3,0,0）
+    showProfile(currentActiveId, true); 
+    triggerOpening(); 
   } else {
+    // 【核心修复】：退出里世界时，恢复正常雷达图
+    showProfile(currentActiveId, true); 
     renderDataUI(false);
   }
 }
 
-// 渲染文字
 function renderDataUI(isZalgo) {
   const oc = ocDatabase.find(o => o.id === currentActiveId);
   if (!oc || currentActiveId !== 'yeyao' || !isGlitchMode) return;
@@ -189,7 +181,7 @@ function showProfile(id, isToggle) {
 
   if (id === 'yeyao' && isGlitchMode) {
     document.getElementById('glitch-btn').style.display = 'block';
-    if (oc.mutated_stats) statsToRender = oc.mutated_stats;
+    if (oc.mutated_stats) statsToRender = oc.mutated_stats; // 这里成功抓取黑化数据 6,6,6,3,0,0
     renderDataUI(false); 
   } else {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
@@ -210,6 +202,8 @@ function showProfile(id, isToggle) {
   }
   
   document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
+  
+  // 这里渲染雷达图：点暗门时会收到 mutated_stats，形状发生巨变
   renderRadarChart(statsToRender);
   
   if (isToggle !== true) switchView('view-profile');
