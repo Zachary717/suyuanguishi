@@ -8,9 +8,9 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .main-header { text-align: center; margin-bottom: 80px; }
 .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
 .directory-wrap { max-width: 900px; margin: 0 auto; }
-.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-sp-bottomacing:.4em; color:var:(--muted); margin-bottom:40px1; display:flex; align-itemspx:center; gap:20px solid; }
-.dir-header::after var { content:""; flex:1; height:1px; background:var(--line); }
-.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border(--line); cursor:pointer; transition:.4s; }
+.dir-header { font-family:"Oswald",sans-serif; font-size:14px; letter-spacing:.4em; color:var(--muted); margin-bottom:40px; display:flex; align-items:center; gap:20px; }
+.dir-header::after { content:""; flex:1; height:1px; background:var(--line); }
+.list-item { display:flex; align-items:baseline; justify-content:space-between; padding:30px 10px; border-bottom:1px solid var(--line); cursor:pointer; transition:.4s; }
 .list-item:hover { padding-left:30px; background:rgba(255,255,255,.4); }
 .item-left { display:flex; align-items:baseline; gap:30px; }
 .item-index { font-family:"Oswald",sans-serif; font-size:16px; color:var(--muted); width:30px; }
@@ -63,52 +63,49 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
 
 /* =========================================
-   修复后的满屏特效
+   真正的故障艺术特效（散落 + 闪烁 + 扫描线）
    ========================================= */
 .glitch-overlay { 
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
   background: transparent; z-index: 9999;
   display: none; overflow: hidden; pointer-events: none; 
+  /* 老式显示器的横向扫描线 */
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px);
 }
 body.glitch-mode .glitch-overlay { display: block; }
 
-.matrix-container { 
-  width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-  display: flex; flex-wrap: wrap; flex-direction: row-reverse;
-  justify-content: flex-start; align-items: flex-start;
-}
-
-.matrix-col { 
-  writing-mode: vertical-rl; text-orientation: upright;
-  font-family: "Noto Serif SC", serif; font-size: 16px; line-height: 1.2; font-weight: 900; 
-  color: rgba(255, 0, 0, 0.9);
-  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.8), -3px 0px 0px rgba(255, 0, 0, 0.8); 
-  padding: 5px 3px; white-space: nowrap; 
+/* 散落的文字块 */
+.glitch-text-piece {
+  position: absolute;
+  font-family: "Noto Serif SC", serif; 
+  font-size: 18px; font-weight: 900; 
+  white-space: nowrap;
   
-  /* 修复：默认不显示，不在这里写死动画 */
-  opacity: 0; 
+  /* 经典的故障红蓝错位 */
+  color: rgba(255, 0, 0, 0.8);
+  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.7), -3px 0px 0px rgba(255, 0, 0, 0.9);
+  
+  opacity: 0;
 }
 
-/* 当父级加上 active 类时，触发“开门杀” */
-.matrix-container.active-anim .matrix-col {
-  animation: entrance 1.5s steps(2) forwards;
+/* 开门杀：全屏疯狂闪烁 */
+.glitch-overlay.active-anim .glitch-text-piece {
+  animation: hard-flash 1.5s steps(2) forwards;
 }
 
-/* 开门杀动画 */
-@keyframes entrance {
-  0% { opacity: 1; transform: scale(1.05); }
-  20% { opacity: 0.1; transform: translate(-5px, 5px); }
-  40% { opacity: 1; transform: scale(0.95); }
-  60% { opacity: 0.2; transform: translate(5px, -5px); }
-  80% { opacity: 0.8; transform: translate(0); }
-  100% { opacity: 0; transform: scale(1); }
+@keyframes hard-flash {
+  0% { opacity: 1; }
+  20% { opacity: 0; }
+  40% { opacity: 1; filter: contrast(150%); }
+  60% { opacity: 0.1; }
+  80% { opacity: 0.9; }
+  100% { opacity: 0; }
 }
 
 /* 基础里世界配色 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
-  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
 }
 body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
 body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
@@ -125,5 +122,5 @@ body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border
   .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
   .content-grid { grid-template-columns:1fr; gap:50px; }
   .glitch-trigger { top:80px; right:20px; }
-  .matrix-col { font-size: 14px; }
+  .glitch-text-piece { font-size: 14px; }
 }
