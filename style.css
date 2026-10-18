@@ -71,44 +71,72 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   故障艺术特效（暴力触发版）
+   故障艺术特效（数据损坏/乱码重叠版）
    ========================================= */
 .glitch-overlay { 
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
   background: transparent; z-index: 9999;
   display: none; overflow: hidden; pointer-events: none; 
-  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.3), rgba(0,0,0,0.3) 1px, transparent 1px, transparent 3px);
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.4), rgba(0,0,0,0.4) 1px, transparent 1px, transparent 3px);
 }
 body.glitch-mode .glitch-overlay { display: block; }
 
-.glitch-text-piece {
-  position: absolute;
-  font-family: "Noto Serif SC", serif; 
-  font-size: 18px; font-weight: 900; 
-  white-space: nowrap;
-  color: rgba(255, 0, 0, 0.8);
-  text-shadow: 3px 0px 0px rgba(0, 255, 255, 0.7), -3px 0px 0px rgba(255, 0, 0, 0.9);
-  
-  /* 核心：直接把动画写死在这个类上，只要生成这个元素，它就会自动播 */
-  animation: hard-flash 1.5s steps(2) forwards, ghost-loop 8s 1.5s infinite steps(2);
+/* 整个乱码容器 */
+.glitch-wrapper {
+  width: 100%; height:  font100%;
+ -family position: relative;
+  animation:: hard-flash 1.5s steps mon(2) forwards, ghost-loop 8s 1.5s infinite steps(2);
+}
+
+/* 多层乱码层叠 */
+.glitch-layer {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+ ospace, "Noto Serif SC", serif; /* 混用等宽字体增加代码感 */
+  font-size: 14px; line-height: 1.2; font-weight: 900;
+  text-align: justify; overflow: hidden;
+  word-break: break-all;
+}
+
+/* 第一层：红色主乱码 */
+.layer-1 {
+  color: rgba(255, 0, 0, 0.9);
+  text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.8);
+  z-index: 3;
+}
+
+/* 第二层：青色重影，稍微错位 */
+.layer-2 {
+  color: rgba(0, 255, 255, 0.7);
+  text-shadow: -2px 0px 0px rgba(255, 0, 0, 0.8);
+  z-index: 2;
+  transform: translate(2px, 1px);
+}
+
+/* 第三层：暗色背景乱码，撕裂感 */
+.layer-3 {
+  color: rgba(150, 0, 0, 0.5);
+  z-index: 1;
+  transform: translate(-2px, -1px);
+  /* 撕裂/切片效果 */
+  clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%, 0 40%, 100% 40%, 100% 60%, 0 60%, 0 80%, 100% 80%, 100% 90%, 0 90%);
 }
 
 /* 开门杀 */
 @keyframes hard-flash {
-  0% { opacity: 1; }
-  20% { opacity: 0; }
-  40% { opacity: 1; filter: contrast(150%); }
+  0% { opacity: 1; filter: contrast(150%); }
+  20% { opacity: 0; transform: translateX(-5px); }
+  40% { opacity: 1; transform: translateX(5px); }
   60% { opacity: 0.1; }
-  80% { opacity: 0.9; }
-  100% { opacity: 0; }
+  80% { opacity: 0.9; transform: scale(1.02); }
+  100% { opacity: 0; transform: scale(1); }
 }
 
 /* 幽灵循环 */
 @keyframes ghost-loop {
   0%, 85% { opacity: 0; }
-  87% { opacity: 1; filter: contrast(150%); }
+  87% { opacity: 1; filter: contrast(150%); transform: translateY(-2px); }
   89% { opacity: 0.1; }
-  91% { opacity: 0.8; }
+  91% { opacity: 0.8; transform: translateY(2px); }
   93%, 100% { opacity: 0; }
 }
 
@@ -132,5 +160,5 @@ body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border
   .hero-text { align-items:flex-start; text-align:left; padding-bottom:0; width:100%; }
   .content-grid { grid-template-columns:1fr; gap:50px; }
   .glitch-trigger { top:80px; right:20px; }
-  .glitch-text-piece { font-size: 14px; }
+  .glitch-layer { font-size: 12px; }
 }
