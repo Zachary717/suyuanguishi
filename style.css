@@ -4,6 +4,7 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .view { display:none; opacity:0; transition:.5s; min-height:100vh; }
 .view.active { display:block; opacity:1; }
 
+/* 首页排版（锁死） */
 #view-main { padding: 80px 40px; }
 .main-header { text-align: center; margin-bottom: 80px; }
 .home-title-img { max-width: 80vw; max-height: 150px; object-fit: contain; }
@@ -17,6 +18,7 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .item-name { font-size:36px; font-weight:900; letter-spacing:.1em; white-space:nowrap; } 
 .item-title { font-size:13px; color:var(--green); text-align:right; flex-grow: 1; }
 
+/* 详情页排版（锁死大雷达图） */
 #view-profile { padding-bottom: 100px; }
 .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 40px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
 .back-btn { font-family:"Oswald",sans-serif; font-size:14px; color:#fff; cursor:pointer; letter-spacing:.2em; }
@@ -60,10 +62,9 @@ body{ background:var(--bg); color:var(--paper); font-family:"Noto Serif SC",seri
 .rel-item.has-link { cursor:pointer; }
 .rel-name { font-size:18px; font-weight:600; min-width:80px; }
 .rel-desc { font-size:13px; color:var(--muted); flex:1; }
-footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted;
-); position: relative; z-index:  20;}
+footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; font-size:12px; color:var(--muted); position: relative; z-index: 20;}
 
-.reveal { font opacity: 0;-size transform: translateY(30px:); transition: all 0 .8s cubic-bezier(180.2, 0.8, 0.2, 1); }
+.reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 .delay-item { opacity: 0; transform: translateY(20px); transition: all 0.6s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
@@ -71,7 +72,7 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   极致高级的故障浮层（无任何乱抖，纯静态切片）
+   全屏故障滤镜与诗词浮现
    ========================================= */
 .glitch-overlay {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -81,13 +82,14 @@ footer { margin-top:120px; text-align:center; font-family:"Oswald",sans-serif; f
 }
 body.glitch-mode .glitch-overlay { display: flex; }
 
+/* 诗词排版 */
 .glitch-text-box {
   position: relative; width: 90%; max-width: 800px;
-  color: #b31010; font-family: "Noto Serif SC", serifpx; line-height: 2; letter-spacing: 0.1em;
+  color: #b31010; font-family: "Noto Serif SC", serif;
+  font-size: 18px; line-height: 2; letter-spacing: 0.1em;
   text-align: center; font-weight: 900;
   text-shadow: 2px 0px 0px rgba(0, 255, 255, 0.8), -2px 0px 0px rgba(255, 0, 0, 0.9);
 }
-
 .glitch-text-box::before, .glitch-text-box::after {
   content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%;
 }
@@ -97,12 +99,26 @@ body.glitch-mode .glitch-overlay { display: flex; }
 @keyframes glitch-anim-1 { 0% { clip-path: inset(20% 0 80% 0); transform: translate(-3px, 0); } 20% { clip-path: inset(60% 0 10% 0); transform: translate(3px, 0); } 40% { clip-path: inset(40% 0 50% 0); transform: translate(-3px, 0); } 60% { clip-path: inset(80% 0 5% 0); transform: translate(3px, 0); } 80% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, 0); } 100% { clip-path: inset(30% 0 50% 0); transform: translate(3px, 0); } }
 @keyframes glitch-anim-2 { 0% { clip-path: inset(10% 0 60% 0); transform: translate(3px, 0); } 20% { clip-path: inset(30% 0 20% 0); transform: translate(-3px, 0); } 40% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 0); } 60% { clip-path: inset(20% 0 50% 0); transform: translate(-3px, 0); } 80% { clip-path: inset(50% 0 30% 0); transform: translate(3px, 0); } 100% { clip-path: inset(5% 0 80% 0); transform: translate(-3px, 0); } }
 
-/* 底层里世界：静态暗色，无抖动，无抽搐 */
+/* 里世界底层：全屏朦胧滤镜 + 动态扫描线 */
 body.glitch-mode {
   --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,.15);
   background-color: var(--bg);
-  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 4px);
+  /* 全屏滤镜感：对比度增强，稍微模糊，降低饱和度 */
+  filter: contrast(1.1) brightness(0.9);
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,0.04), rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px);
+  background-size: 100% 100vh;
+  animation: scanline-move 10s linear infinite;
 }
+@keyframes scanline-move { 0% { background-position: 0 0; } 100% { background-position: 0 100vh; } }
+
+/* 全屏动态故障微小抽搐（自然，不生硬） */
+@keyframes smooth-glitch {
+  0%, 100% { transform: translate(0, 0); filter: blur(0px); }
+  20% { transform: translate(-1px, 1px); filter: blur(0.5px); }
+  50% { transform: translate(1px, -1px); filter: blur(0px); }
+  80% { transform: translate(-1px, 0px); filter: blur(1px); }
+}
+body.seizure-active .view.active { animation: smooth-glitch 0.4s infinite; }
 
 body.glitch-mode .p-name { color: var(--paper); text-shadow: 2px 2px 0px rgba(204,51,68,0.8), -2px -1px 0px rgba(60,122,107,0.8); }
 body.glitch-mode .avatar-box { box-shadow: 10px 10px 0px rgba(0,0,0,0.5); border: 1px solid var(--line); opacity: 0.8; }
