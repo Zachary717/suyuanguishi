@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<!-- 必须要有这一行，不然排版就全乱了 -->
-<link rel="stylesheet" href="style.css?v=100">
+<link rel="stylesheet" href="style.css?v=101">
 </head>
 <body>
 
@@ -16,10 +15,18 @@
 
 <div id="view-main" class="view active">
     <header class="main-header"><img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'"></header>
+    
     <div class="directory-wrap">
         <div class="dir-header">Character Index / 人物卷宗</div>
         <div id="dir-list"></div>
     </div>
+
+    <!-- 【新增：首页专属求签板块】 -->
+    <div class="home-divination-wrap">
+        <div class="home-div-line"><span>俗缘问卜</span></div>
+        <button class="home-div-btn" onclick="openDivination()">诚 心 求 签</button>
+    </div>
+
 </div>
 
 <div id="view-profile" class="view">
@@ -54,7 +61,37 @@
     </div>
 </div>
 
-<script src="data.js?v=100"></script>
-<script src="script.js?v=100"></script>
+<!-- 【新增：求签弹窗】 -->
+<div class="divination-modal" id="divination-modal">
+    <div class="div-modal-content">
+        <div class="div-close" onclick="closeDivination()">×</div>
+        <div class="div-title">俗缘诡事 · 问卜</div>
+        
+        <!-- 签筒区 -->
+        <div class="tube-container" id="tube-container">
+            <div class="tube-body">
+                <div class="tube-stick"></div>
+                <div class="tube-stick"></div>
+                <div class="tube-stick"></div>
+                <div class="tube-stick"></div>
+                <div class="tube-stick"></div>
+            </div>
+        </div>
+        <button class="shake-btn" id="shake-btn" onclick="drawLottery()">摇 签</button>
+
+        <!-- 结果区 -->
+        <div class="result-container" id="result-container">
+            <div class="result-paper" id="result-paper">
+                <div class="result-grade" id="result-grade"></div>
+                <div class="result-title" id="result-title"></div>
+                <div class="result-desc" id="result-desc"></div>
+            </div>
+            <button class="shake-btn" style="margin-top: 20px;" onclick="resetLottery()">再求一签</button>
+        </div>
+    </div>
+</div>
+
+<script src="data.js?v=101"></script>
+<script src="script.js?v=101"></script>
 </body>
 </html>
