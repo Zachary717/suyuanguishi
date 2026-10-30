@@ -8,13 +8,13 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
-    html += '<div class="list-item reveal" onclick="showProfile(\'' + oc.id + '\')"><div class="item-left"><span class="item-index">' + num + '</span><span class="item-name">' + oc.name + '</span></div><div class="item-title">' + oc.title + '</div></div>';
+    // 【关键修改】：把 onclick 改为调用撕票函数
+    html += `<div class="list-item reveal" onclick="ripTicket(event, '${oc.id}', this)"><div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div></div>`;
   }
   list.innerHTML = html;
   setupObserver();
   setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')), 100);
 
-  // 动态插入警告
   const btn = document.getElementById('glitch-btn');
   if (btn) {
     const warning = document.createElement('div');
@@ -29,6 +29,22 @@ window.onload = function() {
     observerBtn.observe(btn, { attributes: true, attributeFilter: ['style'] });
   }
 };
+
+// 【新增】：撕票交互逻辑
+function ripTicket(event, id, element) {
+  // 防止多次点击
+  if (element.classList.contains('ripping')) return;
+  
+  // 添加撕票动画类
+  element.classList.add('ripping');
+  
+  // 延迟 600ms 等待动画播完，然后进入角色界面
+  setTimeout(() => {
+    showProfile(id);
+    // 动画播完后，悄悄把类移除，以便下次返回首页时还能正常点击
+    setTimeout(() => { element.classList.remove('ripping'); }, 500);
+  }, 600);
+}
 
 let isGlitchMode = false;
 let currentActiveId = "";
@@ -321,10 +337,10 @@ function renderRadarChart(stats) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
     dataPoints.push(x + ',' + y);
-    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#d9dedb') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#8b0000') + '" stroke-width="1.5" />';
+    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#a31818') + '" stroke-width="1.5" />';
   }
   svg += '<g class="radar-anim-group" style="opacity: 0;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(139,0,0,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#8b0000') + '" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(163,24,24,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#a31818') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
   svg += '<g class="radar-text">';
@@ -333,8 +349,8 @@ function renderRadarChart(stats) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
     let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
-    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#1a1a1a') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#8b0000') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#111') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#a31818') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
   }
   svg += '</g>';
   document.getElementById('p-stats').innerHTML = svg + '</svg>';
