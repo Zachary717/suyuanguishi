@@ -14,11 +14,11 @@ window.onload = function() {
   setupObserver();
   setTimeout(() => document.querySelectorAll('.reveal').forEach(el => el.classList.add('active')), 100);
 
+  // 动态插入警告
   const btn = document.getElementById('glitch-btn');
   if (btn) {
     const warning = document.createElement('div');
     warning.className = 'epilepsy-warning';
-    // 【修改这里】将警告改为中文
     warning.innerHTML = '光敏性癫痫患者请勿点击';
     btn.parentNode.insertBefore(warning, btn);
     
@@ -321,10 +321,10 @@ function renderRadarChart(stats) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
     dataPoints.push(x + ',' + y);
-    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#b84040') + '" stroke-width="1.5" />';
+    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#d9dedb') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#8b0000') + '" stroke-width="1.5" />';
   }
   svg += '<g class="radar-anim-group" style="opacity: 0;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(74,98,85,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#4a6255') + '" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(139,0,0,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#8b0000') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
   svg += '<g class="radar-text">';
@@ -334,7 +334,7 @@ function renderRadarChart(stats) {
     let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
     let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
     svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#1a1a1a') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#888') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#8b0000') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
   }
   svg += '</g>';
   document.getElementById('p-stats').innerHTML = svg + '</svg>';
