@@ -4,7 +4,7 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 生成卡片，核心修改：z-index 让第一张在最高层
+  // 生成卡片，让第一张在最上面
   var html = '';
   var total = ocDatabase.length;
   for (var i = 0; i < total; i++) {
@@ -19,22 +19,26 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  // PC 端鼠标拖拽滑动支持
+  // ================== 修复：PC端鼠标拖拽滑动 ==================
   var isDown = false;
   var startX, scrollLeft;
   
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
-    startX = e.pageX - scrollBox.offsetLeft;
+    // 记录按下的起点位置和当前的滚动距离
+    startX = e.clientX - scrollBox.getBoundingClientRect().left;
     scrollLeft = scrollBox.scrollLeft;
   });
+  
   scrollBox.addEventListener('mouseleave', function() { isDown = false; });
   scrollBox.addEventListener('mouseup', function() { isDown = false; });
+  
   scrollBox.addEventListener('mousemove', function(e) {
     if (!isDown) return;
-    e.preventDefault();
-    var x = e.pageX - scrollBox.offsetLeft;
-    var walk = (x - startX) * 2; // 拖拽灵敏度
+    e.preventDefault(); // 阻止默认的选中文字等行为
+    // 计算当前鼠标距离起点的偏移
+    var x = e.clientX - scrollBox.getBoundingClientRect().left;
+    var walk = (x - startX) * 1.5; // 乘以系数让拖动更跟手
     scrollBox.scrollLeft = scrollLeft - walk;
   });
 
@@ -118,7 +122,6 @@ function showProfile(id, isToggle) {
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
-  // 图片丢失时直接显示文字，不会显示蓝框
   if (currentAvatar) {
     avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片未找到<br>\' + currentAvatar + \'</div>\'">';
   } else {
@@ -148,7 +151,6 @@ function showProfile(id, isToggle) {
     pTitle.textContent = oc.title;
   }
 
-  // 基础信息，带延迟动效
   if (basicData) {
     for (var b = 0; b < basicData.length; b++) {
       bHtml += '<div class="info-item delay-item" style="transition-delay:' + (b*0.1) + 's"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
@@ -156,7 +158,6 @@ function showProfile(id, isToggle) {
   }
   infoList.innerHTML = bHtml;
 
-  // 时间线，带延迟动效
   if (timelineData) {
     for (var t = 0; t < timelineData.length; t++) {
       var timeColor = isMutated ? 'style="color:red;"' : '';
@@ -165,7 +166,6 @@ function showProfile(id, isToggle) {
   }
   timelineBox.innerHTML = tHtml;
 
-  // 关系，带点击跳转，带延迟动效
   if (relationsData && relationsData.length > 0) {
     for (var r = 0; r < relationsData.length; r++) {
       var rel = relationsData[r];
@@ -195,7 +195,6 @@ function showProfile(id, isToggle) {
   if (isToggle !== true) { switchView('view-profile'); } 
   else { window.scrollTo(0, 0); }
   
-  // 重置并触发动画
   var radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   var delayItems = document.querySelectorAll('.delay-item');
