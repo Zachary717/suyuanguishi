@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=126">
+<link rel="stylesheet" href="style.css?v=127">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -16,14 +16,8 @@
     
     <!-- 顶部头图区 -->
     <div class="hero-banner">
-        <!-- 底层红色图 -->
         <img src="hero-red.png" class="hero-layer red-layer" onerror="this.style.display='none'">
-        <!-- 顶层白色纹理图 -->
         <img src="hero-white.png" class="hero-layer white-layer" onerror="this.style.display='none'">
-        
-        <!-- 如果没有图片，用文字兜底装饰 -->
-        <div class="hero-fallback-text">俗缘诡事</div>
-        <!-- 主标题文字 -->
         <h1 class="hero-title">俗缘诡事</h1>
     </div>
 
@@ -33,41 +27,29 @@
             <a href="#section-home" class="nav-item">首页</a>
             <a href="#section-characters" class="nav-item">角色档案</a>
             <a href="#section-events" class="nav-item">事件索引</a>
-            <a href="#section-blank" class="nav-item">留白</a>
         </div>
     </nav>
 
     <!-- 内容区块容器 -->
     <div class="content-wrapper">
         
-        <!-- 首页简介区 -->
-        <section id="section-home" class="content-section">
-            <div class="sec-title"><span>俗世卷宗</span></div>
-            <p class="intro-text">俗缘诡事，皆因执念。此处收录了世间光怪陆离之档案。</p>
-        </section>
+        <!-- 首页(仅保留锚点) -->
+        <section id="section-home" class="content-section" style="height: 50px;"></section>
 
         <!-- 角色档案区：物理红线卡片 -->
         <section id="section-characters" class="content-section">
-            <div class="sec-title"><span>角色档案</span></div>
-            
             <div class="physics-stage" id="stage">
                 <!-- 动态红线 -->
                 <svg class="red-thread-svg" preserveAspectRatio="none" viewBox="0 0 1000 200">
-                    <path id="dynamic-thread" d="M 0,50 Q 500,100 1000,50" fill="none" stroke="var(--red)" stroke-width="2" />
+                    <path id="dynamic-thread" d="M 0,50 L 1000,50" fill="none" stroke="var(--red)" stroke-width="2" />
                 </svg>
                 <!-- 卡片容器 -->
                 <div class="cards-container" id="cards-container"></div>
             </div>
         </section>
 
-        <section id="section-events" class="content-section">
-            <div class="sec-title"><span>事件索引</span></div>
-            <p class="intro-text">待补充...</p>
-        </section>
-        
-        <section id="section-blank" class="content-section">
-            <div class="sec-title"><span>敬请期待</span></div>
-        </section>
+        <!-- 事件索引(仅保留锚点) -->
+        <section id="section-events" class="content-section" style="height: 50px;"></section>
 
     </div>
 </div>
@@ -111,7 +93,7 @@
     </div>
 </div>
 
-<script src="data.js?v=126"></script>
-<script src="script.js?v=126"></script>
+<script src="data.js?v=127"></script>
+<script src="script.js?v=127"></script>
 </body>
 </html>
