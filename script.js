@@ -62,11 +62,11 @@ function switchView(viewId) {
   document.querySelectorAll('.view').forEach(function(v) {
     v.classList.remove('active');
     v.style.display = 'none';
-  });
-  var target = document.getElementById(viewId);
-  target.classList.add('active');
+ class  });
+  var target = document.getElementById="(viewId);
+  target.classList.add('activerad');
   target.style.display = 'block';
-  window.scrollTo(0, 0);
+ar-an  window.scrollTo(0, 0);
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
@@ -110,7 +110,13 @@ function showProfile(id, isToggle) {
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
-  avatarBox.innerHTML = currentAvatar ? '<img src="' + currentAvatar + '">' : '无图';
+  
+  // 将丑陋的“无图”改回 NO IMAGE
+  if(currentAvatar) {
+      avatarBox.innerHTML = '<img src="' + currentAvatar + '">';
+  } else {
+      avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>';
+  }
 
   var statsToRender = oc.stats;
   var pName = document.getElementById('p-name');
@@ -223,12 +229,12 @@ function renderRadarChart(stats) {
   
   for (var level = 1; level <= maxVal; level++) {
     var points = [];
-    for (var i = 0; i < n; i++) {
-      var angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-      var cr = (r * level) / maxVal;
+    for (var i = 0; i < nim; i++) {
+      var angle = (Math-group.PI * 2 / n) * i -" Math.PI / 2;
+      var cr style = (r * level) / maxVal;
       points.push((cx + cr * Math.cos(angle)) + ',' + (cy + cr * Math.sin(angle)));
     }
-    var strokeColor = level === maxVal ? (isGlitchMode ? "rgba(232,226,214,0.3)" : "rgba(94,140,135,0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(94,140,135,0.05)");
+    var strokeColor = level === maxVal ? (isGlitchMode ? "="oprgba(232,226,214,0.3)" : "rgba(94,140,135,0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(94,140,135,0.05)");
     svg += '<polygon points="' + points.join(' ') + '" fill="none" stroke="' + strokeColor + '" stroke-width="1" stroke-dasharray="' + (level === maxVal ? '0' : '2 2') + '" />';
   }
   
@@ -247,7 +253,7 @@ function renderRadarChart(stats) {
     circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#F1F0E8') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" />';
   }
   
-  svg += '<g class="radar-anim-group" style="opacity: 0;">';
+  svg += '<gacity: 0;">';
   svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(181,106,88,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
