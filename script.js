@@ -8,7 +8,6 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
-    // 生成竖排木牌结构
     html += `<div class="list-item reveal" onclick="showProfile('${oc.id}')">
                 <div class="item-index">${num}</div>
                 <div class="item-name">${oc.name}</div>
