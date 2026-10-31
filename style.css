@@ -20,9 +20,7 @@ body{
 .view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* =========================================
-   首页排版
-   ========================================= */
+/* 首页排版 */
 .home-header { text-align: center; padding-top: 60px; margin-bottom: 40px; }
 .home-subtitle { color: var(--red); letter-spacing: 0.4em; font-size: 14px; font-weight: 900; }
 
@@ -60,9 +58,7 @@ body{
 .item-name { writing-mode: vertical-rl; font-size: 28px; font-weight: 900; color: var(--paper); letter-spacing: 0.1em; line-height: 1.2; }
 .item-title { writing-mode: vertical-rl; font-size: 13px; color: var(--green); letter-spacing: 0.1em; line-height: 1.5; max-height: 180px; }
 
-/* =========================================
-   详情页排版
-   ========================================= */
+/* 详情页排版 */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; letter-spacing: 0.1em; }
@@ -96,14 +92,16 @@ body{
 .tl-event { font-size: 14px; color: var(--muted); }
 
 .rel-item { padding: 12px; border: 1px solid var(--line); background: var(--card-bg); margin-bottom: 10px; transition: background-color 0.8s, border-color 0.8s; }
+/* 恢复：可点击关系的鼠标手势 */
+.rel-item.has-link { cursor: pointer; }
+.rel-item.has-link:hover { border-color: var(--red); box-shadow: 0 4px 10px rgba(181,106,88,0.1); }
+
 .rel-name { font-weight: 900; color: var(--red); margin-bottom: 5px; }
 .rel-desc { font-size: 13px; color: var(--muted); }
 
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
-/* =========================================
-   补回：动效类
-   ========================================= */
+/* 动效类 */
 .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 .delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
@@ -121,8 +119,64 @@ body{
 html { overflow-y: scroll; }
 
 /* =========================================
-   里世界适配 (原封不动)
+   【新增：婴红门票彩蛋】
    ========================================= */
+.ticket-easter-egg {
+    position: fixed;
+    right: -320px; /* 初始隐藏大部分，假设宽度 350px */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 340px;
+    height: 160px;
+    background: #fff;
+    box-shadow: -5px 5px 20px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    cursor: pointer;
+    z-index: 999;
+    transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: none; /* 默认隐藏，通过JS控制显示 */
+}
+
+/* 点击后拉出的状态 */
+.ticket-easter-egg.show {
+    right: 20px; /* 留一点边距 */
+}
+
+.ticket-easter-egg img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none; /* 让点击事件穿透给外层 div */
+}
+
+/* 门票露出的副券标签 */
+.ticket-pull-tab {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 30px;
+    height: 60px;
+    background: var(--red);
+    color: #fff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    letter-spacing: 2px;
+    border-radius: 4px 0 0 4px;
+    box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 如果没有图片的备用样式 */
+.ticket-easter-egg.no-img { background: #e8e3d7; }
+.ticket-easter-egg.no-img::after {
+    content: "武夷山风景区门票"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #888; font-size: 14px;
+}
+
+/* 里世界适配 */
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; }
 body.glitch-mode .glitch-overlay { display: flex; }
 .glitch-text-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; font-size: 18px; color: #d1d1d1; text-shadow: 2px 0 red, -2px 0 lime; animation: harsh 0.2s infinite; }
