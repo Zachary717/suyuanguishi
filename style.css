@@ -18,7 +18,7 @@ body {
   overflow-x: hidden;
 }
 
-.view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
+.view { display: none; opacity: 0; transition: opacity 0.4s ease; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
 /* ================= 头图 ================= */
@@ -34,6 +34,7 @@ body {
 .hero-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .red-layer { z-index: 1; }
 .white-layer { z-index: 2; }
+/* 强制竖排，绝不乱排 */
 .hero-title {
   position: absolute;
   top: 50%;
@@ -46,8 +47,10 @@ body {
   color: #1a1a1a;
   letter-spacing: 0.2em;
   writing-mode: vertical-rl;
+  text-orientation: upright;
   text-shadow: 2px 2px 15px rgba(255,255,255,0.8);
   pointer-events: none;
+  white-space: nowrap; /* 绝对不让它断成一列一个 */
 }
 
 /* ================= 导航 ================= */
@@ -84,7 +87,6 @@ body {
   pointer-events: none;
 }
 
-/* 原生滑动容器 */
 .cards-scroll-container {
   position: absolute;
   top: 0;
@@ -101,15 +103,13 @@ body {
 .cards-scroll-container:active { cursor: grabbing; }
 .cards-scroll-container::-webkit-scrollbar { display: none; }
 
-/* 卡片内部排版 */
 .cards-inner {
   display: flex;
   align-items: flex-start;
-  padding-top: 70px;
+  padding-top: 70px; /* 挂绳位置 */
   width: max-content;
 }
 
-/* 卡片本体 */
 .list-item {
   position: relative;
   width: 140px;
@@ -124,25 +124,43 @@ body {
   gap: 10px;
   padding: 25px 8px;
   
-  margin-right: -40px; /* 初始重叠感 */
-  transform-origin: 50% 0%;
+  /* 初始合拢，-40px 形成重叠 */
+  margin-right: -40px; 
+  transform-origin: 50% 0%; /* 顶部挂载 */
+  /* 核心：给 margin 和 transform 加过渡，实现平滑展开 */
   transition: margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease;
   box-shadow: -2px 4px 10px rgba(0,0,0,0.05);
   cursor: pointer;
+  z-index: 2;
 }
 
+/* 滑动时展开的状态类 */
+.cards-inner.is-sliding .list-item {
+  margin-right: 20px;
+  transform: rotate(-2deg);
+}
+.cards-inner.is-sliding .list-item:nth-child(even) {
+  transform: rotate(2deg); 
+}
+
+.item-index { position: absolute; top: 12px; left: 12px; font-size: 12px; color: var(--muted); }
+.item-name { writing-mode: vertical-rl; font-size: 26px; font-weight: 900; color: #111; letter-spacing: 0.1em; }
+.item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
+
+/* 从卡片头顶连到红线的短绳 */
 .list-item::before {
   content: "";
   position: absolute;
-  top: -60px;
+  top: -30px; /* 连接到卡片顶部 */
   left: 50%;
   width: 1px;
-  height: 60px;
+  height: 30px;
   background: var(--red);
   transform: translateX(-50%);
   z-index: -1;
 }
 
+/* 挂孔 */
 .list-item::after {
   content: "";
   position: absolute;
@@ -155,19 +173,6 @@ body {
   background: var(--bg);
   border: 1px solid var(--red);
 }
-
-/* 滑动时张开 */
-.cards-inner.is-sliding .list-item {
-  margin-right: 20px;
-  transform: rotate(-2deg);
-}
-.cards-inner.is-sliding .list-item:nth-child(even) {
-  transform: rotate(2deg); 
-}
-
-.item-index { position: absolute; top: 12px; left: 12px; font-size: 12px; color: var(--muted); }
-.item-name { writing-mode: vertical-rl; font-size: 26px; font-weight: 900; color: #111; letter-spacing: 0.1em; }
-.item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
 
 /* ================= 详情页 ================= */
 #view-profile { padding-bottom: 60px; }
@@ -200,7 +205,7 @@ body {
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
 /* 动效 */
-.delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
+.delay-item { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
