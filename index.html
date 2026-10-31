@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=150">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=151">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -18,7 +18,14 @@
     <div class="hero-banner">
         <img src="hero-red.png" class="hero-layer red-layer" onerror="this.style.opacity=0">
         <img src="hero-white.png" class="hero-layer white-layer" onerror="this.style.opacity=0">
-        <h1 class="hero-title">俗缘诡事</h1>
+        
+        <!-- 错落书法字 -->
+        <div class="hero-title">
+            <span class="char c1">俗</span>
+            <span class="char c2">缘</span>
+            <span class="char c3">诡</span>
+            <span class="char c4">事</span>
+        </div>
     </div>
 
     <!-- 导航栏 -->
@@ -36,7 +43,10 @@
 
         <section id="section-characters" class="content-section">
             <div class="physics-stage">
-                <!-- 原生横向滑动容器 -->
+                <!-- 横穿红线 -->
+                <div class="red-thread-line"></div>
+                
+                <!-- 横向滑动容器 -->
                 <div class="cards-scroll-container" id="cards-scroll">
                     <div class="cards-inner" id="cards-inner">
                         <!-- JS 动态生成卡片 -->
@@ -84,7 +94,7 @@
     </div>
 </div>
 
-<script src="data.js?v=150"></script>
-<script src="script.js?v=150"></script>
+<script src="data.js?v=151"></script>
+<script src="script.js?v=151"></script>
 </body>
 </html>
