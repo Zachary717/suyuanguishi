@@ -4,14 +4,11 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 生成卡片，利用倒序 z-index 让第一张在最上面
+  // 渲染卡片时，注入 --i 属性，这是控制平移距离的核心
   var html = '';
-  var total = ocDatabase.length;
-  for (var i = 0; i < total; i++) {
+  for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
-    var zIndex = total - i; 
-    
-    html += '<div class="list-item" style="z-index: ' + zIndex + ';" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
+    html += '<div class="list-item" style="--i: ' + i + ';" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
               '<div class="item-index">' + (i + 1) + '</div>' +
               '<div class="item-name">' + oc.name + '</div>' +
               '<div class="item-title">' + oc.title + '</div>' +
@@ -19,24 +16,30 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  // ================== 核心：滑动展开与收缩逻辑 ==================
-  var scrollTimer = null;
-  
+  // 滑动监听：只有在绝对边缘时才收缩
+  var isExpanded = false;
   scrollBox.addEventListener('scroll', function() {
-    // 只要一滑动，立刻加上展开类（CSS Transition 会负责平滑散开）
-    inner.classList.add('is-sliding');
-
-    // 防抖：如果停止滑动 250 毫秒，就移除类名，卡片重新靠拢
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
-      inner.classList.remove('is-sliding');
-    }, 250);
+    var sl = scrollBox.scrollLeft;
+    var max = scrollBox.scrollWidth - scrollBox.clientWidth;
+    
+    // 如果滚到了最左边 (0) 或者最右边 (max)，并且之前是展开状态
+    if (sl <= 2 || sl >= max - 2) {
+      if (isExpanded) {
+        isExpanded = false;
+        inner.classList.remove('is-sliding');
+      }
+    } else {
+      // 在中间滑动，展开
+      if (!isExpanded) {
+        isExpanded = true;
+        inner.classList.add('is-sliding');
+      }
+    }
   });
 
-  // PC 端鼠标拖拽滑动支持
+  // PC 端鼠标拖拽支持
   var isDown = false;
   var startX, scrollLeft;
-  
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
     startX = e.clientX - scrollBox.getBoundingClientRect().left;
