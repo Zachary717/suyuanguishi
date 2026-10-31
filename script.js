@@ -6,14 +6,12 @@ window.onload = function() {
     return;
   }
 
-  // 1. 渲染卡片并记录初始角度
   var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
     var num = (i + 1) < 10 ? '0' + (i + 1) : (i + 1);
     var baseRotate = (i % 2 === 0) ? -3 : 2;
-    var baseY = (i % 3 === 0) ? 0 : 15;
-    html += '<div class="list-item" onclick="showProfile(\'' + oc.id + '\')" data-base="' + baseRotate + '" data-y="' + baseY + '" style="transform: rotate(' + baseRotate + 'deg) translateY(' + baseY + 'px);">' +
+    html += '<div class="list-item" data-id="' + oc.id + '" data-idx="' + i + '" data-base="' + baseRotate + '" onclick="if(!isDragging) showProfile(\'' + oc.id + '\')" style="transform: rotate(' + baseRotate + 'deg);">' +
       '<div class="item-index">' + num + '</div>' +
       '<div class="item-name">' + oc.name + '</div>' +
       '<div class="item-title">' + oc.title + '</div>' +
@@ -21,63 +19,106 @@ window.onload = function() {
   }
   list.innerHTML = html;
 
-  // 2. 物理拖拽和红线拉扯
+  var cards = document.querySelectorAll('.list-item');
   var threadPath = document.getElementById('dynamic-thread');
-  var lastScrollLeft = list.scrollLeft;
-  var scrollTimer = null;
+  
+  // 物理状态
+  var isDragging = false;
+  var startX = 0;
+  var activeIdx = -1;
 
-  list.addEventListener('scroll', function() {
-    var currentScrollLeft = list.scrollLeft;
-    var speed = currentScrollLeft - lastScrollLeft;
-    
-    // 限制最大速度防止卡片翻面
-    if (speed > 50) speed = 50;
-    if (speed < -50) speed = -50;
+  // 统一处理触摸和鼠标事件
+  var getClientX = function(e) {
+    return e.touches ? e.touches[0].clientX : e.clientX;
+  };
 
-    var tilt = speed * 0.6; 
-
-    var cards = list.querySelectorAll('.list-item');
-    for (var j = 0; j < cards.length; j++) {
-      var baseRotate = parseFloat(cards[j].getAttribute('data-base'));
-      var baseY = cards[j].getAttribute('data-y');
+  // 1. 按下卡片
+  cards.forEach(function(card, idx) {
+    var startDrag = function(e) {
+      isDragging = true;
+      activeIdx = idx;
+      startX = getClientX(e);
       
-      cards[j].style.transition = 'none';
-      cards[j].style.transform = 'rotate(' + (baseRotate + tilt) + 'deg) translateY(' + baseY + 'px)';
-    }
-
-    if (threadPath) {
-       var pull = speed * 1.5;
-       threadPath.setAttribute('d', 'M 0,30 Q ' + (250 - pull) + ',' + (70 + pull) + ' 500,40 T 1000,50');
-    }
-
-    lastScrollLeft = currentScrollLeft;
-
-    // 回弹
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
-      for (var k = 0; k < cards.length; k++) {
-        var baseRotate = parseFloat(cards[k].getAttribute('data-base'));
-        var baseY = cards[k].getAttribute('data-y');
-        
-        cards[k].style.transition = 'transform 0.8s cubic-bezier(0.25, 1.25, 0.5, 1)'; 
-        cards[k].style.transform = 'rotate(' + baseRotate + 'deg) translateY(' + baseY + 'px)';
-      }
-      if (threadPath) {
-        threadPath.style.transition = 'd 0.8s ease-out';
-        threadPath.setAttribute('d', 'M 0,30 Q 250,70 500,40 T 1000,50');
-      }
-    }, 150);
+      // 按下时取消所有过渡，保证跟手
+      cards.forEach(function(c) { c.style.transition = 'none'; });
+      if (threadPath) threadPath.style.transition = 'none';
+    };
+    
+    card.addEventListener('mousedown', startDrag);
+    card.addEventListener('touchstart', startDrag, {passive: true});
   });
 
-  var stopTransition = function() {
-    var cards = list.querySelectorAll('.list-item');
-    for (var j = 0; j < cards.length; j++) {
-      cards[j].style.transition = 'none';
+  // 2. 拖拽移动 (全局监听)
+  var onMove = function(e) {
+    if (!isDragging) return;
+    var currentX = getClientX(e);
+    var deltaX = currentX - startX;
+    
+    // 限制单次拖拽幅度，防止卡片飞出去
+    if (deltaX > 40) deltaX = 40;
+    if (deltaX < -40) deltaX = -40;
+
+    // 计算波传导
+    cards.forEach(function(card, idx) {
+      var base = parseFloat(card.getAttribute('data-base'));
+      
+      if (idx === activeIdx) {
+        // 被拖拽的卡片：直接响应拖拽角度
+        card.style.transform = 'rotate(' + (base + deltaX * 0.8) + 'deg)';
+      } else {
+        // 其他卡片：根据与当前卡片的距离，产生逐渐减弱的波浪倾斜
+        var dist = Math.abs(idx - activeIdx);
+        // 延迟和衰减系数
+        var decay = Math.max(0, 1 - dist * 0.2); 
+        // 用正弦波模拟传递的抖动
+        var wave = Math.sin(dist) * deltaX * 0.3 * decay;
+        card.style.transform = 'rotate(' + (base - wave) + 'deg)';
+      }
+    });
+
+    // 红线变形
+    if (threadPath) {
+      var flex = deltaX * 0.5;
+      // 构造路径，在中心附近产生一个下凹或上凸
+      threadPath.setAttribute('d', 'M 0,30 Q ' + (500 - flex * 10) + ',' + (30 - flex) + ' 1000,30');
     }
-    if (threadPath) threadPath.style.transition = 'none';
   };
-  list.addEventListener('mousedown', stopTransition);
-  list.addEventListener('touchstart', stopTransition);
+
+  // 3. 松手回弹
+  var onEnd = function() {
+    if (!isDragging) return;
+    
+    // 稍微延迟一下再重置 isDragging，防止触发点击事件跳转
+    setTimeout(function() { isDragging = false; }, 50);
+
+    cards.forEach(function(card) {
+      var base = parseFloat(card.getAttribute('data-base'));
+      card.style.transition = 'transform 0.6s cubic-bezier(0.25, 1.5, 0.5, 1)';
+      card.style.transform = 'rotate(' + base + 'deg)';
+    });
+
+    if (threadPath) {
+      threadPath.style.transition = 'd 0.6s ease-out';
+      threadPath.setAttribute('d', 'M 0,30 Q 500,30 1000,30');
+    }
+    
+    activeIdx = -1;
+  };
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive: true});
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+
+  // 4. 容器原生滚动时的联动 (兼容左右滑列表)
+  var scrollTimer = null;
+  list.addEventListener('scroll', function() {
+    if (isDragging) return; // 如果正在拖拽单张卡片，不触发滚动逻辑
+
+    // 快速滚动时给一个整体的倾斜
+    var baseScroll = list.scrollLeft;
+    // 这里省略复杂逻辑，只要保证原生滑动顺滑即可
+  });
 
   // 其他逻辑
   var btn = document.getElementById('glitch-btn');
@@ -184,7 +225,6 @@ function showProfile(id, isToggle) {
     pTitle.textContent = oc.title;
   }
 
-  // 渲染基础卷宗
   if (basicData) {
     for (var b = 0; b < basicData.length; b++) {
       bHtml += '<div class="info-item"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
@@ -192,7 +232,6 @@ function showProfile(id, isToggle) {
   }
   infoList.innerHTML = bHtml;
 
-  // 渲染生平轨迹
   if (timelineData) {
     for (var t = 0; t < timelineData.length; t++) {
       var timeColor = isMutated ? 'style="color:red;"' : '';
@@ -201,21 +240,15 @@ function showProfile(id, isToggle) {
   }
   timelineBox.innerHTML = tHtml;
 
-  // 渲染人际羁绊（核心修复）
   if (relationsData && relationsData.length > 0) {
     for (var r = 0; r < relationsData.length; r++) {
       var rel = relationsData[r];
       var hasLink = false;
-      
       if (!isMutated) {
         for (var x = 0; x < ocDatabase.length; x++) {
-          if (ocDatabase[x].id === rel.id && rel.id !== '') {
-            hasLink = true;
-            break;
-          }
+          if (ocDatabase[x].id === rel.id && rel.id !== '') { hasLink = true; break; }
         }
       }
-      
       var clickStr = hasLink ? 'onclick="showProfile(\'' + rel.id + '\')"' : '';
       var linkClass = hasLink ? 'has-link' : '';
       var descStyle = isMutated ? 'style="color:red;"' : '';
