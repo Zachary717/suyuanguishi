@@ -9,7 +9,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{ 
     background-color: var(--bg); 
-    background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, var(--bg) 100%);
     color: var(--paper); 
     font-family:"Noto Serif SC",serif; 
     line-height:2; 
@@ -49,7 +48,7 @@ body{
 
 .list-item {
     position: relative;
-    width: 100%; height: auto; min-height: 260px; /* 去掉死高度，让内容自己撑开 */
+    width: 100%; height: auto; min-height: 240px; 
     background: #fdfcf8; 
     border: 1px solid var(--line);
     box-shadow: 4px 6px 15px rgba(0,0,0,0.06);
@@ -57,12 +56,7 @@ body{
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-origin: top center;
     
-    /* 改成左右双列布局 */
-    display: flex;
-    flex-direction: row; 
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
     padding: 30px 15px;
 }
 
@@ -103,30 +97,28 @@ body{
     font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); font-weight: 600;
 }
 
-/* 左侧名字：恢复端庄宋体，竖排 */
+/* 【核心修改】名字横排，端庄宋体 */
 .item-name {
-    writing-mode: vertical-rl;
-    font-family: "Noto Serif SC", serif; /* 换回思源宋体 */
+    font-family: "Noto Serif SC", serif; 
     font-size: 32px; font-weight: 900; color: var(--paper);
     letter-spacing: 0.15em;
     transition: color 0.3s;
-    line-height: 1;
+    line-height: 1.2;
+    margin-bottom: 15px;
+    text-align: center;
 }
 .list-item:hover .item-name { color: var(--red); }
 
-/* 右侧简介：竖排，不截断 */
+/* 简介横排，不限制高度 */
 .item-title {
-    writing-mode: vertical-rl;
     font-size: 13px; color: var(--green); letter-spacing: 0.1em;
     line-height: 1.6;
-    /* 去掉之前的限制 */
-    max-height: none; 
-    white-space: normal; 
-    overflow: visible;
+    text-align: center;
+    padding: 0 10px;
 }
 
 /* =========================================
-   详情页排版 (彻底修复上方巨大空白)
+   详情页排版 (彻底根除空白)
    ========================================= */
 #view-profile { padding-bottom: 80px; }
 .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 30px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
@@ -147,34 +139,34 @@ body{
   display: none; text-align: center; pointer-events: none;
 }
 
-/* 【核心修复】把 padding-top 从 120px 缩减到 70px，紧贴导航栏 */
+/* 【核弹级修复】彻底把顶部 padding 压到只有 70px，紧贴边缘 */
 .profile-wrap { 
     max-width:1000px; margin:0 auto; 
     padding: 70px 20px 40px; 
-    position: relative; z-index: 10;
+    position: relative;
 }
 
-.hero-section { display: flex; justify-content: flex-start; align-items: flex-end; margin-bottom: 50px; gap: 30px; }
+.hero-section { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 40px; gap: 30px; }
 .avatar-box { 
-    width: 200px; aspect-ratio: 3/4; 
+    width: 180px; aspect-ratio: 3/4; 
     border: 1px solid var(--line); padding: 6px; background: #fff;
     box-shadow: 8px 8px 0px rgba(158,27,27,0.1); transition:.6s; 
 }
-.avatar-box img { width:100%; height:100%; object-fit:cover; transition:.6s; filter: grayscale(20%) contrast(1.1); }
+/* 彻底去除滤镜和曝光 */
+.avatar-box img { width:100%; height:100%; object-fit:cover; transition:.6s; }
 .empty-text { display:flex; height:100%; align-items:center; justify-content:center; color:var(--muted); }
 
-.hero-text { display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 20px; flex-grow: 1; text-align: right;}
+/* 头部改回横排，绝对不会撑破高度 */
+.hero-text { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; flex-grow: 1; text-align: left;}
 .p-name { 
-    writing-mode: vertical-rl; 
-    font-family: "Noto Serif SC", serif; /* 换回宋体 */
-    font-size: 60px; letter-spacing: 0.2em; margin: 0; line-height: 1;
+    font-family: "Noto Serif SC", serif; 
+    font-size: 48px; letter-spacing: 0.1em; margin: 0; line-height: 1.2;
     color: var(--red); font-weight: 900;
     transition: color 0.8s; 
 }
 .p-title { 
-    writing-mode: vertical-rl; 
-    font-size: 14px; color: var(--green); letter-spacing: 0.3em; opacity: 0.8;
-    padding-top: 10px; border-right: 1px solid var(--line);
+    font-size: 14px; color: var(--green); letter-spacing: 0.1em; opacity: 0.8;
+    padding-top: 5px; margin-top: 5px; border-top: 1px solid var(--line);
     transition: color 0.8s, border-color 0.8s; 
 }
 
@@ -244,25 +236,23 @@ body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.
   .tag-wall { padding: 40px 10px 60px; }
   .tag-wall::before { top: 20px; }
   
-  /* 手机端卡片：由于变宽了，两列刚好，高度自适应 */
   .dir-list-inner { gap: 20px; }
-  .list-item { min-height: 220px; padding: 20px 10px; gap: 10px; }
-  .item-name { font-size: 26px; }
+  .list-item { min-height: 200px; padding: 20px 10px; gap: 10px; }
+  .item-name { font-size: 24px; margin-bottom: 10px; }
   .item-title { font-size: 11px; }
   
-  /* 手机端稍微调整错落幅度 */
   .list-item:nth-child(1) { margin-top: 10px; }
   .list-item:nth-child(2) { margin-top: 40px; }
   .list-item:nth-child(3) { margin-top: 15px; }
   .list-item:nth-child(4) { margin-top: 50px; }
   
-  /* 修复手机端详情页顶部空白 */
-  .profile-wrap { padding-top: 60px; } 
-  .hero-section { flex-direction: column; align-items: center; gap: 15px; margin-bottom: 30px; }
-  .avatar-box { width: 140px; }
-  .hero-text { flex-direction: column; align-items: center; text-align: center; }
-  .p-name { writing-mode: horizontal-tb; font-size: 42px; letter-spacing: 0.1em; line-height: 1.2; }
-  .p-title { writing-mode: horizontal-tb; border-right: none; border-bottom: 1px solid var(--line); padding-left: 0; padding-bottom: 5px; margin-top: 5px; font-size: 12px;}
+  /* 手机端把 padding-top 压到 80px，彻底解决空白 */
+  .profile-wrap { padding-top: 80px; } 
+  .hero-section { flex-direction: row; align-items: center; gap: 15px; margin-bottom: 20px; }
+  .avatar-box { width: 120px; }
+  .hero-text { align-items: flex-start; text-align: left; }
+  .p-name { font-size: 36px; }
+  .p-title { font-size: 12px; }
 
   .content-grid { grid-template-columns: 1fr; gap: 40px; }
   .sec-title { margin-bottom: 15px; font-size: 16px;}
