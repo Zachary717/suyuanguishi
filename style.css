@@ -28,6 +28,7 @@ body {
   transition: opacity 0.5s;
   min-height: 100vh;
 }
+
 .view.active {
   display: block;
   opacity: 1;
@@ -38,6 +39,7 @@ body {
   padding-top: 60px;
   margin-bottom: 20px;
 }
+
 .home-subtitle {
   color: var(--red);
   letter-spacing: 0.4em;
@@ -45,49 +47,40 @@ body {
   font-weight: 900;
 }
 
-.hanger-container {
+/* 物理舞台，留足高度，绝不裁剪 */
+.physics-stage {
   position: relative;
   width: 100%;
-  padding-top: 100px;
-  padding-bottom: 100px;
-  /* 这里的溢出隐藏很关键，防止滑动时撑破屏幕 */
-  overflow: hidden; 
+  height: 600px; /* 足够高，防止卡片出界被切 */
+  margin-top: 20px;
 }
 
 .red-thread-svg {
   position: absolute;
-  top: 20px;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 120px;
+  height: 200px;
   z-index: 0;
   pointer-events: none;
 }
 
-.dir-list-inner {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  gap: 20px;
-  padding: 0 40px;
-  position: relative;
+/* 卡片绝对定位容器 */
+.cards-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 1;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  cursor: grab;
-}
-.dir-list-inner:active {
-  cursor: grabbing;
-}
-.dir-list-inner::-webkit-scrollbar {
-  display: none;
+  pointer-events: none; /* 让滚动穿透 */
 }
 
+/* 单张卡片 */
 .list-item {
-  flex-shrink: 0;
-  position: relative;
-  width: 160px;
-  height: 260px;
+  position: absolute;
+  width: 150px;
+  height: 250px;
   background: var(--card-bg);
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -99,26 +92,22 @@ body {
   gap: 15px;
   padding: 30px 10px;
   
-  /* 旋转中心在顶部中心 */
-  transform-origin: top center;
-  /* 默认回弹过渡 */
-  transition: transform 0.6s cubic-bezier(0.25, 1.5, 0.5, 1);
+  /* 核心：旋转原点在正上方中心 */
+  transform-origin: 50% 0%;
+  
+  /* 物理过渡 */
+  transition: transform 0.1s linear;
+  pointer-events: auto; /* 恢复卡片点击 */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* 悬挂线 */
-.list-item::before {
-  content: "";
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  width: 1px;
-  height: 30px;
-  background: var(--red);
-  transform: translateX(-50%);
-  transform-origin: bottom center;
+.list-item:active {
+  cursor: grabbing;
 }
 
-/* 悬挂孔 */
+/* 卡片上的挂孔 */
 .list-item::after {
   content: "";
   position: absolute;
@@ -140,6 +129,7 @@ body {
   font-size: 12px;
   color: var(--muted);
 }
+
 .item-name {
   writing-mode: vertical-rl;
   font-size: 28px;
@@ -147,6 +137,7 @@ body {
   color: var(--paper);
   letter-spacing: 0.1em;
 }
+
 .item-title {
   writing-mode: vertical-rl;
   font-size: 13px;
@@ -155,7 +146,7 @@ body {
   max-height: 180px;
 }
 
-/* ============ 详情页样式 ============ */
+/* ======= 详情页保持不变 ======= */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; }
