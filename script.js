@@ -4,11 +4,11 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 渲染卡片时，注入 --i 属性，这是控制平移距离的核心
+  // 生成卡片
   var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
-    html += '<div class="list-item" style="--i: ' + i + ';" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
+    html += '<div class="list-item" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
               '<div class="item-index">' + (i + 1) + '</div>' +
               '<div class="item-name">' + oc.name + '</div>' +
               '<div class="item-title">' + oc.title + '</div>' +
@@ -16,20 +16,18 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  // 滑动监听：只有在绝对边缘时才收缩
+  // ================== 极简滑动展开与收缩 ==================
   var isExpanded = false;
   scrollBox.addEventListener('scroll', function() {
     var sl = scrollBox.scrollLeft;
     var max = scrollBox.scrollWidth - scrollBox.clientWidth;
     
-    // 如果滚到了最左边 (0) 或者最右边 (max)，并且之前是展开状态
     if (sl <= 2 || sl >= max - 2) {
       if (isExpanded) {
         isExpanded = false;
         inner.classList.remove('is-sliding');
       }
     } else {
-      // 在中间滑动，展开
       if (!isExpanded) {
         isExpanded = true;
         inner.classList.add('is-sliding');
@@ -37,22 +35,25 @@ window.onload = function() {
     }
   });
 
-  // PC 端鼠标拖拽支持
+  // 【PC端鼠标拖拽完美修复】
   var isDown = false;
   var startX, scrollLeft;
+
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
-    startX = e.clientX - scrollBox.getBoundingClientRect().left;
+    startX = e.pageX - scrollBox.offsetLeft;
     scrollLeft = scrollBox.scrollLeft;
   });
-  scrollBox.addEventListener('mouseleave', function() { isDown = false; });
-  scrollBox.addEventListener('mouseup', function() { isDown = false; });
-  scrollBox.addEventListener('mousemove', function(e) {
+  // 绑定在 window 上防止鼠标移出容器导致拖拽卡死
+  window.addEventListener('mousemove', function(e) {
     if (!isDown) return;
     e.preventDefault();
-    var x = e.clientX - scrollBox.getBoundingClientRect().left;
+    var x = e.pageX - scrollBox.offsetLeft;
     var walk = (x - startX) * 1.5; 
     scrollBox.scrollLeft = scrollLeft - walk;
+  });
+  window.addEventListener('mouseup', function() {
+    isDown = false;
   });
 
   setupObserver();
