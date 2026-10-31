@@ -4,150 +4,92 @@ window.onload = function() {
   if (typeof ocDatabase === 'undefined') return;
 
   var threadPath = document.getElementById('dynamic-thread');
-  var cardWidth = 150;
-  var gap = 40;
-  var startX = 50; // 初始偏移
-  var startY = 50; // 红线起始高度
+  // 关键修改：卡片变窄，间距大幅缩小
+  var cardWidth = 140; 
+  var gap = 10; 
+  var startX = 40;
+  var startY = 60;
 
   var cards = [];
   var totalWidth = 0;
 
-  // 1. 初始化卡片数据与DOM
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
     var card = document.createElement('div');
     card.className = 'list-item';
     card.setAttribute('data-id', oc.id);
-    // 基础坐标 (用于后续物理计算)
+    
     card.baseX = startX + i * (cardWidth + gap);
     card.baseY = startY;
-    card.angle = (i % 2 === 0) ? -3 : 3; // 初始错落角度
-    card.velocity = 0; // 物理速度
-
+    card.angle = (i % 2 === 0) ? -3 : 3; 
+    card.velocity = 0; 
+    
     card.innerHTML = '<div class="item-index">' + (i + 1) + '</div>' +
                      '<div class="item-name">' + oc.name + '</div>' +
                      '<div class="item-title">' + oc.title + '</div>';
                      
-    // 点击跳转 (拖拽时不跳转)
-    card.onclick = function(e) {
-      if (Math.abs(this.velocity) < 0.5) {
-        showProfile(this.getAttribute('data-id'));
-      }
-    };
+    (function(cardEl, id) {
+      cardEl.onclick = function() {
+        if (Math.abs(cardEl.velocity) < 0.5) showProfile(id);
+      };
+    })(card, oc.id);
 
     container.appendChild(card);
     cards.push(card);
     totalWidth = card.baseX + cardWidth;
   }
 
-  // 为了让列表能横滑，撑开容器宽度
   container.style.width = totalWidth + 100 + 'px';
 
-  // 2. 物理引擎 (核心)
   var draggingCard = null;
   var lastMouseX = 0;
 
-  // 渲染函数：每一帧更新卡片位置和红线形状
   function renderPhysics() {
-    var pathD = 'M 0,' + startY + ' ';
+    var pathD = 'M 0,' + startY + ' '; 
 
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
-
-      // 限制最大倾角
       if (c.angle > 45) c.angle = 45;
       if (c.angle < -45) c.angle = -45;
 
-      // 应用CSS变换 (基于左上角绝对定位 + 旋转)
-      // 注意：transform-origin 是 50% 0%，所以平移只需定位到 X, Y
-      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
-      
-      // 如果是拖动中的卡片，不进行自然恢复
-      if (c !== draggingCard) {
-        // 阻尼正弦运动，使其恢复原始角度
-        var baseAngle = (i % 2 === 0) ? -3 : 3;
-        var diff = baseAngle - c.angle;
-        c.velocity += diff * 0.05; // 回复力
-        c.velocity *= 0.92; // 摩擦力
-        c.angle += c.velocity;
-      }
-
-      // 构建红线路径 (贝塞尔曲线连接各卡片顶部)
       var pivotX = c.baseX + cardWidth / 2;
       var pivotY = c.baseY;
       
-      // 简单地用直线连接 (视觉上因为卡片挡住了，其实看不出来)
+      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
+
+      if (c !== draggingCard) {
+        var baseAngle = (i % 2 === 0) ? -3 : 3;
+        var diff = baseAngle - c.angle;
+        c.velocity += diff * 0.05; 
+        c.velocity *= 0.92; 
+        c.angle += c.velocity;
+      }
+
       if (i === 0) {
-        pathD += 'L ' + pivotX + ',' + pivotY + ' ';
+        pathD += 'L ' + pivotX + ',' + pivotY + ' '; 
       } else {
         var prevC = cards[i-1];
         var prevPivotX = prevC.baseX + cardWidth / 2;
-        // 用二次贝塞尔画轻微的下垂
         var controlX = (prevPivotX + pivotX) / 2;
         var controlY = (prevC.baseY + pivotY) / 2 + 15; 
         pathD += 'Q ' + controlX + ',' + controlY + ' ' + pivotX + ',' + pivotY + ' ';
       }
     }
     
-    // 收尾红线
-    pathD += 'L ' + (totalWidth + 100) + ',' + startY;
+    pathD += 'L ' + (totalWidth + 50) + ',' + startY;
     if(threadPath) threadPath.setAttribute('d', pathD);
 
     requestAnimationFrame(renderPhysics);
   }
 
-  // 3. 拖拽与滑动逻辑
-  var isDraggingList = false;
-  var listStartX = 0;
-  var listScrollX = 0;
-
   var getClientX = function(e) { return e.touches ? e.touches[0].clientX : e.clientX; };
   
-  // 原生横向滚动绑定 (用于滑动整个列表)
-  document.getElementById('stage').addEventListener('touchstart', function(e) {
-    if (e.target.classList.contains('list-item')) return; // 如果点在卡片上，不触发列表滑动
-    isDraggingList = true;
-    listStartX = getClientX(e);
-    listScrollX = container.offsetLeft || 0;
-  }, {passive: true});
-
-  document.addEventListener('touchmove', function(e) {
-    if (isDraggingList) {
-      var deltaX = getClientX(e) - listStartX;
-      container.style.transform = 'translateX(' + (listScrollX + deltaX) + 'px)';
-    } else if (draggingCard) {
-      // 单张卡片拖拽物理
-      var currentX = getClientX(e);
-      var deltaX = currentX - lastMouseX;
-      // 给目标卡片施加角度
-      draggingCard.angle += deltaX * 0.8;
-      
-      // 波传导：周围的卡片产生反向小倾斜
-      var index = cards.indexOf(draggingCard);
-      for(var j=0; j<cards.length; j++) {
-        if(j !== index) {
-          var distance = Math.abs(j - index);
-          var decay = Math.max(0, 1 - distance * 0.3);
-          cards[j].angle -= deltaX * 0.2 * decay;
-        }
-      }
-      lastMouseX = currentX;
-    }
-  }, {passive: true});
-
-  document.addEventListener('touchend', function() {
-    isDraggingList = false;
-    if (draggingCard) {
-       draggingCard = null;
-    }
-  });
-
-  // 绑定鼠标事件（PC端）
   container.addEventListener('mousedown', function(e) {
     var target = e.target.closest('.list-item');
     if (target) {
       draggingCard = target;
       lastMouseX = getClientX(e);
+      target.velocity = 0; 
     }
   });
 
@@ -155,39 +97,58 @@ window.onload = function() {
     if (draggingCard) {
       var currentX = getClientX(e);
       var deltaX = currentX - lastMouseX;
-      draggingCard.angle += deltaX * 0.8;
+      
+      draggingCard.angle += deltaX * 1.5; 
       
       var index = cards.indexOf(draggingCard);
       for(var j=0; j<cards.length; j++) {
         if(j !== index) {
           var distance = Math.abs(j - index);
-          var decay = Math.max(0, 1 - distance * 0.3);
-          cards[j].angle -= deltaX * 0.2 * decay;
+          var decay = Math.max(0, 1 - distance * 0.3); 
+          cards[j].angle -= deltaX * 0.5 * decay;
         }
       }
       lastMouseX = currentX;
     }
   });
 
-  document.addEventListener('mouseup', function() {
-    draggingCard = null;
-  });
-  
-  // PC端横向滑动
-  document.getElementById('stage').addEventListener('wheel', function(e) {
-    // 如果滚轮是横向的，或者按住了shift
-    if (e.deltaX !== 0 || e.shiftKey) {
-      container.style.transform = 'translateX(' + (container.offsetLeft - (e.deltaX || e.deltaY)) + 'px)';
-    }
-  });
+  document.addEventListener('mouseup', function() { draggingCard = null; });
 
-  // 启动物理引擎
+  container.addEventListener('touchstart', function(e) {
+    var target = e.target.closest('.list-item');
+    if (target) {
+      draggingCard = target;
+      lastMouseX = getClientX(e);
+      target.velocity = 0;
+    }
+  }, {passive: true});
+
+  document.addEventListener('touchmove', function(e) {
+    if (draggingCard) {
+      var currentX = getClientX(e);
+      var deltaX = currentX - lastMouseX;
+      draggingCard.angle += deltaX * 1.5;
+      
+      var index = cards.indexOf(draggingCard);
+      for(var j=0; j<cards.length; j++) {
+        if(j !== index) {
+          var distance = Math.abs(j - index);
+          var decay = Math.max(0, 1 - distance * 0.3);
+          cards[j].angle -= deltaX * 0.5 * decay;
+        }
+      }
+      lastMouseX = currentX;
+    }
+  }, {passive: true});
+
+  document.addEventListener('touchend', function() { draggingCard = null; });
+
   renderPhysics();
 };
 
-// 外部函数保持不报错
-function switchView(viewId) { /*... 保持原来的代码 ...*/ }
-// 将上面原有的函数完整放进来
+var isGlitchMode = false;
+var currentActiveId = "";
+
 function switchView(viewId) {
   var views = document.querySelectorAll('.view');
   for (var i = 0; i < views.length; i++) {
@@ -207,9 +168,6 @@ function switchView(viewId) {
     if (matrix) matrix.innerHTML = '';
   }
 }
-
-var isGlitchMode = false;
-var currentActiveId = "";
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
