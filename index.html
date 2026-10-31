@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=109">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=111">
 </head>
 <body>
 
@@ -13,14 +13,14 @@
     <div class="matrix-container" id="glitch-matrix"></div>
 </div>
 
-<!-- 首页：白净留白 + 错落悬挂木牌 -->
+<!-- 首页：祈福牌 -->
 <div id="view-main" class="view active">
     <div class="home-header">
         <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
         <div class="home-subtitle">俗缘诡事 · 卷宗</div>
     </div>
     
-    <!-- 挂绳与木牌墙 -->
+    <!-- 挂绳与祈福牌区域 -->
     <div class="tag-wall">
         <div id="dir-list" class="dir-list-inner"></div>
     </div>
@@ -29,6 +29,8 @@
 <!-- 详情页 -->
 <div id="view-profile" class="view">
     <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
+    
+    <!-- 导航栏改为相对流，彻底消灭大空白 -->
     <div class="nav-top">
         <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
         <div class="id-tag" id="p-top-id"></div>
@@ -67,7 +69,7 @@
     </div>
 </div>
 
-<script src="data.js?v=109"></script>
-<script src="script.js?v=109"></script>
+<script src="data.js?v=111"></script>
+<script src="script.js?v=111"></script>
 </body>
 </html>
