@@ -20,9 +20,9 @@ body{
 .view.active { display:block; opacity:1; }
 
 /* =========================================
-   首页排版 (真正的错落感)
+   首页排版 (错落感与双列卡片)
    ========================================= */
-#view-main { min-height: 100vh; padding-top: 80px; display: flex; flex-direction: column; align-items: center; }
+#view-main { min-height: 100vh; padding-top: 60px; display: flex; flex-direction: column; align-items: center; }
 .home-header { text-align: center; margin-bottom: 20px; }
 .home-title-img { max-width: 80vw; max-height: 100px; object-fit: contain; }
 .home-subtitle { color: var(--red); letter-spacing: 0.6em; font-size: 14px; margin-top: 15px; font-weight: 900; }
@@ -30,36 +30,43 @@ body{
 /* 挂绳区 */
 .tag-wall {
     position: relative; width: 100%; max-width: 900px;
-    padding: 80px 20px 100px; margin: 0 auto;
+    padding: 60px 20px 100px; margin: 0 auto;
 }
 /* 横向的红绳 */
 .tag-wall::before {
-    content: ""; position: absolute; top: 40px; left: 0; width: 100%; height: 2px;
+    content: ""; position: absolute; top: 30px; left: 0; width: 100%; height: 2px;
     background: var(--red); opacity: 0.6; z-index: 0;
 }
 
-/* 改用 Grid 布局，并让元素顶部对齐以允许高低错落 */
+/* 错落网格 */
 .dir-list-inner {
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
-    gap: 20px 30px;
-    align-items: start; /* 关键：让它们不被拉伸成等高 */
+    gap: 30px 40px;
+    align-items: start;
     position: relative; z-index: 1;
 }
 
 .list-item {
     position: relative;
-    width: 100%; height: 260px;
+    width: 100%; height: auto; min-height: 260px; /* 去掉死高度，让内容自己撑开 */
     background: #fdfcf8; 
     border: 1px solid var(--line);
     box-shadow: 4px 6px 15px rgba(0,0,0,0.06);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transform-origin: top center;
+    
+    /* 改成左右双列布局 */
+    display: flex;
+    flex-direction: row; 
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 15px;
 }
 
-/* 【核心】强制打乱高度，实现真正的错落挂载感 */
+/* 强制错落高度 */
 .list-item:nth-child(1) { margin-top: 0px; transform: rotate(-2deg); }
 .list-item:nth-child(2) { margin-top: 40px; transform: rotate(3deg); }
 .list-item:nth-child(3) { margin-top: 15px; transform: rotate(1.5deg); }
@@ -69,13 +76,12 @@ body{
 .list-item:nth-child(7) { margin-top: 25px; transform: rotate(3deg); }
 .list-item:nth-child(8) { margin-top: 70px; transform: rotate(-2deg); }
 
-/* 悬挂红绳与钉子（为了适应错落，把钉子放在木牌顶部） */
+/* 悬挂红绳与钉子 */
 .list-item::before {
-    content: ""; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-    width: 1px; height: 60px; background: var(--red); opacity: 0.5;
+    content: ""; position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 50px; background: var(--red); opacity: 0.5;
 }
-.list-item:nth-child(odd)::before { height: 40px; top: -40px; } /* 奇数高度绳子短一点 */
-.list-item:nth-child(3n)::before { height: 30px; top: -30px; }
+.list-item:nth-child(odd)::before { height: 30px; top: -30px; } 
 
 .list-item::after {
     content: ""; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
@@ -93,28 +99,34 @@ body{
 }
 
 .item-index {
-    position: absolute; top: 15px; font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); font-weight: 600;
+    position: absolute; top: 15px; left: 15px; 
+    font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); font-weight: 600;
 }
-/* 竖排名字 */
+
+/* 左侧名字：恢复端庄宋体，竖排 */
 .item-name {
     writing-mode: vertical-rl;
-    font-family: "Ma Shan Zheng", "Noto Serif SC", serif;
-    font-size: 34px; font-weight: 900; color: var(--paper);
+    font-family: "Noto Serif SC", serif; /* 换回思源宋体 */
+    font-size: 32px; font-weight: 900; color: var(--paper);
     letter-spacing: 0.15em;
-    margin-bottom: 15px; margin-top: 20px;
     transition: color 0.3s;
+    line-height: 1;
 }
 .list-item:hover .item-name { color: var(--red); }
 
-/* 竖排副标题 */
+/* 右侧简介：竖排，不截断 */
 .item-title {
     writing-mode: vertical-rl;
-    font-size: 12px; color: var(--green); letter-spacing: 0.1em;
-    max-height: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 13px; color: var(--green); letter-spacing: 0.1em;
+    line-height: 1.6;
+    /* 去掉之前的限制 */
+    max-height: none; 
+    white-space: normal; 
+    overflow: visible;
 }
 
 /* =========================================
-   详情页排版 (彻底修复上方空白)
+   详情页排版 (彻底修复上方巨大空白)
    ========================================= */
 #view-profile { padding-bottom: 80px; }
 .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 30px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
@@ -135,10 +147,10 @@ body{
   display: none; text-align: center; pointer-events: none;
 }
 
-/* 【核心修复】大幅增加顶部 padding，彻底顶飞空白 */
+/* 【核心修复】把 padding-top 从 120px 缩减到 70px，紧贴导航栏 */
 .profile-wrap { 
     max-width:1000px; margin:0 auto; 
-    padding: 120px 20px 40px; /* 这里从 80px 改成了 120px */
+    padding: 70px 20px 40px; 
     position: relative; z-index: 10;
 }
 
@@ -154,7 +166,7 @@ body{
 .hero-text { display: flex; flex-direction: row-reverse; align-items: flex-start; gap: 20px; flex-grow: 1; text-align: right;}
 .p-name { 
     writing-mode: vertical-rl; 
-    font-family: "Noto Serif SC", serif;
+    font-family: "Noto Serif SC", serif; /* 换回宋体 */
     font-size: 60px; letter-spacing: 0.2em; margin: 0; line-height: 1;
     color: var(--red); font-weight: 900;
     transition: color 0.8s; 
@@ -204,7 +216,7 @@ footer { margin-top:80px; text-align:center; font-family:"Oswald",sans-serif; fo
 .radar-text.show { opacity: 1; }
 
 /* =========================================
-   里世界特效
+   里世界特效 (原封不动)
    ========================================= */
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; overflow: hidden; }
 body.glitch-mode .glitch-overlay { display: flex; }
@@ -228,21 +240,24 @@ body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.
 
 /* 移动端适配 */
 @media (max-width: 768px) {
-  #view-main { padding-top: 50px; }
-  .tag-wall { padding: 60px 10px 80px; }
-  .tag-wall::before { top: 30px; }
+  #view-main { padding-top: 40px; }
+  .tag-wall { padding: 40px 10px 60px; }
+  .tag-wall::before { top: 20px; }
   
-  .list-item { height: 240px; }
-  /* 手机端稍微调整错落幅度，防止重叠 */
+  /* 手机端卡片：由于变宽了，两列刚好，高度自适应 */
+  .dir-list-inner { gap: 20px; }
+  .list-item { min-height: 220px; padding: 20px 10px; gap: 10px; }
+  .item-name { font-size: 26px; }
+  .item-title { font-size: 11px; }
+  
+  /* 手机端稍微调整错落幅度 */
   .list-item:nth-child(1) { margin-top: 10px; }
-  .list-item:nth-child(2) { margin-top: 50px; }
-  .list-item:nth-child(3) { margin-top: 20px; }
-  .list-item:nth-child(4) { margin-top: 60px; }
+  .list-item:nth-child(2) { margin-top: 40px; }
+  .list-item:nth-child(3) { margin-top: 15px; }
+  .list-item:nth-child(4) { margin-top: 50px; }
   
-  .item-name { font-size: 30px; }
-  .item-title { font-size: 11px; max-height: 80px; }
-  
-  .profile-wrap { padding-top: 100px; } /* 手机端给足 100px 绝对不空 */
+  /* 修复手机端详情页顶部空白 */
+  .profile-wrap { padding-top: 60px; } 
   .hero-section { flex-direction: column; align-items: center; gap: 15px; margin-bottom: 30px; }
   .avatar-box { width: 140px; }
   .hero-text { flex-direction: column; align-items: center; text-align: center; }
