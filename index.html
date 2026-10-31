@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=114">
+<link rel="stylesheet" href="style.css?v=115">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -18,6 +18,7 @@
     </div>
     <div class="dir-list-inner" id="dir-list">加载中...</div>
 </div>
+
 <div id="view-profile" class="view">
     <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
     <div class="nav-top">
@@ -33,9 +34,9 @@
             </div>
         </div>
         <div class="content-grid">
-            <div class="col-left">
+            <div-list class="col-left">
                 <div class="sec-title"><span>基础卷宗</span></div>
-                <div class="info-list" id="p-info-list"></div>
+                <div class="info" id="p-info-list"></div>
                 <div class="sec-title"><span>命理六维</span></div>
                 <div class="stats-container" id="p-stats"></div>
             </div>
@@ -47,12 +48,14 @@
             </div>
         </div>
     </div>
-    <div class="ticket-easter-egg" id="ticket-egg" title="点击拉出/收回副券">
-        <img src="ticket.png" onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
-        <div class="ticket-pull-tab">副券</div>
+
+    <!-- 【纯净版门票彩蛋】就只是一张图 -->
+    <div class="ticket-easter-egg" id="ticket-egg">
+        <img src="ticket.png" alt="彩蛋">
     </div>
 </div>
-<script src="data.js?v=114"></script>
-<script src="script.js?v=114"></script>
+
+<script src="data.js?v=115"></script>
+<script src="script.js?v=115"></script>
 </body>
 </html>
