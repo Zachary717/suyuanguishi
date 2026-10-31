@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=122">
+<link rel="stylesheet" href="style.css?v=124">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -18,14 +18,16 @@
         <div class="home-subtitle">俗 缘 诡 事 · 卷 宗</div>
     </div>
     
-    <div class="hanger-container">
+    <!-- 物理舞台 -->
+    <div class="physics-stage" id="stage">
         <!-- 红线 -->
-        <svg class="red-thread-svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
-            <path id="dynamic-thread" d="M 0,30 Q 500,30 1000,30" fill="none" stroke="var(--red)" stroke-width="2" />
+        <svg class="red-thread-svg" preserveAspectRatio="none" viewBox="0 0 1000 200">
+            <path id="dynamic-thread" d="M 0,50 Q 500,100 1000,50" fill="none" stroke="var(--red)" stroke-width="2" />
         </svg>
         
-        <div class="dir-list-inner" id="dir-list">
-            <!-- JS 动态生成 -->
+        <!-- 卡片容器 -->
+        <div class="cards-container" id="cards-container">
+            <!-- JS生成 -->
         </div>
     </div>
 </div>
@@ -68,7 +70,7 @@
     </div>
 </div>
 
-<script src="data.js?v=122"></script>
-<script src="script.js?v=122"></script>
+<script src="data.js?v=124"></script>
+<script src="script.js?v=124"></script>
 </body>
 </html>
