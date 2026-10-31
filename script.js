@@ -26,13 +26,20 @@ window.onload = function() {
     });
     observerBtn.observe(btn, { attributes: true, attributeFilter: ['style'] });
   }
+
+  // 【门票彩蛋】点击滑出/收回逻辑
+  const ticketEgg = document.getElementById('ticket-egg');
+  if (ticketEgg) {
+    ticketEgg.addEventListener('click', function(e) {
+      this.classList.toggle('show');
+    });
+  }
 };
 
 let isGlitchMode = false;
 let currentActiveId = "";
 let observer;
 
-// 恢复：元素滚动渐显观察器
 function setupObserver() {
   const observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
   observer = new IntersectionObserver((entries, obs) => {
@@ -42,7 +49,7 @@ function setupObserver() {
         if (entry.target.id === 'p-stats') {
           const radarData = entry.target.querySelector('.radar-anim-group');
           const radarText = entry.target.querySelector('.radar-text');
-          if (radarData) animateRadarLines(radarData, radarText); // 触发雷达图生长
+          if (radarData) animateRadarLines(radarData, radarText);
         }
         obs.unobserve(entry.target);
       }
@@ -91,6 +98,17 @@ function showProfile(id, isToggle) {
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
 
+  // 控制门票彩蛋显示：仅婴红显示
+  const ticketEgg = document.getElementById('ticket-egg');
+  if (ticketEgg) {
+    if (id === 'yinghong') {
+      ticketEgg.style.display = 'block';
+    } else {
+      ticketEgg.style.display = 'none';
+      ticketEgg.classList.remove('show'); // 切换角色时重置门票状态
+    }
+  }
+
   const avatarBox = document.getElementById('p-avatar-box');
   let currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
   avatarBox.innerHTML = currentAvatar ? `<img src="${currentAvatar}">` : '无图';
@@ -109,9 +127,18 @@ function showProfile(id, isToggle) {
     document.getElementById('glitch-btn').style.display = (id === 'yeyao') ? 'block' : 'none';
     document.getElementById('p-name').textContent = oc.name;
     document.getElementById('p-title').textContent = oc.title;
+    
     document.getElementById('p-info-list').innerHTML = oc.basic.map((b, i)=>`<div class="info-item delay-item" style="transition-delay:${i*0.1}s"><div class="k">${b.k}</div><div class="v">${b.v}</div></div>`).join('');
     document.getElementById('p-timeline').innerHTML = oc.timeline.map((t, i)=>`<div class="tl-item delay-item" style="transition-delay:${i*0.1}s"><div class="tl-time">${t.time}</div><div class="tl-event">${t.event}</div></div>`).join('');
-    document.getElementById('p-relations').innerHTML = oc.relations.map((r, i)=>`<div class="rel-item delay-item" style="transition-delay:${i*0.1}s"><div class="rel-name">${r.name}</div><div class="rel-desc">${r.desc}</div></div>`).join('');
+    
+    // 【修复】人际羁绊：判断是否具有连接，并绑定 onclick 跳转
+    document.getElementById('p-relations').innerHTML = oc.relations.map((r, i)=>{
+      const hasLink = ocDatabase.find(o => o.id === r.id) && r.id !== '';
+      return `<div class="rel-item delay-item ${hasLink ? 'has-link' : ''}" style="transition-delay:${i*0.1}s" ${hasLink ? `onclick="showProfile('${r.id}')"` : ''}>
+                <div class="rel-name">${r.name}</div>
+                <div class="rel-desc">${r.desc}</div>
+              </div>`;
+    }).join('');
   }
   
   document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
@@ -120,13 +147,12 @@ function showProfile(id, isToggle) {
   if (isToggle !== true) switchView('view-profile');
   else window.scrollTo(0, 0);
   
-  // 恢复：重置动画并触发观察器
   const radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   document.querySelectorAll('.delay-item').forEach(el => el.classList.remove('active'));
   const textGroup = radarContainer.querySelector('.radar-text');
   if (textGroup) textGroup.classList.remove('show');
-  void radarContainer.offsetWidth; // 触发重绘
+  void radarContainer.offsetWidth; 
 
   setTimeout(() => {
     observer.observe(radarContainer);
@@ -134,7 +160,6 @@ function showProfile(id, isToggle) {
   }, 100);
 }
 
-// 恢复：雷达图线条生长动画
 function animateRadarLines(group, textGroup) {
   const circles = group.querySelectorAll('circle');
   const poly = group.querySelector('polygon');
@@ -172,7 +197,6 @@ function animateRadarLines(group, textGroup) {
   requestAnimationFrame(update);
 }
 
-// 恢复：雷达图数据绑定和结构生成
 function renderRadarChart(stats) {
   const cx = 150, cy = 140, r = 90, maxVal = 6; 
   const keys = Object.keys(stats), n = keys.length;
