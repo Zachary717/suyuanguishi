@@ -1,24 +1,112 @@
-:root { --bg: #F1F0E8; --paper: #2E3A35; --red: #B56A58; --green: #5E8C87; --muted: #8A9A95; --line: rgba(94, 140, 135, 0.3); --card-bg: rgba(255, 255, 255, 0.6); }
+:root { --bg: #F1F0E8; --paper: #2E3A35; --red: #B56A58; --green: #5E8C87; --muted: #8A9A95; --line: rgba(94, 140, 135, 0.3); --card-bg: rgba(255, 255, 255, 0.8); }
 *{margin:0;padding:0;box-sizing:border-box}
 body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif SC", serif; line-height: 1.8; overflow-x: hidden; transition: background-color 0.8s, color 0.8s; }
 .view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* 首页排版 */
-.home-header { text-align: center; padding-top: 60px; margin-bottom: 40px; }
+/* =========================================
+   首页排版 (红线悬挂 + 横向滑动)
+   ========================================= */
+.home-header { text-align: center; padding-top: 60px; margin-bottom: 20px; }
 .home-subtitle { color: var(--red); letter-spacing: 0.4em; font-size: 14px; font-weight: 900; }
-.dir-list-inner { max-width: 800px; margin: 0 auto; padding: 0 20px 100px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
-.list-item { position: relative; width: 160px; min-height: 280px; background: var(--card-bg); border: 1px solid var(--line); border-radius: 10px 10px 2px 2px; box-shadow: 2px 5px 15px rgba(94, 140, 135, 0.1); cursor: pointer; transition: transform 0.3s, background-color 0.8s, border-color 0.8s; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; padding: 30px 10px; }
-.list-item:nth-child(odd) { transform: translateY(20px) rotate(-2deg); }
-.list-item:nth-child(even) { transform: translateY(0px) rotate(2deg); }
-.list-item:nth-child(3n) { transform: translateY(40px) rotate(1deg); }
-.list-item:hover { transform: scale(1.05) rotate(0deg) !important; border-color: var(--red); z-index: 10; }
-.list-item::before { content: ""; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 2px; height: 30px; background: var(--red); }
+
+.scroll-hanger-wrap {
+    position: relative;
+    width: 100%;
+    padding-top: 80px; /* 给红线留出空间 */
+    padding-bottom: 60px;
+}
+
+/* 背景的斜向红线 */
+.red-thread-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 横向滑动列表 */
+.dir-list-inner { 
+    display: flex;
+    flex-wrap: nowrap; /* 强制不换行 */
+    overflow-x: auto; /* 允许横向滚动 */
+    gap: 40px;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+    scroll-snap-type: x mandatory; /* 滚动时自动吸附到卡片 */
+    /* 隐藏滚动条 */
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+}
+.dir-list-inner::-webkit-scrollbar { display: none; }
+
+/* 祈福牌卡片 */
+.list-item { 
+    flex-shrink: 0; /* 防止被压缩 */
+    position: relative; 
+    width: 160px; 
+    min-height: 260px; 
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px 8px 2px 2px;
+    box-shadow: 2px 5px 15px rgba(94, 140, 135, 0.1);
+    cursor: pointer; 
+    transition: transform 0.3s, background-color 0.8s, border-color 0.8s;
+    display: flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 15px;
+    padding: 30px 10px;
+    scroll-snap-align: center; /* 吸附中心 */
+    
+    /* 初始倾斜，配合红线 */
+    transform-origin: top center;
+    transform: rotate(-2deg);
+}
+
+/* 偶数牌反向倾斜，奇偶错落 */
+.list-item:nth-child(even) { transform: rotate(3deg) translateY(15px); }
+.list-item:nth-child(3n) { transform: rotate(-1deg) translateY(-10px); }
+
+/* 悬挂细线 */
+.list-item::before {
+    content: ""; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 20px; background: var(--red);
+}
+
+/* 悬挂孔 */
+.list-item::after {
+    content: ""; position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 6px; border-radius: 50%; background: var(--bg);
+    border: 1px solid var(--red);
+}
+
+/* 悬停：像风铃一样摆动 */
+@keyframes swing {
+    0% { transform: rotate(-3deg) translateY(0); }
+    50% { transform: rotate(3deg) translateY(-5px); }
+    100% { transform: rotate(-3deg) translateY(0); }
+}
+
+.list-item:hover {
+    animation: swing 2s ease-in-out infinite;
+    border-color: var(--red);
+    box-shadow: 0 8px 20px rgba(181,106,88,0.15);
+    z-index: 10;
+}
+
 .item-index { position: absolute; top: 10px; left: 10px; font-size: 12px; color: var(--muted); }
 .item-name { writing-mode: vertical-rl; font-size: 28px; font-weight: 900; color: var(--paper); letter-spacing: 0.1em; line-height: 1.2; }
 .item-title { writing-mode: vertical-rl; font-size: 13px; color: var(--green); letter-spacing: 0.1em; line-height: 1.5; max-height: 180px; }
 
-/* 详情页排版 */
+/* =========================================
+   详情页排版 (保持不变)
+   ========================================= */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; letter-spacing: 0.1em; }
@@ -33,7 +121,6 @@ body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif
 .p-name { font-size: 40px; color: var(--red); margin-bottom: 10px; }
 .p-title { font-size: 14px; color: var(--green); border-top: 1px solid var(--line); padding-top: 5px; display: inline-block; }
 
-/* PC端双列布局 */
 .content-grid { display: flex; flex-direction: column; gap: 40px; }
 @media (min-width: 768px) {
     .content-grid { flex-direction: row; justify-content: space-between; gap: 60px; }
@@ -57,7 +144,6 @@ body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif
 .rel-desc { font-size: 13px; color: var(--muted); }
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
-/* 动效 */
 .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 .delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
@@ -65,37 +151,11 @@ body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
 
-/* =========================================
-   门票彩蛋（直接露一半在外面，绝对看得到）
-   ========================================= */
-.ticket-easter-egg {
-    position: fixed;
-    right: -120px; /* 默认露出 80px */
-    bottom: 40px;
-    width: 200px; 
-    height: 100px;
-    background: var(--bg); 
-    border: 2px solid var(--red); /* 如果图片没加载出来，有个红框提示 */
-    cursor: pointer;
-    z-index: 999;
-    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: none;
-}
-.ticket-easter-egg.show {
-    right: 20px; /* 完全拉出 */
-}
-.ticket-easter-egg img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-}
-.ticket-easter-egg.error::after {
-    content: "图片未找到";
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: var(--red); font-size: 12px; white-space: nowrap;
-}
+/* 门票彩蛋 */
+.ticket-easter-egg { position: fixed; right: -120px; bottom: 40px; width: 200px; height: 100px; background: var(--bg); border: 2px solid var(--red); cursor: pointer; z-index: 999; transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: none; }
+.ticket-easter-egg.show { right: 20px; }
+.ticket-easter-egg img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+.ticket-easter-egg.error::after { content: "图片未找到"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--red); font-size: 12px; white-space: nowrap; }
 
 /* 警告条 */
 .epilepsy-warning { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red); color: var(--red); font-size: 12px; letter-spacing: 0.1em; padding: 4px 15px; display: none; text-align: center; pointer-events: none; }
