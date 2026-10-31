@@ -21,36 +21,44 @@ body {
 .view { display: none; opacity: 0; transition: opacity 0.4s ease; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* ================= 头图区域 ================= */
+/* ================= 头图排版重构 ================= */
 .hero-banner {
   position: relative;
   width: 100%;
   height: 50vh;
   min-height: 350px;
   background-color: #e5e0d8;
-  border-bottom: 1px solid var(--line);
   overflow: hidden;
 }
+/* 修复白边：强制图片填满，裁掉多余部分 */
 .hero-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .red-layer { z-index: 1; }
 .white-layer { z-index: 2; }
+
+/* 错落的书法字 */
 .hero-title {
   position: absolute;
-  top: 50%;
-  left: 15%;
-  transform: translateY(-50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   z-index: 3;
-  font-family: "Noto Serif SC", serif;
-  font-size: 64px;
-  font-weight: 900;
-  color: #1a1a1a;
-  letter-spacing: 0.2em;
-  writing-mode: vertical-rl; /* 绝对竖排 */
-  text-orientation: upright;
-  text-shadow: 2px 2px 15px rgba(255,255,255,0.8);
   pointer-events: none;
-  white-space: nowrap; /* 绝不折行 */
 }
+.hero-title .char {
+  position: absolute;
+  font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
+  font-size: 75px;
+  color: #222;
+  font-weight: normal;
+  /* 去掉泛光，只留纯黑 */
+  text-shadow: none;
+}
+/* 根据你的参考图，四个字错落排布 */
+.hero-title .c1 { top: 15%; left: 10%; transform: rotate(-5deg); }
+.hero-title .c2 { top: 35%; left: 25%; transform: rotate(3deg); font-size: 85px; }
+.hero-title .c3 { top: 45%; left: 40%; transform: rotate(-8deg); font-size: 70px; }
+.hero-title .c4 { top: 65%; left: 30%; transform: rotate(5deg); font-size: 80px; }
 
 /* ================= 导航栏 ================= */
 .top-nav {
@@ -78,7 +86,20 @@ body {
   align-items: center;
 }
 
-/* 滑动容器（保留原生丝滑滚动） */
+/* 背景横穿的红线（增加下垂弧度） */
+.red-thread-line {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  border-bottom: 2px solid var(--red);
+  border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 滑动容器 */
 .cards-scroll-container {
   width: 100%;
   height: 100%;
@@ -87,6 +108,8 @@ body {
   scrollbar-width: none;
   padding: 40px;
   cursor: grab;
+  position: relative;
+  z-index: 1;
 }
 .cards-scroll-container:active { cursor: grabbing; }
 .cards-scroll-container::-webkit-scrollbar { display: none; }
@@ -98,6 +121,7 @@ body {
   height: 100%;
   width: max-content;
   padding-right: 100px;
+  padding-top: 60px; /* 给红线留出空间 */
 }
 
 /* 单张卡片 */
@@ -115,43 +139,40 @@ body {
   gap: 10px;
   padding: 25px 8px;
   box-shadow: -5px 5px 15px rgba(0,0,0,0.08);
-  
-  /* 初始重叠，负边距让它们叠在一起 */
   margin-right: -60px; 
   cursor: pointer;
-  /* 去除了所有多余的 transition 和物理动画，保证滑动如丝般顺滑 */
 }
 
-.list-item:last-child {
-  margin-right: 0;
-}
+.list-item:last-child { margin-right: 0; }
 
-/* 【还原夹子设计】 */
+/* 简洁的夹子：纯色小方块，居中夹住顶部 */
 .list-item::before {
   content: "";
   position: absolute;
-  top: -12px;
-  left: 10px;
-  right: 10px;
-  height: 20px;
-  background: linear-gradient(to bottom, #dcdcdc, #999, #666); /* 金属质感 */
-  border-radius: 4px;
-  border: 1px solid #555;
-  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 15px;
+  background: #a0a0a0; /* 普通的浅灰 */
+  border-radius: 2px;
+  border: 1px solid #777;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.2);
   z-index: 10;
 }
 
+/* 挂孔 */
 .list-item::after {
   content: "";
   position: absolute;
-  top: -6px;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #444;
-  border: 2px solid #bbb;
+  background: var(--bg);
+  border: 1px solid var(--red);
   z-index: 11;
 }
 
@@ -189,13 +210,13 @@ body {
 .rel-desc { font-size: 13px; color: var(--muted); }
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
-/* 动效（文字渐显、雷达图控制） */
+/* 动效 */
 .delay-item { opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
 
-/* ================= 里世界特效 ================= */
+/* 里世界 */
 .epilepsy-warning { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red); color: var(--red); font-size: 12px; padding: 4px 15px; display: none; text-align: center; pointer-events: none; }
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; }
 body.glitch-mode .glitch-overlay { display: flex; }
@@ -208,7 +229,10 @@ body.glitch-mode .sec-title { border-bottom-color: var(--red); }
 body.glitch-mode .rel-item { box-shadow: inset 0 0 10px rgba(255,0,0,0.1); }
 
 @media (max-width: 768px) {
-  .hero-title { font-size: 48px; left: 10%; }
+  .hero-title .char { font-size: 55px; }
+  .hero-title .c2 { font-size: 65px; }
+  .hero-title .c3 { font-size: 50px; }
+  .hero-title .c4 { font-size: 60px; }
   .nav-container { gap: 20px; padding: 12px 10px; }
   .nav-item { font-size: 14px; }
   .physics-stage { height: 340px; }
