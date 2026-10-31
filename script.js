@@ -1,186 +1,50 @@
 window.onload = function() {
-  var container = document.getElementById('cards-container');
-  if (!container) return;
+  var inner = document.getElementById('cards-inner');
+  var scrollBox = document.getElementById('cards-scroll');
+  if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  var threadPath = document.getElementById('dynamic-thread');
-  var cardWidth = 140; 
-  var gap = 20; 
-  var startX = 40;
-  var startY = 60; 
-
-  var cards = [];
-  var nodes = []; // 物理节点，用于画线
-  var totalWidth = 0;
-
-  // 初始化
+  var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
-    var card = document.createElement('div');
-    card.className = 'list-item';
-    card.setAttribute('data-id', oc.id);
-    
-    // 物理属性
-    card.baseX = startX + i * (cardWidth + gap);
-    card.baseY = startY;
-    card.x = card.baseX; 
-    card.y = card.baseY;
-    card.vx = 0; 
-    card.vy = 0;
-    card.angle = (i % 2 === 0) ? -2 : 2; 
-    card.targetAngle = card.angle;
-    card.va = 0; // 角速度
-
-    // 创建绳子节点（每个卡片中心一个挂点）
-    nodes.push({
-      baseX: card.baseX + cardWidth / 2,
-      baseY: card.baseY,
-      x: card.baseX + cardWidth / 2,
-      y: card.baseY,
-      vx: 0, vy: 0
-    });
-    
-    card.innerHTML = '<div class="item-index">' + (i + 1) + '</div>' +
-                     '<div class="item-name">' + oc.name + '</div>' +
-                     '<div class="item-title">' + oc.title + '</div>';
-                     
-    (function(cardEl, id) {
-      cardEl.onclick = function() {
-        if (Math.abs(cardEl.vx) < 2) showProfile(id);
-      };
-    })(card, oc.id);
-
-    container.appendChild(card);
-    cards.push(card);
-    totalWidth = card.baseX + cardWidth;
+    html += '<div class="list-item" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
+              '<div class="item-index">' + (i + 1) + '</div>' +
+              '<div class="item-name">' + oc.name + '</div>' +
+              '<div class="item-title">' + oc.title + '</div>' +
+            '</div>';
   }
-  container.style.width = totalWidth + 100 + 'px';
+  inner.innerHTML = html;
 
-  // 物理引擎循环
-  function physicsLoop() {
-    // 绘制路径
-    var pathD = '';
+  var scrollTimer = null;
+  var isDown = false;
+  var startX, scrollLeft;
 
-    for (var i = 0; i < cards.length; i++) {
-      var c = cards[i];
-      var n = nodes[i];
+  scrollBox.addEventListener('mousedown', function(e) {
+    isDown = true;
+    startX = e.pageX - scrollBox.offsetLeft;
+    scrollLeft = scrollBox.scrollLeft;
+  });
+  scrollBox.addEventListener('mouseleave', function() { isDown = false; });
+  scrollBox.addEventListener('mouseup', function() { isDown = false; });
+  scrollBox.addEventListener('mousemove', function(e) {
+    if (!isDown) return;
+    e.preventDefault();
+    var x = e.pageX - scrollBox.offsetLeft;
+    var walk = (x - startX) * 2;
+    scrollBox.scrollLeft = scrollLeft - walk;
+  });
 
-      // 1. 卡片物理 (弹簧力回弹)
-      var k = 0.1; // 弹性系数
-      var damping = 0.85; // 阻尼
-      
-      // 如果没有拖拽，计算弹簧力
-      if (!c.isDragging) {
-        var dx = c.baseX - c.x;
-        var ax = dx * k;
-        c.vx = (c.vx + ax) * damping;
-        c.x += c.vx;
+  scrollBox.addEventListener('scroll', function() {
+    inner.classList.add('is-sliding');
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      inner.classList.remove('is-sliding');
+    }, 300);
+  });
 
-        var da = c.targetAngle - c.angle;
-        var aa = da * 0.1;
-        c.va = (c.va + aa) * damping;
-        c.angle += c.va;
-      }
-
-      // 2. 绳子节点物理 (受卡片牵连)
-      var ndx = (c.x + cardWidth/2) - n.x;
-      var ndy = c.y - n.y;
-      n.vx = (n.vx + ndx * 0.2) * 0.8;
-      n.vy = (n.vy + ndy * 0.2) * 0.8;
-      n.x += n.vx;
-      n.y += n.vy;
-
-      // 应用卡片位置
-      c.style.transform = 'translate(' + c.x + 'px, ' + c.y + 'px) rotate(' + c.angle + 'deg)';
-
-      // 3. 构建平滑曲线（使用三次贝塞尔近似穿过所有节点）
-      if (i === 0) {
-        pathD += 'M ' + (n.x - 80) + ',' + (n.y - 15) + ' '; // 左侧延伸
-        pathD += 'Q ' + (n.x - 40) + ',' + (n.y + 10) + ' ' + n.x + ',' + n.y + ' ';
-      } else {
-        var prevN = nodes[i-1];
-        // 控制点计算（用于平滑连接）
-        var cx1 = prevN.x + (n.x - prevN.x) * 0.5;
-        var cy1 = prevN.y + (n.y - prevN.y) * 0.5 + 15; // 下坠感
-        
-        pathD += 'Q ' + cx1 + ',' + cy1 + ' ' + n.x + ',' + n.y + ' ';
-      }
-    }
-
-    // 右侧延伸
-    var lastN = nodes[nodes.length - 1];
-    pathD += 'Q ' + (lastN.x + 40) + ',' + (lastN.y + 10) + ' ' + (lastN.x + 80) + ',' + (lastN.y - 15);
-
-    if (threadPath) threadPath.setAttribute('d', pathD);
-
-    requestAnimationFrame(physicsLoop);
-  }
-
-  // 启动物理循环
-  physicsLoop();
-
-  // 交互逻辑
-  var draggingCard = null;
-  var startMouseX = 0;
-  var getClientX = function(e) { return e.touches ? e.touches[0].clientX : e.clientX; };
-  
-  container.addEventListener('mousedown', startDrag);
-  container.addEventListener('touchstart', startDrag, {passive: true});
-
-  function startDrag(e) {
-    var target = e.target.closest('.list-item');
-    if (target) {
-      draggingCard = target;
-      draggingCard.isDragging = true;
-      startMouseX = getClientX(e);
-    }
-  }
-
-  document.addEventListener('mousemove', moveDrag);
-  document.addEventListener('touchmove', moveDrag, {passive: true});
-
-  function moveDrag(e) {
-    if (!draggingCard) return;
-    var currentX = getClientX(e);
-    var deltaX = currentX - startMouseX;
-    if (deltaX > 60) deltaX = 60;
-    if (deltaX < -60) deltaX = -60;
-
-    var dragIdx = cards.indexOf(draggingCard);
-    
-    // 给被拖拽的卡片直接赋值
-    draggingCard.x = draggingCard.baseX + deltaX;
-    draggingCard.angle = (dragIdx % 2 === 0 ? -2 : 2) + deltaX * 0.6;
-
-    // 传递力给周围卡片，制造拉扯感
-    for (var i = 0; i < cards.length; i++) {
-      if (i === dragIdx) continue;
-      var distance = Math.abs(i - dragIdx);
-      if (distance < 3) { // 只有附近的会受影响
-        var factor = 1 - (distance * 0.3);
-        cards[i].x = cards[i].baseX + deltaX * 0.2 * factor;
-      }
-    }
-  }
-
-  document.addEventListener('mouseup', endDrag);
-  document.addEventListener('touchend', endDrag);
-
-  function endDrag() {
-    if (!draggingCard) return;
-    draggingCard.isDragging = false;
-    
-    // 触发回弹（物理引擎自动处理）
-    var dragIdx = cards.indexOf(draggingCard);
-    draggingCard.targetAngle = (dragIdx % 2 === 0 ? -2 : 2);
-    draggingCard = null;
-  }
-
-  // 初始化观察器
   setupObserver();
 };
 
-// 动效与渲染
 var isGlitchMode = false;
 var currentActiveId = "";
 var observer;
@@ -254,8 +118,13 @@ function showProfile(id, isToggle) {
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
-  if (currentAvatar) { avatarBox.innerHTML = '<img src="' + currentAvatar + '">'; } 
-  else { avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>'; }
+  
+  // 【终极防蓝框】：用 img 标签尝试加载，失败了就替换成文字，绝对不留蓝框
+  if (currentAvatar) {
+    avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片缺失<br>\' + currentAvatar + \'</div>\'">';
+  } else {
+    avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>';
+  }
 
   var statsToRender = oc.stats;
   var pName = document.getElementById('p-name');
