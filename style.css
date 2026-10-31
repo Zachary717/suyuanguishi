@@ -20,40 +20,37 @@ body {
 .view { display: none; opacity: 0; transition: opacity 0.4s ease; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* ================= 头图区域 ================= */
-.hero-banner {
-  position: relative;
-  width: 100%;
+/* ================= 纯文字极简头图 ================= */
+.text-banner {
+  padding: 100px 20px 80px;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
 }
-.red-layer { width: 100%; height: auto; display: block; position: relative; z-index: 1; }
-.white-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
-
-/* 规整宋体标题 */
-.hero-title {
-  position: absolute;
-  top: 25%;
-  left: 12%;
-  z-index: 3;
+.main-title {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
   font-family: "Noto Serif SC", serif;
-  color: #1a1a1a;
-  pointer-events: none;
+  font-weight: 900;
+  color: var(--paper);
+  line-height: 1.2;
 }
-.hero-title .line-1 { font-size: 52px; font-weight: 900; letter-spacing: 0.2em; margin-bottom: 10px; }
-.hero-title .line-2 { font-size: 52px; font-weight: 900; letter-spacing: 0.2em; margin-left: 60px; }
+.main-title .line-1 { font-size: 72px; letter-spacing: 0.2em; }
+.main-title .line-2 { font-size: 72px; letter-spacing: 0.2em; margin-left: 80px; }
+.main-subtitle { margin-top: 30px; font-size: 14px; color: var(--muted); letter-spacing: 0.5em; }
 
 /* ================= 导航栏 ================= */
 .top-nav {
   position: sticky;
   top: 0;
   width: 100%;
-  background: var(--bg);
+  background: var(--bg); 
   z-index: 100;
   border-bottom: 1px solid var(--line);
-  border-top: 1px solid var(--line);
 }
 .nav-container { display: flex; justify-content: center; align-items: center; padding: 15px 20px; max-width: 1000px; margin: 0 auto; }
-.nav-item { color: var(--paper); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: 0.1em; padding: 0 25px; position: relative; }
-.nav-item:not(:last-child)::after { content: "|"; position: absolute; right: 0; color: var(--muted); font-weight: 300; font-family: "Oswald", sans-serif; }
+.nav-item { color: var(--paper); text-decoration: none; font-size: 16px; font-weight: 600; padding: 0 25px; position: relative; }
+.nav-item:not(:last-child)::after { content: "|"; position: absolute; right: 0; color: var(--muted); font-weight: 300; }
 
 /* ================= 角色卡片区 ================= */
 .content-wrapper { max-width: 100%; margin: 0 auto; padding-bottom: 50px; }
@@ -63,22 +60,22 @@ body {
   position: relative;
   width: 100%;
   height: 400px;
-  display: flex;
-  align-items: center;
+  margin-top: 20px;
 }
 
+/* 横向贯穿的红线 (位置精确计算) */
 .red-thread-line {
   position: absolute;
-  top: 80px;
+  top: 70px; /* 红线的绝对高度 */
   left: 0;
   width: 100%;
-  height: 50px;
-  border-bottom: 2px solid var(--red);
-  border-radius: 50% 50% 0 0 / 15px 15px 0 0;
+  height: 1px;
+  background: var(--red);
   z-index: 0;
   pointer-events: none;
 }
 
+/* 滑动容器 */
 .cards-scroll-container {
   width: 100%;
   height: 100%;
@@ -93,13 +90,14 @@ body {
 .cards-scroll-container:active { cursor: grabbing; }
 .cards-scroll-container::-webkit-scrollbar { display: none; }
 
+/* 内部排列 */
 .cards-inner {
   display: flex;
   align-items: flex-start;
   height: 100%;
   width: max-content;
-  padding-top: 80px;
-  padding-right: 100px;
+  padding-top: 70px; /* 让卡片顶部刚好卡在 70px 处 */
+  padding-right: 1000px; /* 留出空间，防止展开时被裁剪 */
 }
 
 /* 单张卡片 */
@@ -107,6 +105,7 @@ body {
   position: relative;
   width: 140px;
   height: 220px;
+  flex-shrink: 0; 
   background: #FFFFFF;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -116,59 +115,56 @@ body {
   align-items: center;
   gap: 10px;
   padding: 25px 8px;
-  box-shadow: -5px 5px 15px rgba(0,0,0,0.06);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
   
-  /* 【核心伸缩逻辑】利用 CSS 过渡，绝不在 JS 里死磕性能 */
-  margin-right: -60px;
-  transition: margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease;
+  /* 初始重叠，不改变边距 */
+  margin-right: -60px; 
+  
+  /* 【核心修复】用 transform 来做展开，绝对不改变容器宽度，彻底解决抽搐 */
+  transform: translateX(calc(var(--i) * 0px));
+  transition: transform 0.4s cubic-bezier(0.25, 1.2, 0.5, 1), box-shadow 0.3s;
   cursor: pointer;
 }
 
-/* 滑动时展开的状态类 */
+/* 展开状态：平移距离拉开，视觉上散开，但不改变总宽度 */
 .cards-inner.is-sliding .list-item {
-  margin-right: 20px;
-  transform: rotate(-2deg);
-}
-.cards-inner.is-sliding .list-item:nth-child(even) {
-  transform: rotate(2deg); 
+  transform: translateX(calc(var(--i) * 80px));
+  box-shadow: -10px 10px 20px rgba(0,0,0,0.1);
 }
 
-.list-item:last-child { margin-right: 0; }
+/* 连接挂扣与红线的短线 */
+.list-item::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 20px;
+  background: var(--red);
+  z-index: 9;
+}
 
-/* 极简挂扣 */
+/* 挂扣圆环 */
 .list-item::before {
   content: "";
   position: absolute;
   top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg);
   border: 1px solid var(--red);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 10;
-}
-/* 连接挂扣和红线的短线 */
-.list-item::after {
-  content: "";
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 8px;
-  background: var(--red);
-  z-index: 9;
 }
 
 .item-index { position: absolute; top: 20px; left: 12px; font-size: 12px; color: var(--muted); }
-.item-name { writing-mode: vertical-rl; font-size: 26px; font-weight: 900; color: #111; letter-spacing: 0.1em; }
-.item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
+.item-name { writing-mode: vertical-rl; font-size: 26px; font-weight: 900; color: #111; letter-spacing: 0.1em; white-space: nowrap; }
+.item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; white-space: nowrap; }
 
 /* ================= 详情页 ================= */
-/* 篇幅原因，详情页样式和你之前一样，未做删减 */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; }
