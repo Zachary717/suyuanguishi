@@ -5,7 +5,7 @@
   --green: #5E8C87;
   --muted: #8A9A95;
   --line: rgba(94, 140, 135, 0.3);
-  --card-bg: #FFFFFF; /* 彻底改为纯白实色，绝不透底 */
+  --card-bg: #FFFFFF; 
 }
 
 * {
@@ -42,13 +42,10 @@ body {
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 50vh;
-  min-height: 350px;
-  max-height: 500px;
+  height: 55vh;
+  min-height: 400px;
   overflow: hidden;
-  /* 兜底背景：宣纸纹理色 */
   background-color: #e5e0d8;
-  background-image: radial-gradient(circle at center, #fff 0%, #e0dace 100%);
   border-bottom: 1px solid var(--line);
 }
 
@@ -64,19 +61,6 @@ body {
 .red-layer { z-index: 1; }
 .white-layer { z-index: 2; }
 
-/* 默认隐藏兜底文字，当图片没加载出来时作为装饰 */
-.hero-fallback-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 20vw;
-  font-weight: 900;
-  color: rgba(0,0,0,0.03);
-  z-index: 0;
-  white-space: nowrap;
-}
-
 .hero-title {
   position: absolute;
   top: 40%;
@@ -89,7 +73,7 @@ body {
   color: #1a1a1a;
   letter-spacing: 0.2em;
   writing-mode: vertical-rl;
-  text-shadow: 2px 2px 15px rgba(255,255,255,0.8); /* 保证在深色底上也能看清 */
+  text-shadow: 2px 2px 15px rgba(255,255,255,0.8);
   pointer-events: none;
 }
 
@@ -119,50 +103,27 @@ body {
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.1em;
-  transition: color 0.3s;
   position: relative;
 }
 
 .nav-item:hover { color: var(--red); }
 
-.nav-item::after {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--red);
-  transition: width 0.3s;
-}
-
-.nav-item:hover::after { width: 100%; }
-
-/* ================= 内容区块 ================= */
+/* ================= 物理红线舞台 ================= */
 .content-wrapper {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px 100px;
+  padding: 40px 0 100px;
 }
 
 .content-section {
-  margin-bottom: 80px;
-  scroll-margin-top: 70px; /* 防导航栏遮挡 */
+  scroll-margin-top: 70px;
 }
 
-.intro-text {
-  color: var(--muted);
-  font-size: 15px;
-  margin-top: 15px;
-}
-
-/* ================= 物理红线舞台 ================= */
 .physics-stage {
   position: relative;
   width: 100%;
   height: 450px;
-  overflow: hidden;
-  margin-top: 20px;
+  overflow: hidden; 
 }
 
 .red-thread-svg {
@@ -171,7 +132,7 @@ body {
   left: 0;
   width: 100%;
   height: 200px;
-  z-index: 0;
+  z-index: 1; /* 红线在卡片下方 */
   pointer-events: none;
 }
 
@@ -180,18 +141,18 @@ body {
   top: 0;
   left: 0;
   height: 100%;
-  z-index: 1;
+  z-index: 2; /* 卡片在红线上方，挡住挂点 */
   pointer-events: none;
 }
 
-/* 卡片：纯白实底 + GPU加速去重影 */
+/* 卡片 */
 .list-item {
   position: absolute;
-  width: 140px; /* 稍微收窄 */
+  width: 140px;
   height: 230px;
-  background: #FFFFFF; /* 纯色，不留透明度 */
+  background: #FFFFFF; 
   border: 1px solid #ddd; 
-  border-radius: 4px; /* 更方正一点 */
+  border-radius: 4px; 
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -199,16 +160,14 @@ body {
   gap: 10px;
   padding: 25px 8px;
   
-  /* 旋转原点在挂孔处 */
   transform-origin: 50% 0%; 
   transition: transform 0.1s linear;
   pointer-events: auto;
   cursor: grab;
   user-select: none;
-  
-  /* 强制开启硬件加速，解决重影Bug */
   will-change: transform;
   transform: translateZ(0); 
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .list-item:active { cursor: grabbing; }
@@ -233,7 +192,7 @@ body {
 .item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
 
 
-/* ======= 详情页 (无改动) ======= */
+/* ======= 详情页 (不变) ======= */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; }
