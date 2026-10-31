@@ -5,7 +5,7 @@
     --green: #5E8C87;     
     --muted: #8A9A95;     
     --line: rgba(94, 140, 135, 0.3);
-    --card-bg: rgba(255, 255, 255, 0.6); /* 新增：卡片通用底色 */
+    --card-bg: rgba(255, 255, 255, 0.6); 
 }
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -21,7 +21,7 @@ body{
 .view.active { display: block; opacity: 1; }
 
 /* =========================================
-   首页排版 (绝对安全的 Flex 布局)
+   首页排版
    ========================================= */
 .home-header { text-align: center; padding-top: 60px; margin-bottom: 40px; }
 .home-subtitle { color: var(--red); letter-spacing: 0.4em; font-size: 14px; font-weight: 900; }
@@ -31,7 +31,6 @@ body{
     display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;
 }
 
-/* 祈福牌卡片 */
 .list-item {
     position: relative; width: 160px; min-height: 280px; 
     background: var(--card-bg);
@@ -96,14 +95,22 @@ body{
 .tl-time { font-weight: 900; font-size: 15px; margin-bottom: 5px; }
 .tl-event { font-size: 14px; color: var(--muted); }
 
-/* 关系卡片底色自适应 */
 .rel-item { padding: 12px; border: 1px solid var(--line); background: var(--card-bg); margin-bottom: 10px; transition: background-color 0.8s, border-color 0.8s; }
 .rel-name { font-weight: 900; color: var(--red); margin-bottom: 5px; }
 .rel-desc { font-size: 13px; color: var(--muted); }
 
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
-/* 警告条 */
+/* =========================================
+   补回：动效类
+   ========================================= */
+.reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.active { opacity: 1; transform: translateY(0); }
+.delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
+.delay-item.active { opacity: 1; transform: translateY(0); }
+.radar-text { opacity: 0; transition: opacity 0.5s ease; }
+.radar-text.show { opacity: 1; }
+
 .epilepsy-warning {
   position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999;
   background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red);
@@ -114,35 +121,23 @@ body{
 html { overflow-y: scroll; }
 
 /* =========================================
-   【核心修复】里世界专属适配
+   里世界适配 (原封不动)
    ========================================= */
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; }
 body.glitch-mode .glitch-overlay { display: flex; }
 .glitch-text-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; font-size: 18px; color: #d1d1d1; text-shadow: 2px 0 red, -2px 0 lime; animation: harsh 0.2s infinite; }
 @keyframes harsh { 0%,100%{opacity:1;} 50%{opacity:0;} 51%{opacity:1;transform:translate(-49%,-50%);} }
 
-/* 里世界变量覆盖 */
 body.glitch-mode { 
-    --bg: #090a0c; 
-    --paper: #e8e2d6; 
-    --muted: #6a7a73; 
-    --red: #ff0000; 
-    --green: #3c7a6b; 
-    --line: rgba(232,226,214,0.15); 
-    --card-bg: rgba(20, 10, 10, 0.6); /* 卡片变暗黑微红 */
-    
-    background-color: var(--bg); 
-    background-image: none; 
+    --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,0.15); 
+    --card-bg: rgba(20, 10, 10, 0.6); 
+    background-color: var(--bg); background-image: none; 
 }
-
-/* 彻底隐藏里世界的警告条和扫描线伪元素，防止视觉污染 */
 body.glitch-mode .epilepsy-warning { display: none !important; }
-
 body.glitch-mode .p-name { color: var(--paper); }
 body.glitch-mode .avatar-box { border-color: var(--line); box-shadow: 0 0 10px rgba(255,0,0,0.2); }
 body.glitch-mode .sec-title { border-bottom-color: var(--red); }
 body.glitch-mode .rel-item { box-shadow: inset 0 0 10px rgba(255,0,0,0.1); }
 
-/* 修复雷达图底部的奇怪条纹（去掉了全局 body::before） */
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9996; opacity: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px); pointer-events: none; transition: opacity 0.5s; }
 body.glitch-mode::before { opacity: 1; }
