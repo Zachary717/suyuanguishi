@@ -8,32 +8,21 @@
 <link rel="stylesheet" href="style.css?v=119">
 </head>
 <body>
-<div class="glitch-overlay">
-    <div class="matrix-container" id="glitch-matrix"></div>
-</div>
+<div class="glitch-overlay"><div class="matrix-container" id="glitch-matrix"></div></div>
 
-<!-- 首页 -->
 <div id="view-main" class="view active" style="display: block; opacity: 1;">
     <div class="home-header">
         <h1 style="font-size:32px; margin-bottom:10px; color:#2E3A35;">俗缘诡事</h1>
         <div class="home-subtitle">俗 缘 诡 事 · 卷 宗</div>
     </div>
-    
-    <!-- 红线悬挂滑动区 -->
     <div class="scroll-hanger-wrap">
-        <!-- 背景的红线（用SVG画一条斜波浪线） -->
         <svg class="red-thread-svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
             <path d="M 0,20 Q 250,80 500,40 T 1000,60" fill="none" stroke="var(--red)" stroke-width="2" />
         </svg>
-        
-        <!-- 横向滑动列表 -->
-        <div class="dir-list-inner" id="dir-list">
-            <!-- JS生成的内容会放在这里 -->
-        </div>
+        <div class="dir-list-inner" id="dir-list"></div>
     </div>
 </div>
 
-<!-- 详情页 -->
 <div id="view-profile" class="view">
     <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
     <div class="nav-top">
@@ -57,7 +46,6 @@
                 <div class="sec-title"><span>命理六维</span></div>
                 <div class="stats-container" id="p-stats"></div>
             </div>
-            
             <div class="col-right">
                 <div class="sec-title"><span>生平轨迹</span></div>
                 <div class="timeline" id="p-timeline"></div>
