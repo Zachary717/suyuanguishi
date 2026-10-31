@@ -8,8 +8,12 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
-    // 【关键修改】：把 onclick 改为调用撕票函数
-    html += `<div class="list-item reveal" onclick="ripTicket(event, '${oc.id}', this)"><div class="item-left"><span class="item-index">${num}</span><span class="item-name">${oc.name}</span></div><div class="item-title">${oc.title}</div></div>`;
+    // 使用新的挂票结构
+    html += `<div class="list-item reveal" onclick="ripTicket(event, '${oc.id}', this)">
+                <div class="item-index">${num}</div>
+                <div class="item-name">${oc.name}</div>
+                <div class="item-title">${oc.title}</div>
+             </div>`;
   }
   list.innerHTML = html;
   setupObserver();
@@ -30,20 +34,16 @@ window.onload = function() {
   }
 };
 
-// 【新增】：撕票交互逻辑
+// 撕票动画拦截
 function ripTicket(event, id, element) {
-  // 防止多次点击
   if (element.classList.contains('ripping')) return;
-  
-  // 添加撕票动画类
   element.classList.add('ripping');
   
-  // 延迟 600ms 等待动画播完，然后进入角色界面
   setTimeout(() => {
     showProfile(id);
-    // 动画播完后，悄悄把类移除，以便下次返回首页时还能正常点击
+    // 延迟移除动画类，等下次返回首页时恢复原状
     setTimeout(() => { element.classList.remove('ripping'); }, 500);
-  }, 600);
+  }, 600); 
 }
 
 let isGlitchMode = false;
