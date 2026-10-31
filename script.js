@@ -4,7 +4,7 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 生成卡片，让第一张在最上面
+  // 生成卡片，利用倒序 z-index 让第一张在最上面
   var html = '';
   var total = ocDatabase.length;
   for (var i = 0; i < total; i++) {
@@ -19,30 +19,39 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  // ================== 修复：PC端鼠标拖拽滑动 ==================
+  // ================== 核心：滑动展开与收缩逻辑 ==================
+  var scrollTimer = null;
+  
+  scrollBox.addEventListener('scroll', function() {
+    // 只要一滑动，立刻加上展开类（CSS Transition 会负责平滑散开）
+    inner.classList.add('is-sliding');
+
+    // 防抖：如果停止滑动 250 毫秒，就移除类名，卡片重新靠拢
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(function() {
+      inner.classList.remove('is-sliding');
+    }, 250);
+  });
+
+  // PC 端鼠标拖拽滑动支持
   var isDown = false;
   var startX, scrollLeft;
   
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
-    // 记录按下的起点位置和当前的滚动距离
     startX = e.clientX - scrollBox.getBoundingClientRect().left;
     scrollLeft = scrollBox.scrollLeft;
   });
-  
   scrollBox.addEventListener('mouseleave', function() { isDown = false; });
   scrollBox.addEventListener('mouseup', function() { isDown = false; });
-  
   scrollBox.addEventListener('mousemove', function(e) {
     if (!isDown) return;
-    e.preventDefault(); // 阻止默认的选中文字等行为
-    // 计算当前鼠标距离起点的偏移
+    e.preventDefault();
     var x = e.clientX - scrollBox.getBoundingClientRect().left;
-    var walk = (x - startX) * 1.5; // 乘以系数让拖动更跟手
+    var walk = (x - startX) * 1.5; 
     scrollBox.scrollLeft = scrollLeft - walk;
   });
 
-  // 初始化观察器
   setupObserver();
 };
 
