@@ -5,25 +5,24 @@ window.onload = function() {
 
   var threadPath = document.getElementById('dynamic-thread');
   var cardWidth = 140; 
-  var gap = 15; // 稍微拉开一点点距离
+  var gap = 20; 
   var startX = 40;
-  var startY = 60; // 红线的高度
+  var startY = 60; 
 
   var cards = [];
   var totalWidth = 0;
 
+  // 初始化卡片
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
     var card = document.createElement('div');
     card.className = 'list-item';
     card.setAttribute('data-id', oc.id);
     
-    // 物理属性
     card.baseX = startX + i * (cardWidth + gap);
     card.baseY = startY;
-    card.currentAngle = (i % 2 === 0) ? -2 : 2; 
-    card.targetAngle = card.currentAngle;
-    card.velocity = 0; 
+    card.offsetX = 0; 
+    card.angle = (i % 2 === 0) ? -3 : 3; 
     
     card.innerHTML = '<div class="item-index">' + (i + 1) + '</div>' +
                      '<div class="item-name">' + oc.name + '</div>' +
@@ -31,7 +30,7 @@ window.onload = function() {
                      
     (function(cardEl, id) {
       cardEl.onclick = function() {
-        if (Math.abs(cardEl.velocity) < 1) showProfile(id);
+        if (Math.abs(cardEl.offsetX) < 5) showProfile(id);
       };
     })(card, oc.id);
 
@@ -42,131 +41,130 @@ window.onload = function() {
 
   container.style.width = totalWidth + 100 + 'px';
 
-  // ======== 物理引擎核心 ========
-  var draggingCard = null;
-  var lastMouseX = 0;
-
-  function renderPhysics() {
-    var pathD = 'M -20,' + startY + ' '; // 起点稍微往左偏，红线贯穿屏幕
-
+  // 渲染红线
+  function drawThread() {
+    var pathD = '';
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
-      
-      // 弹簧阻尼模型 (Spring-Damper)
-      if (c !== draggingCard) {
-        // 计算向目标回弹的加速度
-        var acceleration = (c.targetAngle - c.currentAngle) * 0.1;
-        c.velocity += acceleration;
-        c.velocity *= 0.85; // 摩擦力，数值越小停得越快
-        c.currentAngle += c.velocity;
-        
-        // 联动传导：将自身的震动传给旁边的卡片
-        if (i > 0 && Math.abs(c.velocity) > 0.1) {
-          cards[i-1].velocity += c.velocity * 0.2;
-        }
-        if (i < cards.length - 1 && Math.abs(c.velocity) > 0.1) {
-          cards[i+1].velocity += c.velocity * 0.2;
-        }
-      }
-
-      // 限制最大角度，防止翻转
-      if (c.currentAngle > 30) c.currentAngle = 30;
-      if (c.currentAngle < -30) c.currentAngle = -30;
-
-      // 渲染卡片位置
-      var pivotX = c.baseX + cardWidth / 2;
+      var pivotX = c.baseX + cardWidth / 2 + c.offsetX;
       var pivotY = c.baseY;
       
-      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.currentAngle + 'deg)';
-
-      // 绘制红线：用平滑的贝塞尔曲线穿过每个卡片的挂点
       if (i === 0) {
-        pathD += 'L ' + pivotX + ',' + pivotY + ' '; 
+        pathD += 'M ' + (pivotX - 100) + ',' + (pivotY - 10) + ' ';
+        pathD += 'Q ' + (pivotX - 50) + ',' + (pivotY + 15) + ' ' + pivotX + ',' + pivotY + ' ';
       } else {
         var prevC = cards[i-1];
-        var prevPivotX = prevC.baseX + cardWidth / 2;
-        // 控制点：仅在中间加一点点极微小的下坠感，不用生硬的波浪
+        var prevPivotX = prevC.baseX + cardWidth / 2 + prevC.offsetX;
+        var prevPivotY = prevC.baseY;
         var controlX = (prevPivotX + pivotX) / 2;
-        var controlY = startY + 5; 
+        var controlY = (prevPivotY + pivotY) / 2 + 20; 
         pathD += 'Q ' + controlX + ',' + controlY + ' ' + pivotX + ',' + pivotY + ' ';
       }
     }
-    
-    pathD += 'L 2000,' + startY; // 延伸到屏幕外
+    var lastC = cards[cards.length - 1];
+    var lastPivotX = lastC.baseX + cardWidth / 2 + lastC.offsetX;
+    var lastPivotY = lastC.baseY;
+    pathD += 'Q ' + (lastPivotX + 50) + ',' + (lastPivotY + 15) + ' ' + (lastPivotX + 100) + ',' + (lastPivotY - 10);
     if(threadPath) threadPath.setAttribute('d', pathD);
-
-    requestAnimationFrame(renderPhysics);
   }
 
+  drawThread();
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].style.transform = 'translate(' + cards[i].baseX + 'px, ' + cards[i].baseY + 'px) rotate(' + cards[i].angle + 'deg)';
+  }
+
+  // 拖拽物理
+  var draggingCard = null;
+  var startMouseX = 0;
   var getClientX = function(e) { return e.touches ? e.touches[0].clientX : e.clientX; };
   
-  // 拖拽事件
-  container.addEventListener('mousedown', function(e) {
+  container.addEventListener('mousedown', startDrag);
+  container.addEventListener('touchstart', startDrag, {passive: true});
+
+  function startDrag(e) {
     var target = e.target.closest('.list-item');
     if (target) {
       draggingCard = target;
-      lastMouseX = getClientX(e);
-      draggingCard.velocity = 0;
+      startMouseX = getClientX(e);
+      for(var i=0; i<cards.length; i++) cards[i].style.transition = 'none';
     }
-  });
+  }
 
-  document.addEventListener('mousemove', function(e) {
-    if (draggingCard) {
-      var currentX = getClientX(e);
-      var deltaX = currentX - lastMouseX;
-      
-      // 直接设定被拖拽卡片的当前角度
-      draggingCard.currentAngle += deltaX * 1.5; 
-      
-      // 赋予一个速度，松手时会有惯性
-      draggingCard.velocity = deltaX * 0.5;
-      
-      lastMouseX = currentX;
+  document.addEventListener('mousemove', moveDrag);
+  document.addEventListener('touchmove', moveDrag, {passive: true});
+
+  function moveDrag(e) {
+    if (!draggingCard) return;
+    var currentX = getClientX(e);
+    var deltaX = currentX - startMouseX;
+    if (deltaX > 50) deltaX = 50;
+    if (deltaX < -50) deltaX = -50;
+
+    var dragIdx = cards.indexOf(draggingCard);
+    draggingCard.offsetX = deltaX;
+    draggingCard.angle = (dragIdx % 2 === 0 ? -3 : 3) + deltaX * 0.6;
+    draggingCard.style.transform = 'translate(' + (draggingCard.baseX + draggingCard.offsetX) + 'px, ' + draggingCard.baseY + 'px) rotate(' + draggingCard.angle + 'deg)';
+
+    for (var i = 0; i < cards.length; i++) {
+      if (i === dragIdx) continue;
+      var distance = Math.abs(i - dragIdx);
+      var factor = Math.max(0, 1 - distance * 0.3); 
+      var c = cards[i];
+      c.offsetX = deltaX * 0.3 * factor;
+      c.angle = (i % 2 === 0 ? -3 : 3) - deltaX * 0.2 * factor;
+      c.style.transform = 'translate(' + (c.baseX + c.offsetX) + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
     }
-  });
+    drawThread();
+  }
 
-  document.addEventListener('mouseup', function() {
-    if (draggingCard) {
-      // 松手后，设定它回归的最终角度是初始的错落角度
-      var index = cards.indexOf(draggingCard);
-      draggingCard.targetAngle = (index % 2 === 0) ? -2 : 2;
-      draggingCard = null;
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+
+  function endDrag() {
+    if (!draggingCard) return;
+    draggingCard = null;
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+      c.style.transition = 'transform 0.8s cubic-bezier(0.25, 1.25, 0.5, 1)';
+      c.offsetX = 0;
+      c.angle = (i % 2 === 0) ? -3 : 3;
+      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
     }
-  });
-
-  // 触摸屏适配
-  container.addEventListener('touchstart', function(e) {
-    var target = e.target.closest('.list-item');
-    if (target) {
-      draggingCard = target;
-      lastMouseX = getClientX(e);
-      draggingCard.velocity = 0;
+    if(threadPath) {
+      threadPath.style.transition = 'd 0.8s ease-out';
+      drawThread();
+      setTimeout(function() { threadPath.style.transition = 'none'; }, 800);
     }
-  }, {passive: true});
+  }
 
-  document.addEventListener('touchmove', function(e) {
-    if (draggingCard) {
-      var currentX = getClientX(e);
-      var deltaX = currentX - lastMouseX;
-      draggingCard.currentAngle += deltaX * 1.5;
-      draggingCard.velocity = deltaX * 0.5;
-      lastMouseX = currentX;
-    }
-  }, {passive: true});
-
-  document.addEventListener('touchend', function() {
-    if (draggingCard) {
-      var index = cards.indexOf(draggingCard);
-      draggingCard.targetAngle = (index % 2 === 0) ? -2 : 2;
-      draggingCard = null;
-    }
-  });
-
-  renderPhysics();
+  // 初始化观察器 (用于详情页动效)
+  setupObserver();
 };
+
+// ==========================================
+// 详情页动效与渲染引擎 (完全恢复)
+// ==========================================
 
 var isGlitchMode = false;
 var currentActiveId = "";
+var observer;
+
+function setupObserver() {
+  var observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
+  observer = new IntersectionObserver(function(entries, obs) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+        if (entry.target.id === 'p-stats') {
+          var radarData = entry.target.querySelector('.radar-anim-group');
+          var radarText = entry.target.querySelector('.radar-text');
+          if (radarData) animateRadarLines(radarData, radarText);
+        }
+        obs.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+}
 
 function switchView(viewId) {
   var views = document.querySelectorAll('.view');
@@ -180,6 +178,7 @@ function switchView(viewId) {
     target.style.display = 'block';
   }
   window.scrollTo(0, 0);
+  
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
@@ -192,15 +191,19 @@ function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
   if (isGlitchMode) { document.body.classList.add('glitch-mode'); } 
   else { document.body.classList.remove('glitch-mode'); }
+  
   var matrix = document.getElementById('glitch-matrix');
   if (matrix) matrix.innerHTML = '';
+  
   if (isGlitchMode) {
     showProfile(currentActiveId, true);
     if (matrix) {
       matrix.innerHTML = '<div class="glitch-text-box">Text Glitch</div>';
       setTimeout(function() { matrix.innerHTML = ''; }, 1200);
     }
-  } else { showProfile(currentActiveId, true); }
+  } else { 
+    showProfile(currentActiveId, true); 
+  }
 }
 
 function showProfile(id, isToggle) {
@@ -214,6 +217,16 @@ function showProfile(id, isToggle) {
     if (ocDatabase[i].id === id) { oc = ocDatabase[i]; break; }
   }
   if (!oc) return;
+
+  // 【恢复】里世界按钮控制
+  var btn = document.getElementById('glitch-btn');
+  if (btn) {
+    if (id === 'yeyao') {
+      btn.style.display = 'block';
+    } else {
+      btn.style.display = 'none';
+    }
+  }
 
   var ticketEgg = document.getElementById('ticket-egg');
   if (ticketEgg) {
@@ -241,21 +254,18 @@ function showProfile(id, isToggle) {
   var relationsData = isMutated ? oc.mutated_relations : oc.relations;
 
   if (isMutated) {
-    var btn = document.getElementById('glitch-btn');
-    if (btn) btn.style.display = 'block';
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
     pName.textContent = "叶 瑶 ？";
     pTitle.textContent = "是我做错了吗?";
   } else {
-    var btn2 = document.getElementById('glitch-btn');
-    if (btn2) btn2.style.display = (id === 'yeyao') ? 'block' : 'none';
     pName.textContent = oc.name;
     pTitle.textContent = oc.title;
   }
 
+  // 【恢复】逐条延迟加载动效
   if (basicData) {
     for (var b = 0; b < basicData.length; b++) {
-      bHtml += '<div class="info-item"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
+      bHtml += '<div class="info-item delay-item" style="transition-delay:' + (b*0.1) + 's"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
     }
   }
   infoList.innerHTML = bHtml;
@@ -263,7 +273,7 @@ function showProfile(id, isToggle) {
   if (timelineData) {
     for (var t = 0; t < timelineData.length; t++) {
       var timeColor = isMutated ? 'style="color:red;"' : '';
-      tHtml += '<div class="tl-item"><div class="tl-time" ' + timeColor + '>' + timelineData[t].time + '</div><div class="tl-event">' + timelineData[t].event + '</div></div>';
+      tHtml += '<div class="tl-item delay-item" style="transition-delay:' + (t*0.1) + 's"><div class="tl-time" ' + timeColor + '>' + timelineData[t].time + '</div><div class="tl-event">' + timelineData[t].event + '</div></div>';
     }
   }
   timelineBox.innerHTML = tHtml;
@@ -281,7 +291,7 @@ function showProfile(id, isToggle) {
       var linkClass = hasLink ? 'has-link' : '';
       var descStyle = isMutated ? 'style="color:red;"' : '';
       
-      rHtml += '<div class="rel-item ' + linkClass + '" ' + clickStr + '>';
+      rHtml += '<div class="rel-item delay-item ' + linkClass + '" style="transition-delay:' + (r*0.1) + 's" ' + clickStr + '>';
       rHtml += '<div class="rel-name">' + rel.name + '</div>';
       rHtml += '<div class="rel-desc" ' + descStyle + '>' + rel.desc + '</div>';
       rHtml += '</div>';
@@ -297,8 +307,81 @@ function showProfile(id, isToggle) {
 
   if (isToggle !== true) { switchView('view-profile'); } 
   else { window.scrollTo(0, 0); }
+  
+  // 重置动画状态，确保每次进来都能重新触发
+  var radarContainer = document.getElementById('p-stats');
+  radarContainer.classList.remove('active');
+  var delayItems = document.querySelectorAll('.delay-item');
+  for(var k=0; k<delayItems.length; k++) {
+    delayItems[k].classList.remove('active');
+  }
+  var textGroup = radarContainer.querySelector('.radar-text');
+  if (textGroup) textGroup.classList.remove('show');
+  
+  // 强制重绘以重启动画
+  void radarContainer.offsetWidth; 
+
+  // 延迟观察，让 DOM 先渲染出来
+  setTimeout(function() {
+    if (observer) {
+      observer.observe(radarContainer);
+      for(var m=0; m<delayItems.length; m++) {
+        observer.observe(delayItems[m]);
+      }
+    }
+  }, 100);
 }
 
+// 雷达图生长动画
+function animateRadarLines(group, textGroup) {
+  var circles = group.querySelectorAll('circle');
+  var poly = group.querySelector('polygon');
+  var targets = [];
+  var cx = 150, cy = 140;
+  group.style.opacity = 0;
+  
+  for(var i=0; i<circles.length; i++) {
+    var c = circles[i];
+    var tx = parseFloat(c.getAttribute('data-tx'));
+    var ty = parseFloat(c.getAttribute('data-ty'));
+    var distance = Math.hypot(tx - cx, ty - cy);
+    targets.push({ el: c, tx: tx, ty: ty, distance: distance });
+  }
+  
+  var speed = Math.hypot(90, 0) / 800; 
+  var startTime = performance.now();
+  
+  for(var j=0; j<circles.length; j++) {
+    circles[j].setAttribute('cx', cx);
+    circles[j].setAttribute('cy', cy);
+  }
+  poly.setAttribute('points', cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy);
+  group.style.opacity = 1;
+  
+  function update(now) {
+    var elapsed = now - startTime;
+    var currentPoints = [];
+    var allFinished = true;
+    
+    for(var k=0; k<targets.length; k++) {
+      var t = targets[k];
+      var progress = Math.min(elapsed / (t.distance / speed), 1);
+      if (progress < 1) allFinished = false; 
+      var currentX = cx + (t.tx - cx) * progress;
+      var currentY = cy + (t.ty - cy) * progress;
+      t.el.setAttribute('cx', currentX);
+      t.el.setAttribute('cy', currentY);
+      currentPoints.push(currentX + ',' + currentY);
+    }
+    
+    poly.setAttribute('points', currentPoints.join(' '));
+    if (!allFinished) requestAnimationFrame(update);
+    else textGroup.classList.add('show');
+  }
+  requestAnimationFrame(update);
+}
+
+// 绘制雷达图结构
 function renderRadarChart(stats) {
   var cx = 150, cy = 140, r = 90, maxVal = 6;
   var keys = Object.keys(stats), n = keys.length;
@@ -321,25 +404,28 @@ function renderRadarChart(stats) {
   }
   
   var dataPoints = [];
+  var circleTags = '';
   for (var i3 = 0; i3 < n; i3++) {
     var cr2 = (r * stats[keys[i3]]) / maxVal;
     var angle3 = (Math.PI * 2 / n) * i3 - Math.PI / 2;
     var x = cx + cr2 * Math.cos(angle3), y = cy + cr2 * Math.sin(angle3);
     dataPoints.push(x + ',' + y);
+    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#F1F0E8') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" />';
   }
   
-  svg += '<g style="opacity: 1;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="rgba(181,106,88,0.1)" stroke="#B56A58" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += '<g class="radar-anim-group" style="opacity: 0;">';
+  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(181,106,88,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += circleTags;
   svg += '</g>';
   
-  svg += '<g>';
+  svg += '<g class="radar-text">';
   for (var i4 = 0; i4 < n; i4++) {
     var key = keys[i4];
     var angle4 = (Math.PI * 2 / n) * i4 - Math.PI / 2;
     var lx = cx + (r + 20) * Math.cos(angle4), ly = cy + (r + 20) * Math.sin(angle4);
     var textAnchor = Math.cos(angle4) > 0.1 ? "start" : (Math.cos(angle4) < -0.1 ? "end" : "middle");
-    svg += '<text x="' + lx + '" y="' + ly + '" fill="#2E3A35" font-size="12" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="#5E8C87" font-size="11" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#2E3A35') + '" font-size="12" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#5E8C87') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
   }
   svg += '</g>';
   
