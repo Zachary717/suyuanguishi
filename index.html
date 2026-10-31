@@ -5,12 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=115">
+<link rel="stylesheet" href="style.css?v=118">
 </head>
 <body>
 <div class="glitch-overlay">
     <div class="matrix-container" id="glitch-matrix"></div>
 </div>
+
 <div id="view-main" class="view active" style="display: block; opacity: 1;">
     <div class="home-header">
         <h1 style="font-size:32px; margin-bottom:10px; color:#2E3A35;">俗缘诡事</h1>
@@ -25,6 +26,7 @@
         <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
         <div class="id-tag" id="p-top-id">ID: UNKNOWN</div>
     </div>
+    
     <div class="profile-wrap">
         <div class="hero-section">
             <div class="avatar-box" id="p-avatar-box"></div>
@@ -33,13 +35,15 @@
                 <div class="p-title" id="p-title">身份</div>
             </div>
         </div>
+        
         <div class="content-grid">
-            <div-list class="col-left">
+            <div class="col-left">
                 <div class="sec-title"><span>基础卷宗</span></div>
-                <div class="info" id="p-info-list"></div>
+                <div class="info-list" id="p-info-list"></div>
                 <div class="sec-title"><span>命理六维</span></div>
                 <div class="stats-container" id="p-stats"></div>
             </div>
+            
             <div class="col-right">
                 <div class="sec-title"><span>生平轨迹</span></div>
                 <div class="timeline" id="p-timeline"></div>
@@ -49,13 +53,12 @@
         </div>
     </div>
 
-    <!-- 【纯净版门票彩蛋】就只是一张图 -->
     <div class="ticket-easter-egg" id="ticket-egg">
-        <img src="ticket.png" alt="彩蛋">
+        <img src="ticket.png" alt="门票" onerror="this.style.display='none'; this.parentElement.classList.add('error');">
     </div>
 </div>
 
-<script src="data.js?v=115"></script>
-<script src="script.js?v=115"></script>
+<script src="data.js?v=118"></script>
+<script src="script.js?v=118"></script>
 </body>
 </html>
