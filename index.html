@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=106">
+<link rel="stylesheet" href="style.css?v=108">
 </head>
 <body>
 
@@ -13,16 +13,16 @@
     <div class="matrix-container" id="glitch-matrix"></div>
 </div>
 
-<!-- 首页：中式挂票墙 -->
+<!-- 首页：白净留白 + 错落悬挂木牌 -->
 <div id="view-main" class="view active">
     <div class="home-header">
         <img src="title.png" class="home-title-img" alt="俗缘诡事" onerror="this.style.display='none'">
         <div class="home-subtitle">俗缘诡事 · 卷宗</div>
     </div>
     
-    <!-- 挂票墙容器 -->
-    <div class="ticket-wall" id="dir-list">
-        <!-- JS 会在这里生成挂票 -->
+    <!-- 挂绳与木牌墙 -->
+    <div class="tag-wall">
+        <div id="dir-list" class="dir-list-inner"></div>
     </div>
 </div>
 
@@ -34,6 +34,7 @@
         <div class="id-tag" id="p-top-id"></div>
     </div>
     
+    <!-- 修复了上方巨大空白的 profile-wrap -->
     <div class="profile-wrap">
         <div class="hero-section">
             <div class="avatar-box" id="p-avatar-box"></div>
@@ -48,7 +49,7 @@
                 <div class="sec-title"><span>基础卷宗</span></div>
                 <div class="info-list" id="p-info-list"></div>
                 
-                <div class="sec-title" style="margin-top:60px;"><span>命理六维</span></div>
+                <div class="sec-title" style="margin-top:50px;"><span>命理六维</span></div>
                 <div class="stats-wrapper">
                     <div class="stats-container" id="p-stats"></div>
                 </div>
@@ -58,7 +59,7 @@
                 <div class="sec-title"><span>生平轨迹</span></div>
                 <div class="timeline" id="p-timeline"></div>
                 
-                <div class="sec-title" style="margin-top:60px;"><span>人际羁绊</span></div>
+                <div class="sec-title" style="margin-top:50px;"><span>人际羁绊</span></div>
                 <div class="relations-list" id="p-relations"></div>
             </div>
         </div>
@@ -67,7 +68,7 @@
     </div>
 </div>
 
-<script src="data.js?v=106"></script>
-<script src="script.js?v=106"></script>
+<script src="data.js?v=108"></script>
+<script src="script.js?v=108"></script>
 </body>
 </html>
