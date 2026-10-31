@@ -4,11 +4,14 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 生成卡片
+  // 生成卡片，核心修改：z-index 让第一张在最高层
   var html = '';
-  for (var i = 0; i < ocDatabase.length; i++) {
+  var total = ocDatabase.length;
+  for (var i = 0; i < total; i++) {
     var oc = ocDatabase[i];
-    html += '<div class="list-item" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
+    var zIndex = total - i; 
+    
+    html += '<div class="list-item" style="z-index: ' + zIndex + ';" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
               '<div class="item-index">' + (i + 1) + '</div>' +
               '<div class="item-name">' + oc.name + '</div>' +
               '<div class="item-title">' + oc.title + '</div>' +
@@ -16,9 +19,10 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  // --- PC 端鼠标拖拽滑动 ---
+  // PC 端鼠标拖拽滑动支持
   var isDown = false;
   var startX, scrollLeft;
+  
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
     startX = e.pageX - scrollBox.offsetLeft;
@@ -32,21 +36,6 @@ window.onload = function() {
     var x = e.pageX - scrollBox.offsetLeft;
     var walk = (x - startX) * 2; // 拖拽灵敏度
     scrollBox.scrollLeft = scrollLeft - walk;
-  });
-
-  // --- 滑动展开与边缘合拢逻辑 ---
-  scrollBox.addEventListener('scroll', function() {
-    // 只要滑动，立刻展开
-    inner.classList.add('is-sliding');
-
-    // 判断是否滑动到了最左侧或最右侧
-    var scrollLeft = scrollBox.scrollLeft;
-    var maxScroll = scrollBox.scrollWidth - scrollBox.clientWidth;
-
-    // 如果滑到了最左边，或者滑到了最右边，强制合拢
-    if (scrollLeft <= 5 || scrollLeft >= maxScroll - 5) {
-      inner.classList.remove('is-sliding');
-    }
   });
 
   // 初始化观察器
@@ -129,8 +118,9 @@ function showProfile(id, isToggle) {
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
+  // 图片丢失时直接显示文字，不会显示蓝框
   if (currentAvatar) {
-    avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片缺失<br>\' + currentAvatar + \'</div>\'">';
+    avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片未找到<br>\' + currentAvatar + \'</div>\'">';
   } else {
     avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>';
   }
@@ -158,6 +148,7 @@ function showProfile(id, isToggle) {
     pTitle.textContent = oc.title;
   }
 
+  // 基础信息，带延迟动效
   if (basicData) {
     for (var b = 0; b < basicData.length; b++) {
       bHtml += '<div class="info-item delay-item" style="transition-delay:' + (b*0.1) + 's"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
@@ -165,6 +156,7 @@ function showProfile(id, isToggle) {
   }
   infoList.innerHTML = bHtml;
 
+  // 时间线，带延迟动效
   if (timelineData) {
     for (var t = 0; t < timelineData.length; t++) {
       var timeColor = isMutated ? 'style="color:red;"' : '';
@@ -173,6 +165,7 @@ function showProfile(id, isToggle) {
   }
   timelineBox.innerHTML = tHtml;
 
+  // 关系，带点击跳转，带延迟动效
   if (relationsData && relationsData.length > 0) {
     for (var r = 0; r < relationsData.length; r++) {
       var rel = relationsData[r];
@@ -202,6 +195,7 @@ function showProfile(id, isToggle) {
   if (isToggle !== true) { switchView('view-profile'); } 
   else { window.scrollTo(0, 0); }
   
+  // 重置并触发动画
   var radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   var delayItems = document.querySelectorAll('.delay-item');
