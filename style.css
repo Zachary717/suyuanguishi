@@ -3,6 +3,8 @@
 body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif SC", serif; line-height: 1.8; overflow-x: hidden; transition: background-color 0.8s, color 0.8s; }
 .view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
+
+/* 首页排版 */
 .home-header { text-align: center; padding-top: 60px; margin-bottom: 40px; }
 .home-subtitle { color: var(--red); letter-spacing: 0.4em; font-size: 14px; font-weight: 900; }
 .dir-list-inner { max-width: 800px; margin: 0 auto; padding: 0 20px 100px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
@@ -15,18 +17,29 @@ body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif
 .item-index { position: absolute; top: 10px; left: 10px; font-size: 12px; color: var(--muted); }
 .item-name { writing-mode: vertical-rl; font-size: 28px; font-weight: 900; color: var(--paper); letter-spacing: 0.1em; line-height: 1.2; }
 .item-title { writing-mode: vertical-rl; font-size: 13px; color: var(--green); letter-spacing: 0.1em; line-height: 1.5; max-height: 180px; }
+
+/* 详情页排版 */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; letter-spacing: 0.1em; }
 .id-tag { font-family: "Oswald", sans-serif; font-size: 12px; }
-.profile-wrap { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+
+.profile-wrap { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
 .hero-section { display: flex; gap: 20px; margin-bottom: 40px; align-items: flex-end; }
-.avatar-box { width: 140px; height: 180px; background: var(--card-bg); border: 1px solid var(--line); padding: 4px; transition: background-color 0.8s; }
+.avatar-box { width: 140px; height: 180px; background: var(--card-bg); border: 1px solid var(--line); padding: 4px; transition: background-color 0.8s; display: flex; justify-content: center; align-items: center; }
 .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+.empty-text { font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); letter-spacing: 2px; text-align: center; }
+
 .p-name { font-size: 40px; color: var(--red); margin-bottom: 10px; }
 .p-title { font-size: 14px; color: var(--green); border-top: 1px solid var(--line); padding-top: 5px; display: inline-block; }
+
+/* PC端双列布局 */
 .content-grid { display: flex; flex-direction: column; gap: 40px; }
-@media (min-width: 768px) { .content-grid { flex-direction: row; justify-content: space-between; } .col-left, .col-right { width: 48%; } }
+@media (min-width: 768px) {
+    .content-grid { flex-direction: row; justify-content: space-between; gap: 60px; }
+    .col-left, .col-right { width: 50%; }
+}
+
 .sec-title { font-size: 18px; font-weight: 900; margin: 30px 0 15px; border-bottom: 2px solid var(--paper); display: inline-block; padding-bottom: 5px; transition: border-color 0.8s; }
 .sec-title span { font-size: 14px; color: var(--muted); margin-left: 10px; }
 .info-item { display: flex; border-bottom: 1px dashed var(--line); padding: 10px 0; }
@@ -43,43 +56,49 @@ body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif
 .rel-name { font-weight: 900; color: var(--red); margin-bottom: 5px; }
 .rel-desc { font-size: 13px; color: var(--muted); }
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
+
+/* 动效 */
 .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 .delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
-.epilepsy-warning { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red); color: var(--red); font-size: 12px; letter-spacing: 0.1em; padding: 4px 15px; display: none; text-align: center; pointer-events: none; }
-html { overflow-y: scroll; }
 
 /* =========================================
-   【纯净版】门票交互
+   门票彩蛋（直接露一半在外面，绝对看得到）
    ========================================= */
 .ticket-easter-egg {
     position: fixed;
-    right: -180px; /* 默认藏在屏幕外面，只露出一点点边 */
+    right: -120px; /* 默认露出 80px */
     bottom: 40px;
-    width: 180px; /* 控制图片大小 */
+    width: 200px; 
+    height: 100px;
+    background: var(--bg); 
+    border: 2px solid var(--red); /* 如果图片没加载出来，有个红框提示 */
     cursor: pointer;
     z-index: 999;
     transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     display: none;
 }
-
-/* 点击后的状态：滑入屏幕 */
 .ticket-easter-egg.show {
-    right: 20px; /* 完全拉出，留一点边距 */
+    right: 20px; /* 完全拉出 */
 }
-
-/* 纯图片，没有任何外壳 */
 .ticket-easter-egg img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
     display: block;
-    border-radius: 4px;
-    box-shadow: -4px 4px 15px rgba(0,0,0,0.15); /* 加一点淡淡的阴影显得立体 */
     pointer-events: none;
 }
+.ticket-easter-egg.error::after {
+    content: "图片未找到";
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: var(--red); font-size: 12px; white-space: nowrap;
+}
+
+/* 警告条 */
+.epilepsy-warning { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red); color: var(--red); font-size: 12px; letter-spacing: 0.1em; padding: 4px 15px; display: none; text-align: center; pointer-events: none; }
 
 /* 里世界适配 */
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; }
