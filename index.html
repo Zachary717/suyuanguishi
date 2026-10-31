@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=151">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=154">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -19,12 +19,10 @@
         <img src="hero-red.png" class="hero-layer red-layer" onerror="this.style.opacity=0">
         <img src="hero-white.png" class="hero-layer white-layer" onerror="this.style.opacity=0">
         
-        <!-- 错落书法字 -->
+        <!-- 规整、错开的宋体字 -->
         <div class="hero-title">
-            <span class="char c1">俗</span>
-            <span class="char c2">缘</span>
-            <span class="char c3">诡</span>
-            <span class="char c4">事</span>
+            <div class="line-1">俗 缘</div>
+            <div class="line-2">诡 事</div>
         </div>
     </div>
 
@@ -39,11 +37,11 @@
 
     <!-- 主内容区 -->
     <div class="content-wrapper">
-        <section id="section-home" class="content-section" style="height: 20px;"></section>
+        <section id="section-home" class="content-section" style="height: 10px;"></section>
 
         <section id="section-characters" class="content-section">
             <div class="physics-stage">
-                <!-- 横穿红线 -->
+                <!-- 横向贯穿的红线 -->
                 <div class="red-thread-line"></div>
                 
                 <!-- 横向滑动容器 -->
@@ -55,7 +53,7 @@
             </div>
         </section>
 
-        <section id="section-events" class="content-section" style="height: 20px;"></section>
+        <section id="section-events" class="content-section" style="height: 100px;"></section>
     </div>
 </div>
 
@@ -94,7 +92,7 @@
     </div>
 </div>
 
-<script src="data.js?v=151"></script>
-<script src="script.js?v=151"></script>
+<script src="data.js?v=154"></script>
+<script src="script.js?v=154"></script>
 </body>
 </html>
