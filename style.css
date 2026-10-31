@@ -4,8 +4,7 @@
   --red: #B56A58;
   --green: #5E8C87;
   --muted: #8A9A95;
-  --line: rgba(94, 140, 135, 0.3);
-  --card-bg: #FFFFFF;
+  --line: rgba(94, 140, 135, 0.2);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -21,92 +20,72 @@ body {
 .view { display: none; opacity: 0; transition: opacity 0.4s ease; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* ================= 头图排版重构 ================= */
+/* ================= 头图区域 ================= */
 .hero-banner {
   position: relative;
   width: 100%;
-  height: 50vh;
-  min-height: 350px;
-  background-color: #e5e0d8;
-  overflow: hidden;
 }
-/* 修复白边：强制图片填满，裁掉多余部分 */
-.hero-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-.red-layer { z-index: 1; }
-.white-layer { z-index: 2; }
+.red-layer { width: 100%; height: auto; display: block; position: relative; z-index: 1; }
+.white-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
 
-/* 错落的书法字 */
+/* 规整宋体标题 */
 .hero-title {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 25%;
+  left: 12%;
   z-index: 3;
+  font-family: "Noto Serif SC", serif;
+  color: #1a1a1a;
   pointer-events: none;
 }
-.hero-title .char {
-  position: absolute;
-  font-family: "Ma Shan Zheng", "STKaiti", "KaiTi", serif;
-  font-size: 75px;
-  color: #222;
-  font-weight: normal;
-  /* 去掉泛光，只留纯黑 */
-  text-shadow: none;
-}
-/* 根据你的参考图，四个字错落排布 */
-.hero-title .c1 { top: 15%; left: 10%; transform: rotate(-5deg); }
-.hero-title .c2 { top: 35%; left: 25%; transform: rotate(3deg); font-size: 85px; }
-.hero-title .c3 { top: 45%; left: 40%; transform: rotate(-8deg); font-size: 70px; }
-.hero-title .c4 { top: 65%; left: 30%; transform: rotate(5deg); font-size: 80px; }
+.hero-title .line-1 { font-size: 52px; font-weight: 900; letter-spacing: 0.2em; margin-bottom: 10px; }
+.hero-title .line-2 { font-size: 52px; font-weight: 900; letter-spacing: 0.2em; margin-left: 60px; }
 
 /* ================= 导航栏 ================= */
 .top-nav {
   position: sticky;
   top: 0;
   width: 100%;
-  background: rgba(241, 240, 232, 0.95);
-  backdrop-filter: blur(10px);
+  background: var(--bg);
   z-index: 100;
   border-bottom: 1px solid var(--line);
+  border-top: 1px solid var(--line);
 }
-.nav-container { display: flex; justify-content: center; gap: 50px; padding: 18px 20px; max-width: 1000px; margin: 0 auto; }
-.nav-item { color: var(--paper); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: 0.1em; }
+.nav-container { display: flex; justify-content: center; align-items: center; padding: 15px 20px; max-width: 1000px; margin: 0 auto; }
+.nav-item { color: var(--paper); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: 0.1em; padding: 0 25px; position: relative; }
+.nav-item:not(:last-child)::after { content: "|"; position: absolute; right: 0; color: var(--muted); font-weight: 300; font-family: "Oswald", sans-serif; }
 
 /* ================= 角色卡片区 ================= */
-.content-wrapper { max-width: 100%; margin: 0 auto; padding: 40px 0 100px; }
-.content-section { scroll-margin-top: 70px; }
+.content-wrapper { max-width: 100%; margin: 0 auto; padding-bottom: 50px; }
+.content-section { scroll-margin-top: 60px; }
 
 .physics-stage {
   position: relative;
   width: 100%;
-  height: 380px;
-  margin-top: 20px;
+  height: 400px;
   display: flex;
   align-items: center;
 }
 
-/* 背景横穿的红线（增加下垂弧度） */
 .red-thread-line {
   position: absolute;
-  top: 60px;
+  top: 80px;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 50px;
   border-bottom: 2px solid var(--red);
-  border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+  border-radius: 50% 50% 0 0 / 15px 15px 0 0;
   z-index: 0;
   pointer-events: none;
 }
 
-/* 滑动容器 */
 .cards-scroll-container {
   width: 100%;
   height: 100%;
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  padding: 40px;
+  padding: 0 40px;
   cursor: grab;
   position: relative;
   z-index: 1;
@@ -114,14 +93,13 @@ body {
 .cards-scroll-container:active { cursor: grabbing; }
 .cards-scroll-container::-webkit-scrollbar { display: none; }
 
-/* 内部卡片排列 */
 .cards-inner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   height: 100%;
   width: max-content;
+  padding-top: 80px;
   padding-right: 100px;
-  padding-top: 60px; /* 给红线留出空间 */
 }
 
 /* 单张卡片 */
@@ -138,42 +116,51 @@ body {
   align-items: center;
   gap: 10px;
   padding: 25px 8px;
-  box-shadow: -5px 5px 15px rgba(0,0,0,0.08);
-  margin-right: -60px; 
+  box-shadow: -5px 5px 15px rgba(0,0,0,0.06);
+  
+  /* 【核心伸缩逻辑】利用 CSS 过渡，绝不在 JS 里死磕性能 */
+  margin-right: -60px;
+  transition: margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease;
   cursor: pointer;
+}
+
+/* 滑动时展开的状态类 */
+.cards-inner.is-sliding .list-item {
+  margin-right: 20px;
+  transform: rotate(-2deg);
+}
+.cards-inner.is-sliding .list-item:nth-child(even) {
+  transform: rotate(2deg); 
 }
 
 .list-item:last-child { margin-right: 0; }
 
-/* 简洁的夹子：纯色小方块，居中夹住顶部 */
+/* 极简挂扣 */
 .list-item::before {
   content: "";
   position: absolute;
-  top: -10px;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px;
-  height: 15px;
-  background: #a0a0a0; /* 普通的浅灰 */
-  border-radius: 2px;
-  border: 1px solid #777;
-  box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--red);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 10;
 }
-
-/* 挂孔 */
+/* 连接挂扣和红线的短线 */
 .list-item::after {
   content: "";
   position: absolute;
-  top: 6px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid var(--red);
-  z-index: 11;
+  width: 1px;
+  height: 8px;
+  background: var(--red);
+  z-index: 9;
 }
 
 .item-index { position: absolute; top: 20px; left: 12px; font-size: 12px; color: var(--muted); }
@@ -181,6 +168,7 @@ body {
 .item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
 
 /* ================= 详情页 ================= */
+/* 篇幅原因，详情页样式和你之前一样，未做删减 */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; }
@@ -227,13 +215,3 @@ body.glitch-mode .epilepsy-warning { display: none !important; }
 body.glitch-mode .p-name { color: var(--paper); }
 body.glitch-mode .sec-title { border-bottom-color: var(--red); }
 body.glitch-mode .rel-item { box-shadow: inset 0 0 10px rgba(255,0,0,0.1); }
-
-@media (max-width: 768px) {
-  .hero-title .char { font-size: 55px; }
-  .hero-title .c2 { font-size: 65px; }
-  .hero-title .c3 { font-size: 50px; }
-  .hero-title .c4 { font-size: 60px; }
-  .nav-container { gap: 20px; padding: 12px 10px; }
-  .nav-item { font-size: 14px; }
-  .physics-stage { height: 340px; }
-}
