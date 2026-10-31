@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=142">
+<link rel="stylesheet" href="style.css?v=150">
 </head>
 <body>
 <div class="glitch-overlay">
@@ -14,12 +14,14 @@
 
 <div id="view-main" class="view active" style="display: block; opacity: 1;">
     
+    <!-- 顶部头图 -->
     <div class="hero-banner">
-        <img src="hero-red.png" class="hero-layer red-layer" onerror="this.style.display='none'">
-        <img src="hero-white.png" class="hero-layer white-layer" onerror="this.style.display='none'">
+        <img src="hero-red.png" class="hero-layer red-layer" onerror="this.style.opacity=0">
+        <img src="hero-white.png" class="hero-layer white-layer" onerror="this.style.opacity=0">
         <h1 class="hero-title">俗缘诡事</h1>
     </div>
 
+    <!-- 导航栏 -->
     <nav class="top-nav" id="top-nav">
         <div class="nav-container">
             <a href="#section-home" class="nav-item">首页</a>
@@ -28,19 +30,16 @@
         </div>
     </nav>
 
+    <!-- 主内容区 -->
     <div class="content-wrapper">
         <section id="section-home" class="content-section" style="height: 20px;"></section>
 
         <section id="section-characters" class="content-section">
             <div class="physics-stage">
-                <!-- 贯穿背景的红线 -->
-                <svg class="red-thread-svg" preserveAspectRatio="none" viewBox="0 0 1000 100">
-                    <path id="main-thread-path" d="M 0,50 Q 500,50 1000,50" fill="none" stroke="var(--red)" stroke-width="2" />
-                </svg>
-                
+                <!-- 原生横向滑动容器 -->
                 <div class="cards-scroll-container" id="cards-scroll">
                     <div class="cards-inner" id="cards-inner">
-                        <!-- JS 生成 -->
+                        <!-- JS 动态生成卡片 -->
                     </div>
                 </div>
             </div>
@@ -50,6 +49,7 @@
     </div>
 </div>
 
+<!-- 详情页 -->
 <div id="view-profile" class="view">
     <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
     <div class="nav-top">
@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<script src="data.js?v=142"></script>
-<script src="script.js?v=142"></script>
+<script src="data.js?v=150"></script>
+<script src="script.js?v=150"></script>
 </body>
 </html>
