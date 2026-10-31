@@ -2,11 +2,11 @@ window.onload = function() {
   var list = document.getElementById('dir-list');
   if (!list) return;
   if (typeof ocDatabase === 'undefined') {
-    list.innerHTML = '<div style="color:red;text-align:center;">data.js error</div>';
+    list.innerHTML = '<div style="color:red;text-align:center;">data.js 读取失败</div>';
     return;
   }
 
-  // 1. 渲染卡片
+  // 1. 渲染卡片并记录初始角度
   var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
@@ -21,7 +21,7 @@ window.onload = function() {
   }
   list.innerHTML = html;
 
-  // 2. 物理拖拽效果
+  // 2. 物理拖拽和红线拉扯
   var threadPath = document.getElementById('dynamic-thread');
   var lastScrollLeft = list.scrollLeft;
   var scrollTimer = null;
@@ -30,10 +30,10 @@ window.onload = function() {
     var currentScrollLeft = list.scrollLeft;
     var speed = currentScrollLeft - lastScrollLeft;
     
+    // 限制最大速度防止卡片翻面
     if (speed > 50) speed = 50;
     if (speed < -50) speed = -50;
 
-    // 向左滑动(speed正)，卡片顺时针倾斜
     var tilt = speed * 0.6; 
 
     var cards = list.querySelectorAll('.list-item');
@@ -41,12 +41,10 @@ window.onload = function() {
       var baseRotate = parseFloat(cards[j].getAttribute('data-base'));
       var baseY = cards[j].getAttribute('data-y');
       
-      // 取消过渡，保证跟手
       cards[j].style.transition = 'none';
       cards[j].style.transform = 'rotate(' + (baseRotate + tilt) + 'deg) translateY(' + baseY + 'px)';
     }
 
-    // 动态拉扯红线
     if (threadPath) {
        var pull = speed * 1.5;
        threadPath.setAttribute('d', 'M 0,30 Q ' + (250 - pull) + ',' + (70 + pull) + ' 500,40 T 1000,50');
@@ -54,14 +52,13 @@ window.onload = function() {
 
     lastScrollLeft = currentScrollLeft;
 
-    // 松手回弹
+    // 回弹
     clearTimeout(scrollTimer);
     scrollTimer = setTimeout(function() {
       for (var k = 0; k < cards.length; k++) {
         var baseRotate = parseFloat(cards[k].getAttribute('data-base'));
         var baseY = cards[k].getAttribute('data-y');
         
-        // 恢复弹性过渡
         cards[k].style.transition = 'transform 0.8s cubic-bezier(0.25, 1.25, 0.5, 1)'; 
         cards[k].style.transform = 'rotate(' + baseRotate + 'deg) translateY(' + baseY + 'px)';
       }
@@ -72,7 +69,6 @@ window.onload = function() {
     }, 150);
   });
 
-  // 按下时取消过渡
   var stopTransition = function() {
     var cards = list.querySelectorAll('.list-item');
     for (var j = 0; j < cards.length; j++) {
@@ -83,7 +79,7 @@ window.onload = function() {
   list.addEventListener('mousedown', stopTransition);
   list.addEventListener('touchstart', stopTransition);
 
-  // 其他附属逻辑
+  // 其他逻辑
   var btn = document.getElementById('glitch-btn');
   if (btn) {
     var warning = document.createElement('div');
@@ -170,12 +166,12 @@ function showProfile(id, isToggle) {
   
   var bHtml = '', tHtml = '', rHtml = '';
 
-  // 区分正常和里世界的数据源
-  var basicData = (id === 'yeyao' && isGlitchMode) ? oc.mutated_basic : oc.basic;
-  var timelineData = (id === 'yeyao' && isGlitchMode) ? oc.mutated_timeline : oc.timeline;
-  var relationsData = (id === 'yeyao' && isGlitchMode) ? oc.mutated_relations : oc.relations;
+  var isMutated = (id === 'yeyao' && isGlitchMode);
+  var basicData = isMutated ? oc.mutated_basic : oc.basic;
+  var timelineData = isMutated ? oc.mutated_timeline : oc.timeline;
+  var relationsData = isMutated ? oc.mutated_relations : oc.relations;
 
-  if (id === 'yeyao' && isGlitchMode) {
+  if (isMutated) {
     var btn = document.getElementById('glitch-btn');
     if (btn) btn.style.display = 'block';
     if (oc.mutated_stats) statsToRender = oc.mutated_stats;
@@ -188,7 +184,7 @@ function showProfile(id, isToggle) {
     pTitle.textContent = oc.title;
   }
 
-  // 构建基础信息
+  // 渲染基础卷宗
   if (basicData) {
     for (var b = 0; b < basicData.length; b++) {
       bHtml += '<div class="info-item"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
@@ -196,35 +192,41 @@ function showProfile(id, isToggle) {
   }
   infoList.innerHTML = bHtml;
 
-  // 构建生平轨迹
+  // 渲染生平轨迹
   if (timelineData) {
     for (var t = 0; t < timelineData.length; t++) {
-      var timeColor = (id === 'yeyao' && isGlitchMode) ? 'style="color:red;"' : '';
+      var timeColor = isMutated ? 'style="color:red;"' : '';
       tHtml += '<div class="tl-item"><div class="tl-time" ' + timeColor + '>' + timelineData[t].time + '</div><div class="tl-event">' + timelineData[t].event + '</div></div>';
     }
   }
   timelineBox.innerHTML = tHtml;
 
-  // 构建人际羁绊（修复了这里可能因为拼接错误导致的空白）
-  if (relationsData) {
+  // 渲染人际羁绊（核心修复）
+  if (relationsData && relationsData.length > 0) {
     for (var r = 0; r < relationsData.length; r++) {
       var rel = relationsData[r];
       var hasLink = false;
-      if (!(id === 'yeyao' && isGlitchMode)) {
+      
+      if (!isMutated) {
         for (var x = 0; x < ocDatabase.length; x++) {
-          if (ocDatabase[x].id === rel.id && rel.id !== '') hasLink = true;
+          if (ocDatabase[x].id === rel.id && rel.id !== '') {
+            hasLink = true;
+            break;
+          }
         }
       }
       
       var clickStr = hasLink ? 'onclick="showProfile(\'' + rel.id + '\')"' : '';
       var linkClass = hasLink ? 'has-link' : '';
-      var descStyle = (id === 'yeyao' && isGlitchMode) ? 'style="color:red;"' : '';
+      var descStyle = isMutated ? 'style="color:red;"' : '';
       
       rHtml += '<div class="rel-item ' + linkClass + '" ' + clickStr + '>';
       rHtml += '<div class="rel-name">' + rel.name + '</div>';
       rHtml += '<div class="rel-desc" ' + descStyle + '>' + rel.desc + '</div>';
       rHtml += '</div>';
     }
+  } else {
+    rHtml = '<div style="color:var(--muted);font-size:14px;">暂无羁绊记录</div>';
   }
   relationsBox.innerHTML = rHtml;
 
