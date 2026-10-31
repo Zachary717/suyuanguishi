@@ -8,6 +8,7 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
+    // 生成左右双列的竖排结构
     html += `<div class="list-item reveal" onclick="showProfile('${oc.id}')">
                 <div class="item-index">${num}</div>
                 <div class="item-name">${oc.name}</div>
@@ -310,12 +311,12 @@ function renderRadarChart(stats) {
       let cr = (r * level) / maxVal;
       points.push((cx + cr * Math.cos(angle)) + ',' + (cy + cr * Math.sin(angle)));
     }
-    let strokeColor = level === maxVal ? (isGlitchMode ? "rgba(232,226,214,0.3)" : "rgba(26,26,26,0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(26,26,26,0.05)");
+    let strokeColor = level === maxVal ? (isGlitchMode ? "rgba(232,226,214,0.3)" : "rgba(94, 140, 135, 0.2)") : (isGlitchMode ? "rgba(232,226,214,0.1)" : "rgba(94, 140, 135, 0.05)");
     svg += '<polygon points="' + points.join(' ') + '" fill="none" stroke="' + strokeColor + '" stroke-width="1" stroke-dasharray="' + (level === maxVal ? '0' : '2 2') + '" />';
   }
   for (let i = 0; i < n; i++) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
-    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * Math.cos(angle)) + '" y2="' + (cy + r * Math.sin(angle)) + '" stroke="' + (isGlitchMode ? 'rgba(232,226,214,0.15)' : 'rgba(26,26,26,0.08)') + '" stroke-width="1" />';
+    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * Math.cos(angle)) + '" y2="' + (cy + r * Math.sin(angle)) + '" stroke="' + (isGlitchMode ? 'rgba(232,226,214,0.15)' : 'rgba(94, 140, 135, 0.1)') + '" stroke-width="1" />';
   }
   let dataPoints = [];
   let circleTags = '';
@@ -324,10 +325,10 @@ function renderRadarChart(stats) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     let x = cx + cr * Math.cos(angle), y = cy + cr * Math.sin(angle);
     dataPoints.push(x + ',' + y);
-    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#f7f6f1') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#a31818') + '" stroke-width="1.5" />';
+    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#F1F0E8') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" />';
   }
   svg += '<g class="radar-anim-group" style="opacity: 0;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(163,24,24,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#a31818') + '" stroke-width="1.5" stroke-linejoin="round" />';
+  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(181, 106, 88, 0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" stroke-linejoin="round" />';
   svg += circleTags;
   svg += '</g>';
   svg += '<g class="radar-text">';
@@ -336,8 +337,8 @@ function renderRadarChart(stats) {
     let angle = (Math.PI * 2 / n) * i - Math.PI / 2;
     let lx = cx + (r + 25) * Math.cos(angle), ly = cy + (r + 25) * Math.sin(angle);
     let textAnchor = Math.cos(angle) > 0.1 ? "start" : (Math.cos(angle) < -0.1 ? "end" : "middle");
-    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#111') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#a31818') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#2E3A35') + '" font-size="13" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#5E8C87') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
   }
   svg += '</g>';
   document.getElementById('p-stats').innerHTML = svg + '</svg>';
