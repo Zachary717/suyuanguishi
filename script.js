@@ -28,10 +28,20 @@ window.onload = function() {
 let isGlitchMode = false;
 let currentActiveId = "";
 
+// 强制控制页面的显示与隐藏
 function switchView(viewId) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(viewId).classList.add('active');
+  // 1. 把所有页面全部隐藏
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.remove('active');
+    v.style.display = 'none';
+  });
+  // 2. 把目标页面显示出来
+  let target = document.getElementById(viewId);
+  target.classList.add('active');
+  target.style.display = 'block';
+  
   window.scrollTo(0, 0);
+
   if (viewId === 'view-main') {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
@@ -59,6 +69,7 @@ function showProfile(id, isToggle) {
     document.body.classList.remove('glitch-mode');
     isGlitchMode = false;
   }
+  
   const oc = ocDatabase.find(o => o.id === id);
   if(!oc) return;
 
@@ -88,8 +99,12 @@ function showProfile(id, isToggle) {
   document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR: UNKNOWN" : `ID: ${oc.id.toUpperCase()}`;
   renderRadarChart(statsToRender);
   
-  if (isToggle !== true) switchView('view-profile');
-  else window.scrollTo(0, 0);
+  // 触发跳转的核心代码
+  if (isToggle !== true) {
+    switchView('view-profile');
+  } else {
+    window.scrollTo(0, 0);
+  }
 }
 
 function renderRadarChart(stats) {
