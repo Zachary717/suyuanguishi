@@ -10,7 +10,6 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-
 body {
   background-color: var(--bg);
   color: var(--paper);
@@ -22,46 +21,155 @@ body {
 .view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* 头图 */
+/* ================= 头图 ================= */
 .hero-banner {
-  position: relative; width: 100%; height: 50vh; min-height: 350px;
-  background-color: #e5e0d8; border-bottom: 1px solid var(--line); overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 50vh;
+  min-height: 350px;
+  background-color: #e5e0d8;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
 }
 .hero-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 .red-layer { z-index: 1; }
 .white-layer { z-index: 2; }
 .hero-title {
-  position: absolute; top: 45%; left: 15%; transform: translateY(-50%); z-index: 3;
-  font-family: "Noto Serif SC", serif; font-size: 64px; font-weight: 900; color: #1a1a1a;
-  letter-spacing: 0.2em; writing-mode: vertical-rl; text-shadow: 2px 2px 15px rgba(255,255,255,0.8); pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 15%;
+  transform: translateY(-50%);
+  z-index: 3;
+  font-family: "Noto Serif SC", serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 0.2em;
+  writing-mode: vertical-rl;
+  text-shadow: 2px 2px 15px rgba(255,255,255,0.8);
+  pointer-events: none;
 }
 
-/* 导航 */
-.top-nav { position: sticky; top: 0; width: 100%; background: rgba(241, 240, 232, 0.95); backdrop-filter: blur(10px); z-index: 100; border-bottom: 1px solid var(--line); }
+/* ================= 导航 ================= */
+.top-nav {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: rgba(241, 240, 232, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  border-bottom: 1px solid var(--line);
+}
 .nav-container { display: flex; justify-content: center; gap: 50px; padding: 18px 20px; max-width: 1000px; margin: 0 auto; }
 .nav-item { color: var(--paper); text-decoration: none; font-size: 16px; font-weight: 600; letter-spacing: 0.1em; }
 
-/* 物理舞台 */
-.content-wrapper { max-width: 1200px; margin: 0 auto; padding: 40px 0 100px; }
+/* ================= 物理红线舞台 ================= */
+.content-wrapper { max-width: 100%; margin: 0 auto; padding: 40px 0 100px; }
 .content-section { scroll-margin-top: 70px; }
-.physics-stage { position: relative; width: 100%; height: 450px; overflow: hidden; margin-top: 30px; }
-.red-thread-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-.cards-container { position: absolute; top: 0; left: 0; height: 100%; z-index: 2; pointer-events: none; }
 
-/* 卡片（去除了CSS过渡，全权交由JS物理引擎控制） */
-.list-item {
-  position: absolute; width: 140px; height: 230px; background: #FFFFFF; border: 1px solid #ddd; border-radius: 4px; 
-  display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 10px; padding: 25px 8px;
-  transform-origin: 50% 0%; pointer-events: auto; cursor: grab; user-select: none; will-change: transform;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+.physics-stage {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  margin-top: 20px;
 }
-.list-item:active { cursor: grabbing; }
-.list-item::after { content: ""; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--bg); border: 1px solid var(--red); }
+
+.red-thread-svg {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 原生滑动容器 */
+.cards-scroll-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  z-index: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding: 0 40px;
+  cursor: grab;
+}
+.cards-scroll-container:active { cursor: grabbing; }
+.cards-scroll-container::-webkit-scrollbar { display: none; }
+
+/* 卡片内部排版 */
+.cards-inner {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 70px;
+  width: max-content;
+}
+
+/* 卡片本体 */
+.list-item {
+  position: relative;
+  width: 140px;
+  height: 220px;
+  background: #FFFFFF;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 25px 8px;
+  
+  margin-right: -40px; /* 初始重叠感 */
+  transform-origin: 50% 0%;
+  transition: margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease;
+  box-shadow: -2px 4px 10px rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.list-item::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  width: 1px;
+  height: 60px;
+  background: var(--red);
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
+.list-item::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--red);
+}
+
+/* 滑动时张开 */
+.cards-inner.is-sliding .list-item {
+  margin-right: 20px;
+  transform: rotate(-2deg);
+}
+.cards-inner.is-sliding .list-item:nth-child(even) {
+  transform: rotate(2deg); 
+}
+
 .item-index { position: absolute; top: 12px; left: 12px; font-size: 12px; color: var(--muted); }
 .item-name { writing-mode: vertical-rl; font-size: 26px; font-weight: 900; color: #111; letter-spacing: 0.1em; }
 .item-title { writing-mode: vertical-rl; font-size: 12px; color: var(--green); letter-spacing: 0.1em; max-height: 160px; }
 
-/* 详情页 */
+/* ================= 详情页 ================= */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; }
@@ -91,7 +199,7 @@ body {
 .rel-desc { font-size: 13px; color: var(--muted); }
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
 
-/* 动效类 */
+/* 动效 */
 .delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
@@ -113,5 +221,5 @@ body.glitch-mode .rel-item { box-shadow: inset 0 0 10px rgba(255,0,0,0.1); }
   .hero-title { font-size: 48px; left: 10%; }
   .nav-container { gap: 20px; padding: 12px 10px; }
   .nav-item { font-size: 14px; }
-  .physics-stage { height: 400px; }
+  .physics-stage { height: 380px; }
 }
