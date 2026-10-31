@@ -4,11 +4,10 @@ window.onload = function() {
   if (typeof ocDatabase === 'undefined') return;
 
   var threadPath = document.getElementById('dynamic-thread');
-  // 关键修改：卡片变窄，间距大幅缩小
   var cardWidth = 140; 
-  var gap = 10; 
+  var gap = 15; // 稍微拉开一点点距离
   var startX = 40;
-  var startY = 60;
+  var startY = 60; // 红线的高度
 
   var cards = [];
   var totalWidth = 0;
@@ -19,9 +18,11 @@ window.onload = function() {
     card.className = 'list-item';
     card.setAttribute('data-id', oc.id);
     
+    // 物理属性
     card.baseX = startX + i * (cardWidth + gap);
     card.baseY = startY;
-    card.angle = (i % 2 === 0) ? -3 : 3; 
+    card.currentAngle = (i % 2 === 0) ? -2 : 2; 
+    card.targetAngle = card.currentAngle;
     card.velocity = 0; 
     
     card.innerHTML = '<div class="item-index">' + (i + 1) + '</div>' +
@@ -30,7 +31,7 @@ window.onload = function() {
                      
     (function(cardEl, id) {
       cardEl.onclick = function() {
-        if (Math.abs(cardEl.velocity) < 0.5) showProfile(id);
+        if (Math.abs(cardEl.velocity) < 1) showProfile(id);
       };
     })(card, oc.id);
 
@@ -41,42 +42,57 @@ window.onload = function() {
 
   container.style.width = totalWidth + 100 + 'px';
 
+  // ======== 物理引擎核心 ========
   var draggingCard = null;
   var lastMouseX = 0;
 
   function renderPhysics() {
-    var pathD = 'M 0,' + startY + ' '; 
+    var pathD = 'M -20,' + startY + ' '; // 起点稍微往左偏，红线贯穿屏幕
 
     for (var i = 0; i < cards.length; i++) {
       var c = cards[i];
-      if (c.angle > 45) c.angle = 45;
-      if (c.angle < -45) c.angle = -45;
+      
+      // 弹簧阻尼模型 (Spring-Damper)
+      if (c !== draggingCard) {
+        // 计算向目标回弹的加速度
+        var acceleration = (c.targetAngle - c.currentAngle) * 0.1;
+        c.velocity += acceleration;
+        c.velocity *= 0.85; // 摩擦力，数值越小停得越快
+        c.currentAngle += c.velocity;
+        
+        // 联动传导：将自身的震动传给旁边的卡片
+        if (i > 0 && Math.abs(c.velocity) > 0.1) {
+          cards[i-1].velocity += c.velocity * 0.2;
+        }
+        if (i < cards.length - 1 && Math.abs(c.velocity) > 0.1) {
+          cards[i+1].velocity += c.velocity * 0.2;
+        }
+      }
 
+      // 限制最大角度，防止翻转
+      if (c.currentAngle > 30) c.currentAngle = 30;
+      if (c.currentAngle < -30) c.currentAngle = -30;
+
+      // 渲染卡片位置
       var pivotX = c.baseX + cardWidth / 2;
       var pivotY = c.baseY;
       
-      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
+      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.currentAngle + 'deg)';
 
-      if (c !== draggingCard) {
-        var baseAngle = (i % 2 === 0) ? -3 : 3;
-        var diff = baseAngle - c.angle;
-        c.velocity += diff * 0.05; 
-        c.velocity *= 0.92; 
-        c.angle += c.velocity;
-      }
-
+      // 绘制红线：用平滑的贝塞尔曲线穿过每个卡片的挂点
       if (i === 0) {
         pathD += 'L ' + pivotX + ',' + pivotY + ' '; 
       } else {
         var prevC = cards[i-1];
         var prevPivotX = prevC.baseX + cardWidth / 2;
+        // 控制点：仅在中间加一点点极微小的下坠感，不用生硬的波浪
         var controlX = (prevPivotX + pivotX) / 2;
-        var controlY = (prevC.baseY + pivotY) / 2 + 15; 
+        var controlY = startY + 5; 
         pathD += 'Q ' + controlX + ',' + controlY + ' ' + pivotX + ',' + pivotY + ' ';
       }
     }
     
-    pathD += 'L ' + (totalWidth + 50) + ',' + startY;
+    pathD += 'L 2000,' + startY; // 延伸到屏幕外
     if(threadPath) threadPath.setAttribute('d', pathD);
 
     requestAnimationFrame(renderPhysics);
@@ -84,12 +100,13 @@ window.onload = function() {
 
   var getClientX = function(e) { return e.touches ? e.touches[0].clientX : e.clientX; };
   
+  // 拖拽事件
   container.addEventListener('mousedown', function(e) {
     var target = e.target.closest('.list-item');
     if (target) {
       draggingCard = target;
       lastMouseX = getClientX(e);
-      target.velocity = 0; 
+      draggingCard.velocity = 0;
     }
   });
 
@@ -98,28 +115,32 @@ window.onload = function() {
       var currentX = getClientX(e);
       var deltaX = currentX - lastMouseX;
       
-      draggingCard.angle += deltaX * 1.5; 
+      // 直接设定被拖拽卡片的当前角度
+      draggingCard.currentAngle += deltaX * 1.5; 
       
-      var index = cards.indexOf(draggingCard);
-      for(var j=0; j<cards.length; j++) {
-        if(j !== index) {
-          var distance = Math.abs(j - index);
-          var decay = Math.max(0, 1 - distance * 0.3); 
-          cards[j].angle -= deltaX * 0.5 * decay;
-        }
-      }
+      // 赋予一个速度，松手时会有惯性
+      draggingCard.velocity = deltaX * 0.5;
+      
       lastMouseX = currentX;
     }
   });
 
-  document.addEventListener('mouseup', function() { draggingCard = null; });
+  document.addEventListener('mouseup', function() {
+    if (draggingCard) {
+      // 松手后，设定它回归的最终角度是初始的错落角度
+      var index = cards.indexOf(draggingCard);
+      draggingCard.targetAngle = (index % 2 === 0) ? -2 : 2;
+      draggingCard = null;
+    }
+  });
 
+  // 触摸屏适配
   container.addEventListener('touchstart', function(e) {
     var target = e.target.closest('.list-item');
     if (target) {
       draggingCard = target;
       lastMouseX = getClientX(e);
-      target.velocity = 0;
+      draggingCard.velocity = 0;
     }
   }, {passive: true});
 
@@ -127,21 +148,19 @@ window.onload = function() {
     if (draggingCard) {
       var currentX = getClientX(e);
       var deltaX = currentX - lastMouseX;
-      draggingCard.angle += deltaX * 1.5;
-      
-      var index = cards.indexOf(draggingCard);
-      for(var j=0; j<cards.length; j++) {
-        if(j !== index) {
-          var distance = Math.abs(j - index);
-          var decay = Math.max(0, 1 - distance * 0.3);
-          cards[j].angle -= deltaX * 0.5 * decay;
-        }
-      }
+      draggingCard.currentAngle += deltaX * 1.5;
+      draggingCard.velocity = deltaX * 0.5;
       lastMouseX = currentX;
     }
   }, {passive: true});
 
-  document.addEventListener('touchend', function() { draggingCard = null; });
+  document.addEventListener('touchend', function() {
+    if (draggingCard) {
+      var index = cards.indexOf(draggingCard);
+      draggingCard.targetAngle = (index % 2 === 0) ? -2 : 2;
+      draggingCard = null;
+    }
+  });
 
   renderPhysics();
 };
