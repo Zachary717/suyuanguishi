@@ -8,8 +8,8 @@ window.onload = function() {
   for(let i=0; i<ocDatabase.length; i++) {
     let oc = ocDatabase[i];
     let num = (i + 1).toString().padStart(2, '0');
-    // 使用新的挂票结构
-    html += `<div class="list-item reveal" onclick="ripTicket(event, '${oc.id}', this)">
+    // 生成竖排木牌结构
+    html += `<div class="list-item reveal" onclick="showProfile('${oc.id}')">
                 <div class="item-index">${num}</div>
                 <div class="item-name">${oc.name}</div>
                 <div class="item-title">${oc.title}</div>
@@ -33,18 +33,6 @@ window.onload = function() {
     observerBtn.observe(btn, { attributes: true, attributeFilter: ['style'] });
   }
 };
-
-// 撕票动画拦截
-function ripTicket(event, id, element) {
-  if (element.classList.contains('ripping')) return;
-  element.classList.add('ripping');
-  
-  setTimeout(() => {
-    showProfile(id);
-    // 延迟移除动画类，等下次返回首页时恢复原状
-    setTimeout(() => { element.classList.remove('ripping'); }, 500);
-  }, 600); 
-}
 
 let isGlitchMode = false;
 let currentActiveId = "";
