@@ -20,7 +20,7 @@ body{
 .view.active { display:block; opacity:1; }
 
 /* =========================================
-   首页排版 (白净中式留白 + 悬挂木牌)
+   首页排版 (真正的错落感)
    ========================================= */
 #view-main { min-height: 100vh; padding-top: 80px; display: flex; flex-direction: column; align-items: center; }
 .home-header { text-align: center; margin-bottom: 20px; }
@@ -31,7 +31,6 @@ body{
 .tag-wall {
     position: relative; width: 100%; max-width: 900px;
     padding: 80px 20px 100px; margin: 0 auto;
-    display: flex; justify-content: center;
 }
 /* 横向的红绳 */
 .tag-wall::before {
@@ -39,15 +38,18 @@ body{
     background: var(--red); opacity: 0.6; z-index: 0;
 }
 
-/* 错落的木牌列表 */
+/* 改用 Grid 布局，并让元素顶部对齐以允许高低错落 */
 .dir-list-inner {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 40px 30px;
+    display: grid; 
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px 30px;
+    align-items: start; /* 关键：让它们不被拉伸成等高 */
     position: relative; z-index: 1;
 }
 
 .list-item {
     position: relative;
-    width: 130px; height: 280px;
+    width: 100%; height: 260px;
     background: #fdfcf8; 
     border: 1px solid var(--line);
     box-shadow: 4px 6px 15px rgba(0,0,0,0.06);
@@ -57,34 +59,41 @@ body{
     transform-origin: top center;
 }
 
-/* 错落角度控制 */
-.list-item:nth-child(1) { transform: rotate(-3deg); }
-.list-item:nth-child(2) { transform: rotate(2deg) translateY(15px); }
-.list-item:nth-child(3) { transform: rotate(-1.5deg) translateY(-5px); }
-.list-item:nth-child(4) { transform: rotate(4deg) translateY(20px); }
-.list-item:nth-child(5) { transform: rotate(-2deg) translateY(5px); }
-.list-item:nth-child(6) { transform: rotate(3deg); }
+/* 【核心】强制打乱高度，实现真正的错落挂载感 */
+.list-item:nth-child(1) { margin-top: 0px; transform: rotate(-2deg); }
+.list-item:nth-child(2) { margin-top: 40px; transform: rotate(3deg); }
+.list-item:nth-child(3) { margin-top: 15px; transform: rotate(1.5deg); }
+.list-item:nth-child(4) { margin-top: 60px; transform: rotate(-3deg); }
+.list-item:nth-child(5) { margin-top: 5px; transform: rotate(2deg); }
+.list-item:nth-child(6) { margin-top: 45px; transform: rotate(-1deg); }
+.list-item:nth-child(7) { margin-top: 25px; transform: rotate(3deg); }
+.list-item:nth-child(8) { margin-top: 70px; transform: rotate(-2deg); }
 
-/* 悬挂红绳与钉子 */
+/* 悬挂红绳与钉子（为了适应错落，把钉子放在木牌顶部） */
 .list-item::before {
-    content: ""; position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
-    width: 1px; height: 40px; background: var(--red); opacity: 0.5;
+    content: ""; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 60px; background: var(--red); opacity: 0.5;
 }
+.list-item:nth-child(odd)::before { height: 40px; top: -40px; } /* 奇数高度绳子短一点 */
+.list-item:nth-child(3n)::before { height: 30px; top: -30px; }
+
 .list-item::after {
-    content: ""; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    content: ""; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
     width: 8px; height: 8px; border-radius: 50%; background: #fff;
     border: 1px solid var(--muted); box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    z-index: 2;
 }
 
 /* 悬浮拉正 */
 .list-item:hover {
-    transform: scale(1.05) rotate(0deg) translateY(10px) !important;
+    transform: scale(1.05) rotate(0deg) translateY(0px) !important;
     box-shadow: 0 15px 25px rgba(0,0,0,0.1);
     border-color: var(--red);
+    z-index: 10;
 }
 
 .item-index {
-    position: absolute; top: 25px; font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); font-weight: 600;
+    position: absolute; top: 15px; font-family: "Oswald", sans-serif; font-size: 14px; color: var(--muted); font-weight: 600;
 }
 /* 竖排名字 */
 .item-name {
@@ -101,11 +110,11 @@ body{
 .item-title {
     writing-mode: vertical-rl;
     font-size: 12px; color: var(--green); letter-spacing: 0.1em;
-    max-height: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    max-height: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
 /* =========================================
-   详情页排版 (修复上方空白)
+   详情页排版 (彻底修复上方空白)
    ========================================= */
 #view-profile { padding-bottom: 80px; }
 .nav-top { position:fixed; top:0; left:0; right:0; z-index:50; padding:20px 30px; display:flex; justify-content:space-between; mix-blend-mode:difference; }
@@ -126,8 +135,12 @@ body{
   display: none; text-align: center; pointer-events: none;
 }
 
-/* 核心修复：减少顶部 padding，让内容提上来 */
-.profile-wrap { max-width:1000px; margin:0 auto; padding: 80px 20px 40px; }
+/* 【核心修复】大幅增加顶部 padding，彻底顶飞空白 */
+.profile-wrap { 
+    max-width:1000px; margin:0 auto; 
+    padding: 120px 20px 40px; /* 这里从 80px 改成了 120px */
+    position: relative; z-index: 10;
+}
 
 .hero-section { display: flex; justify-content: flex-start; align-items: flex-end; margin-bottom: 50px; gap: 30px; }
 .avatar-box { 
@@ -165,7 +178,6 @@ body{
 .info-item .k { width:70px; color:var(--muted); font-size:13px; flex-shrink:0; }
 .info-item .v { font-size:15px; font-weight:600; color: var(--paper); word-break: break-all; }
 
-/* 雷达图框，去掉了丑丑的乾坤 */
 .stats-wrapper { border: 1px solid var(--line); padding: 20px 10px; position: relative; background: rgba(255,255,255,0.5); }
 .stats-container { display:flex; justify-content:center; width: 100%; min-height: 260px; min-width: 0; }
 
@@ -219,12 +231,18 @@ body.glitch-mode .avatar-box img { filter: grayscale(80%) contrast(1.2) sepia(0.
   #view-main { padding-top: 50px; }
   .tag-wall { padding: 60px 10px 80px; }
   .tag-wall::before { top: 30px; }
-  .list-item { width: 100px; height: 240px; gap: 20px; }
-  .list-item::before { top: -30px; height: 30px; }
-  .item-name { font-size: 26px; }
+  
+  .list-item { height: 240px; }
+  /* 手机端稍微调整错落幅度，防止重叠 */
+  .list-item:nth-child(1) { margin-top: 10px; }
+  .list-item:nth-child(2) { margin-top: 50px; }
+  .list-item:nth-child(3) { margin-top: 20px; }
+  .list-item:nth-child(4) { margin-top: 60px; }
+  
+  .item-name { font-size: 30px; }
   .item-title { font-size: 11px; max-height: 80px; }
   
-  .profile-wrap { padding-top: 70px; } /* 再次修复手机端顶部空白 */
+  .profile-wrap { padding-top: 100px; } /* 手机端给足 100px 绝对不空 */
   .hero-section { flex-direction: column; align-items: center; gap: 15px; margin-bottom: 30px; }
   .avatar-box { width: 140px; }
   .hero-text { flex-direction: column; align-items: center; text-align: center; }
