@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>俗缘诡事</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=112">
+<link rel="stylesheet" href="style.css?v=113">
 </head>
 <body>
 
@@ -20,9 +20,7 @@
         <div class="home-subtitle">俗 缘 诡 事 · 卷 宗</div>
     </div>
     
-    <!-- 列表容器 -->
     <div class="dir-list-inner" id="dir-list">
-        <!-- JS 会在这里生成内容，如果JS失效，这里会有文字 -->
         加载中...
     </div>
 </div>
@@ -31,7 +29,6 @@
 <div id="view-profile" class="view">
     <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
     
-    <!-- 导航栏正常排版，绝不悬浮 -->
     <div class="nav-top">
         <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
         <div class="id-tag" id="p-top-id">ID: UNKNOWN</div>
@@ -64,9 +61,15 @@
             </div>
         </div>
     </div>
+
+    <!-- 【新增：婴红专属的门票彩蛋】 -->
+    <div class="ticket-easter-egg" id="ticket-egg" title="点击拉出/收回副券">
+        <img src="ticket.png" alt="武夷山门票" onerror="this.style.display='none'; this.parentElement.classList.add('no-img');">
+        <div class="ticket-pull-tab">副券</div>
+    </div>
 </div>
 
-<script src="data.js?v=112"></script>
-<script src="script.js?v=112"></script>
+<script src="data.js?v=113"></script>
+<script src="script.js?v=113"></script>
 </body>
 </html>
