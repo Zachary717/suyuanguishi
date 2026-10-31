@@ -20,7 +20,7 @@ body {
 .view { display: none; opacity: 0; transition: opacity 0.4s ease; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
 
-/* ================= 纯文字极简头图 ================= */
+/* ================= 纯文字头图 ================= */
 .text-banner {
   padding: 100px 20px 80px;
   text-align: center;
@@ -37,7 +37,6 @@ body {
 }
 .main-title .line-1 { font-size: 72px; letter-spacing: 0.2em; }
 .main-title .line-2 { font-size: 72px; letter-spacing: 0.2em; margin-left: 80px; }
-.main-subtitle { margin-top: 30px; font-size: 14px; color: var(--muted); letter-spacing: 0.5em; }
 
 /* ================= 导航栏 ================= */
 .top-nav {
@@ -63,13 +62,13 @@ body {
   margin-top: 20px;
 }
 
-/* 横向贯穿的红线 (位置精确计算) */
+/* 红线（绝对定位高度为 80px） */
 .red-thread-line {
   position: absolute;
-  top: 70px; /* 红线的绝对高度 */
+  top: 80px; 
   left: 0;
   width: 100%;
-  height: 1px;
+  height: 2px;
   background: var(--red);
   z-index: 0;
   pointer-events: none;
@@ -80,12 +79,14 @@ body {
   width: 100%;
   height: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
   padding: 0 40px;
   cursor: grab;
   position: relative;
   z-index: 1;
+  user-select: none; /* 防止拖拽时选中文本 */
 }
 .cards-scroll-container:active { cursor: grabbing; }
 .cards-scroll-container::-webkit-scrollbar { display: none; }
@@ -96,8 +97,8 @@ body {
   align-items: flex-start;
   height: 100%;
   width: max-content;
-  padding-top: 70px; /* 让卡片顶部刚好卡在 70px 处 */
-  padding-right: 1000px; /* 留出空间，防止展开时被裁剪 */
+  padding-top: 80px; /* 卡片顶部与红线(Y=80)重合 */
+  padding-right: 1000px;
 }
 
 /* 单张卡片 */
@@ -105,7 +106,7 @@ body {
   position: relative;
   width: 140px;
   height: 220px;
-  flex-shrink: 0; 
+  flex: 0 0 140px; /* 绝对锁死宽度，防止被挤压 */
   background: #FFFFFF;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -115,41 +116,24 @@ body {
   align-items: center;
   gap: 10px;
   padding: 25px 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
   
-  /* 初始重叠，不改变边距 */
+  /* 初始重叠 */
   margin-right: -60px; 
-  
-  /* 【核心修复】用 transform 来做展开，绝对不改变容器宽度，彻底解决抽搐 */
-  transform: translateX(calc(var(--i) * 0px));
-  transition: transform 0.4s cubic-bezier(0.25, 1.2, 0.5, 1), box-shadow 0.3s;
+  transition: margin 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
 }
 
-/* 展开状态：平移距离拉开，视觉上散开，但不改变总宽度 */
+/* 滑动展开状态 */
 .cards-inner.is-sliding .list-item {
-  transform: translateX(calc(var(--i) * 80px));
-  box-shadow: -10px 10px 20px rgba(0,0,0,0.1);
+  margin-right: 20px;
 }
 
-/* 连接挂扣与红线的短线 */
-.list-item::after {
-  content: "";
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1px;
-  height: 20px;
-  background: var(--red);
-  z-index: 9;
-}
-
-/* 挂扣圆环 */
+/* 【精准对齐】挂扣圆环：悬挂在卡片顶部边缘（刚好在 Y=80 的红线上） */
 .list-item::before {
   content: "";
   position: absolute;
-  top: -8px;
+  top: -8px; /* 向上偏移，中心刚好在红线（Y=80）上 */
   left: 50%;
   transform: translateX(-50%);
   width: 12px;
