@@ -1,145 +1,193 @@
 window.onload = function() {
-  var list = document.getElementById('dir-list');
-  if (!list) return;
-  if (typeof ocDatabase === 'undefined') {
-    list.innerHTML = '<div style="color:red;text-align:center;">data.js 读取失败</div>';
-    return;
-  }
+  var container = document.getElementById('cards-container');
+  if (!container) return;
+  if (typeof ocDatabase === 'undefined') return;
 
-  var html = '';
+  var threadPath = document.getElementById('dynamic-thread');
+  var cardWidth = 150;
+  var gap = 40;
+  var startX = 50; // 初始偏移
+  var startY = 50; // 红线起始高度
+
+  var cards = [];
+  var totalWidth = 0;
+
+  // 1. 初始化卡片数据与DOM
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
-    var num = (i + 1) < 10 ? '0' + (i + 1) : (i + 1);
-    var baseRotate = (i % 2 === 0) ? -3 : 2;
-    html += '<div class="list-item" data-id="' + oc.id + '" data-idx="' + i + '" data-base="' + baseRotate + '" onclick="if(!isDragging) showProfile(\'' + oc.id + '\')" style="transform: rotate(' + baseRotate + 'deg);">' +
-      '<div class="item-index">' + num + '</div>' +
-      '<div class="item-name">' + oc.name + '</div>' +
-      '<div class="item-title">' + oc.title + '</div>' +
-      '</div>';
-  }
-  list.innerHTML = html;
+    var card = document.createElement('div');
+    card.className = 'list-item';
+    card.setAttribute('data-id', oc.id);
+    // 基础坐标 (用于后续物理计算)
+    card.baseX = startX + i * (cardWidth + gap);
+    card.baseY = startY;
+    card.angle = (i % 2 === 0) ? -3 : 3; // 初始错落角度
+    card.velocity = 0; // 物理速度
 
-  var cards = document.querySelectorAll('.list-item');
-  var threadPath = document.getElementById('dynamic-thread');
-  
-  // 物理状态
-  var isDragging = false;
-  var startX = 0;
-  var activeIdx = -1;
-
-  // 统一处理触摸和鼠标事件
-  var getClientX = function(e) {
-    return e.touches ? e.touches[0].clientX : e.clientX;
-  };
-
-  // 1. 按下卡片
-  cards.forEach(function(card, idx) {
-    var startDrag = function(e) {
-      isDragging = true;
-      activeIdx = idx;
-      startX = getClientX(e);
-      
-      // 按下时取消所有过渡，保证跟手
-      cards.forEach(function(c) { c.style.transition = 'none'; });
-      if (threadPath) threadPath.style.transition = 'none';
-    };
-    
-    card.addEventListener('mousedown', startDrag);
-    card.addEventListener('touchstart', startDrag, {passive: true});
-  });
-
-  // 2. 拖拽移动 (全局监听)
-  var onMove = function(e) {
-    if (!isDragging) return;
-    var currentX = getClientX(e);
-    var deltaX = currentX - startX;
-    
-    // 限制单次拖拽幅度，防止卡片飞出去
-    if (deltaX > 40) deltaX = 40;
-    if (deltaX < -40) deltaX = -40;
-
-    // 计算波传导
-    cards.forEach(function(card, idx) {
-      var base = parseFloat(card.getAttribute('data-base'));
-      
-      if (idx === activeIdx) {
-        // 被拖拽的卡片：直接响应拖拽角度
-        card.style.transform = 'rotate(' + (base + deltaX * 0.8) + 'deg)';
-      } else {
-        // 其他卡片：根据与当前卡片的距离，产生逐渐减弱的波浪倾斜
-        var dist = Math.abs(idx - activeIdx);
-        // 延迟和衰减系数
-        var decay = Math.max(0, 1 - dist * 0.2); 
-        // 用正弦波模拟传递的抖动
-        var wave = Math.sin(dist) * deltaX * 0.3 * decay;
-        card.style.transform = 'rotate(' + (base - wave) + 'deg)';
+    card.innerHTML = '<div class="item-index">' + (i + 1) + '</div>' +
+                     '<div class="item-name">' + oc.name + '</div>' +
+                     '<div class="item-title">' + oc.title + '</div>';
+                     
+    // 点击跳转 (拖拽时不跳转)
+    card.onclick = function(e) {
+      if (Math.abs(this.velocity) < 0.5) {
+        showProfile(this.getAttribute('data-id'));
       }
-    });
+    };
 
-    // 红线变形
-    if (threadPath) {
-      var flex = deltaX * 0.5;
-      // 构造路径，在中心附近产生一个下凹或上凸
-      threadPath.setAttribute('d', 'M 0,30 Q ' + (500 - flex * 10) + ',' + (30 - flex) + ' 1000,30');
+    container.appendChild(card);
+    cards.push(card);
+    totalWidth = card.baseX + cardWidth;
+  }
+
+  // 为了让列表能横滑，撑开容器宽度
+  container.style.width = totalWidth + 100 + 'px';
+
+  // 2. 物理引擎 (核心)
+  var draggingCard = null;
+  var lastMouseX = 0;
+
+  // 渲染函数：每一帧更新卡片位置和红线形状
+  function renderPhysics() {
+    var pathD = 'M 0,' + startY + ' ';
+
+    for (var i = 0; i < cards.length; i++) {
+      var c = cards[i];
+
+      // 限制最大倾角
+      if (c.angle > 45) c.angle = 45;
+      if (c.angle < -45) c.angle = -45;
+
+      // 应用CSS变换 (基于左上角绝对定位 + 旋转)
+      // 注意：transform-origin 是 50% 0%，所以平移只需定位到 X, Y
+      c.style.transform = 'translate(' + c.baseX + 'px, ' + c.baseY + 'px) rotate(' + c.angle + 'deg)';
+      
+      // 如果是拖动中的卡片，不进行自然恢复
+      if (c !== draggingCard) {
+        // 阻尼正弦运动，使其恢复原始角度
+        var baseAngle = (i % 2 === 0) ? -3 : 3;
+        var diff = baseAngle - c.angle;
+        c.velocity += diff * 0.05; // 回复力
+        c.velocity *= 0.92; // 摩擦力
+        c.angle += c.velocity;
+      }
+
+      // 构建红线路径 (贝塞尔曲线连接各卡片顶部)
+      var pivotX = c.baseX + cardWidth / 2;
+      var pivotY = c.baseY;
+      
+      // 简单地用直线连接 (视觉上因为卡片挡住了，其实看不出来)
+      if (i === 0) {
+        pathD += 'L ' + pivotX + ',' + pivotY + ' ';
+      } else {
+        var prevC = cards[i-1];
+        var prevPivotX = prevC.baseX + cardWidth / 2;
+        // 用二次贝塞尔画轻微的下垂
+        var controlX = (prevPivotX + pivotX) / 2;
+        var controlY = (prevC.baseY + pivotY) / 2 + 15; 
+        pathD += 'Q ' + controlX + ',' + controlY + ' ' + pivotX + ',' + pivotY + ' ';
+      }
     }
-  };
-
-  // 3. 松手回弹
-  var onEnd = function() {
-    if (!isDragging) return;
     
-    // 稍微延迟一下再重置 isDragging，防止触发点击事件跳转
-    setTimeout(function() { isDragging = false; }, 50);
+    // 收尾红线
+    pathD += 'L ' + (totalWidth + 100) + ',' + startY;
+    if(threadPath) threadPath.setAttribute('d', pathD);
 
-    cards.forEach(function(card) {
-      var base = parseFloat(card.getAttribute('data-base'));
-      card.style.transition = 'transform 0.6s cubic-bezier(0.25, 1.5, 0.5, 1)';
-      card.style.transform = 'rotate(' + base + 'deg)';
-    });
+    requestAnimationFrame(renderPhysics);
+  }
 
-    if (threadPath) {
-      threadPath.style.transition = 'd 0.6s ease-out';
-      threadPath.setAttribute('d', 'M 0,30 Q 500,30 1000,30');
+  // 3. 拖拽与滑动逻辑
+  var isDraggingList = false;
+  var listStartX = 0;
+  var listScrollX = 0;
+
+  var getClientX = function(e) { return e.touches ? e.touches[0].clientX : e.clientX; };
+  
+  // 原生横向滚动绑定 (用于滑动整个列表)
+  document.getElementById('stage').addEventListener('touchstart', function(e) {
+    if (e.target.classList.contains('list-item')) return; // 如果点在卡片上，不触发列表滑动
+    isDraggingList = true;
+    listStartX = getClientX(e);
+    listScrollX = container.offsetLeft || 0;
+  }, {passive: true});
+
+  document.addEventListener('touchmove', function(e) {
+    if (isDraggingList) {
+      var deltaX = getClientX(e) - listStartX;
+      container.style.transform = 'translateX(' + (listScrollX + deltaX) + 'px)';
+    } else if (draggingCard) {
+      // 单张卡片拖拽物理
+      var currentX = getClientX(e);
+      var deltaX = currentX - lastMouseX;
+      // 给目标卡片施加角度
+      draggingCard.angle += deltaX * 0.8;
+      
+      // 波传导：周围的卡片产生反向小倾斜
+      var index = cards.indexOf(draggingCard);
+      for(var j=0; j<cards.length; j++) {
+        if(j !== index) {
+          var distance = Math.abs(j - index);
+          var decay = Math.max(0, 1 - distance * 0.3);
+          cards[j].angle -= deltaX * 0.2 * decay;
+        }
+      }
+      lastMouseX = currentX;
     }
-    
-    activeIdx = -1;
-  };
+  }, {passive: true});
 
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('touchmove', onMove, {passive: true});
-  document.addEventListener('mouseup', onEnd);
-  document.addEventListener('touchend', onEnd);
-
-  // 4. 容器原生滚动时的联动 (兼容左右滑列表)
-  var scrollTimer = null;
-  list.addEventListener('scroll', function() {
-    if (isDragging) return; // 如果正在拖拽单张卡片，不触发滚动逻辑
-
-    // 快速滚动时给一个整体的倾斜
-    var baseScroll = list.scrollLeft;
-    // 这里省略复杂逻辑，只要保证原生滑动顺滑即可
+  document.addEventListener('touchend', function() {
+    isDraggingList = false;
+    if (draggingCard) {
+       draggingCard = null;
+    }
   });
 
-  // 其他逻辑
-  var btn = document.getElementById('glitch-btn');
-  if (btn) {
-    var warning = document.createElement('div');
-    warning.className = 'epilepsy-warning';
-    warning.innerHTML = '警告：光敏性癫痫患者请勿点击';
-    btn.parentNode.insertBefore(warning, btn);
-  }
-  var ticketEgg = document.getElementById('ticket-egg');
-  if (ticketEgg) {
-    ticketEgg.addEventListener('click', function() {
-      if (this.classList.contains('show')) { this.classList.remove('show'); } 
-      else { this.classList.add('show'); }
-    });
-  }
+  // 绑定鼠标事件（PC端）
+  container.addEventListener('mousedown', function(e) {
+    var target = e.target.closest('.list-item');
+    if (target) {
+      draggingCard = target;
+      lastMouseX = getClientX(e);
+    }
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (draggingCard) {
+      var currentX = getClientX(e);
+      var deltaX = currentX - lastMouseX;
+      draggingCard.angle += deltaX * 0.8;
+      
+      var index = cards.indexOf(draggingCard);
+      for(var j=0; j<cards.length; j++) {
+        if(j !== index) {
+          var distance = Math.abs(j - index);
+          var decay = Math.max(0, 1 - distance * 0.3);
+          cards[j].angle -= deltaX * 0.2 * decay;
+        }
+      }
+      lastMouseX = currentX;
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    draggingCard = null;
+  });
+  
+  // PC端横向滑动
+  document.getElementById('stage').addEventListener('wheel', function(e) {
+    // 如果滚轮是横向的，或者按住了shift
+    if (e.deltaX !== 0 || e.shiftKey) {
+      container.style.transform = 'translateX(' + (container.offsetLeft - (e.deltaX || e.deltaY)) + 'px)';
+    }
+  });
+
+  // 启动物理引擎
+  renderPhysics();
 };
 
-var isGlitchMode = false;
-var currentActiveId = "";
-
+// 外部函数保持不报错
+function switchView(viewId) { /*... 保持原来的代码 ...*/ }
+// 将上面原有的函数完整放进来
 function switchView(viewId) {
   var views = document.querySelectorAll('.view');
   for (var i = 0; i < views.length; i++) {
@@ -159,6 +207,9 @@ function switchView(viewId) {
     if (matrix) matrix.innerHTML = '';
   }
 }
+
+var isGlitchMode = false;
+var currentActiveId = "";
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
