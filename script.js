@@ -4,6 +4,7 @@ window.onload = function() {
   if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
+  // 生成卡片
   var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
@@ -15,10 +16,9 @@ window.onload = function() {
   }
   inner.innerHTML = html;
 
-  var scrollTimer = null;
+  // --- PC 端鼠标拖拽滑动 ---
   var isDown = false;
   var startX, scrollLeft;
-
   scrollBox.addEventListener('mousedown', function(e) {
     isDown = true;
     startX = e.pageX - scrollBox.offsetLeft;
@@ -30,21 +30,32 @@ window.onload = function() {
     if (!isDown) return;
     e.preventDefault();
     var x = e.pageX - scrollBox.offsetLeft;
-    var walk = (x - startX) * 2;
+    var walk = (x - startX) * 2; // 拖拽灵敏度
     scrollBox.scrollLeft = scrollLeft - walk;
   });
 
+  // --- 滑动展开与边缘合拢逻辑 ---
   scrollBox.addEventListener('scroll', function() {
+    // 只要滑动，立刻展开
     inner.classList.add('is-sliding');
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(function() {
+
+    // 判断是否滑动到了最左侧或最右侧
+    var scrollLeft = scrollBox.scrollLeft;
+    var maxScroll = scrollBox.scrollWidth - scrollBox.clientWidth;
+
+    // 如果滑到了最左边，或者滑到了最右边，强制合拢
+    if (scrollLeft <= 5 || scrollLeft >= maxScroll - 5) {
       inner.classList.remove('is-sliding');
-    }, 300);
+    }
   });
 
+  // 初始化观察器
   setupObserver();
 };
 
+// ==========================================
+// 详情页动效与渲染
+// ==========================================
 var isGlitchMode = false;
 var currentActiveId = "";
 var observer;
@@ -118,8 +129,6 @@ function showProfile(id, isToggle) {
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
-  
-  // 【终极防蓝框】：用 img 标签尝试加载，失败了就替换成文字，绝对不留蓝框
   if (currentAvatar) {
     avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片缺失<br>\' + currentAvatar + \'</div>\'">';
   } else {
