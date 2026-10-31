@@ -1,197 +1,71 @@
-:root { 
-    --bg: #F1F0E8;        
-    --paper: #2E3A35;     
-    --red: #B56A58;       
-    --green: #5E8C87;     
-    --muted: #8A9A95;     
-    --line: rgba(94, 140, 135, 0.3);
-    --card-bg: rgba(255, 255, 255, 0.6); 
-}
+:root { --bg: #F1F0E8; --paper: #2E3A35; --red: #B56A58; --green: #5E8C87; --muted: #8A9A95; --line: rgba(94, 140, 135, 0.3); --card-bg: rgba(255, 255, 255, 0.6); }
 *{margin:0;padding:0;box-sizing:border-box}
-
-body{ 
-    background-color: var(--bg); 
-    color: var(--paper); 
-    font-family: "Noto Serif SC", serif; 
-    line-height: 1.8; 
-    overflow-x: hidden; 
-    transition: background-color 0.8s, color 0.8s; 
-}
+body{ background-color: var(--bg); color: var(--paper); font-family: "Noto Serif SC", serif; line-height: 1.8; overflow-x: hidden; transition: background-color 0.8s, color 0.8s; }
 .view { display: none; opacity: 0; transition: opacity 0.5s; min-height: 100vh; }
 .view.active { display: block; opacity: 1; }
-
-/* 首页排版 */
 .home-header { text-align: center; padding-top: 60px; margin-bottom: 40px; }
 .home-subtitle { color: var(--red); letter-spacing: 0.4em; font-size: 14px; font-weight: 900; }
-
-.dir-list-inner {
-    max-width: 800px; margin: 0 auto; padding: 0 20px 100px;
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;
-}
-
-.list-item {
-    position: relative; width: 160px; min-height: 280px; 
-    background: var(--card-bg);
-    border: 1px solid var(--line);
-    border-radius: 10px 10px 2px 2px;
-    box-shadow: 2px 5px 15px rgba(94, 140, 135, 0.1);
-    cursor: pointer; transition: transform 0.3s, background-color 0.8s, border-color 0.8s;
-    display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px;
-    padding: 30px 10px;
-}
-
+.dir-list-inner { max-width: 800px; margin: 0 auto; padding: 0 20px 100px; display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; }
+.list-item { position: relative; width: 160px; min-height: 280px; background: var(--card-bg); border: 1px solid var(--line); border-radius: 10px 10px 2px 2px; box-shadow: 2px 5px 15px rgba(94, 140, 135, 0.1); cursor: pointer; transition: transform 0.3s, background-color 0.8s, border-color 0.8s; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 15px; padding: 30px 10px; }
 .list-item:nth-child(odd) { transform: translateY(20px) rotate(-2deg); }
 .list-item:nth-child(even) { transform: translateY(0px) rotate(2deg); }
 .list-item:nth-child(3n) { transform: translateY(40px) rotate(1deg); }
-
-.list-item:hover {
-    transform: scale(1.05) rotate(0deg) !important;
-    border-color: var(--red); z-index: 10;
-}
-
-.list-item::before {
-    content: ""; position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-    width: 2px; height: 30px; background: var(--red);
-}
-
+.list-item:hover { transform: scale(1.05) rotate(0deg) !important; border-color: var(--red); z-index: 10; }
+.list-item::before { content: ""; position: absolute; top: -30px; left: 50%; transform: translateX(-50%); width: 2px; height: 30px; background: var(--red); }
 .item-index { position: absolute; top: 10px; left: 10px; font-size: 12px; color: var(--muted); }
 .item-name { writing-mode: vertical-rl; font-size: 28px; font-weight: 900; color: var(--paper); letter-spacing: 0.1em; line-height: 1.2; }
 .item-title { writing-mode: vertical-rl; font-size: 13px; color: var(--green); letter-spacing: 0.1em; line-height: 1.5; max-height: 180px; }
-
-/* 详情页排版 */
 #view-profile { padding-bottom: 60px; }
 .nav-top { display: flex; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
 .back-btn { cursor: pointer; font-family: "Oswald", sans-serif; letter-spacing: 0.1em; }
 .id-tag { font-family: "Oswald", sans-serif; font-size: 12px; }
-
 .profile-wrap { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
 .hero-section { display: flex; gap: 20px; margin-bottom: 40px; align-items: flex-end; }
 .avatar-box { width: 140px; height: 180px; background: var(--card-bg); border: 1px solid var(--line); padding: 4px; transition: background-color 0.8s; }
 .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
-
 .p-name { font-size: 40px; color: var(--red); margin-bottom: 10px; }
 .p-title { font-size: 14px; color: var(--green); border-top: 1px solid var(--line); padding-top: 5px; display: inline-block; }
-
 .content-grid { display: flex; flex-direction: column; gap: 40px; }
-@media (min-width: 768px) {
-    .content-grid { flex-direction: row; justify-content: space-between; }
-    .col-left, .col-right { width: 48%; }
-}
-
+@media (min-width: 768px) { .content-grid { flex-direction: row; justify-content: space-between; } .col-left, .col-right { width: 48%; } }
 .sec-title { font-size: 18px; font-weight: 900; margin: 30px 0 15px; border-bottom: 2px solid var(--paper); display: inline-block; padding-bottom: 5px; transition: border-color 0.8s; }
 .sec-title span { font-size: 14px; color: var(--muted); margin-left: 10px; }
-
 .info-item { display: flex; border-bottom: 1px dashed var(--line); padding: 10px 0; }
 .info-item .k { width: 60px; color: var(--muted); font-size: 13px; flex-shrink: 0; }
 .info-item .v { font-size: 15px; font-weight: 600; }
-
 .timeline { border-left: 1px solid var(--red); padding-left: 15px; }
 .tl-item { margin-bottom: 20px; position: relative; }
 .tl-item::before { content: ""; position: absolute; left: -19px; top: 6px; width: 7px; height: 7px; background: var(--red); border-radius: 50%; }
 .tl-time { font-weight: 900; font-size: 15px; margin-bottom: 5px; }
 .tl-event { font-size: 14px; color: var(--muted); }
-
 .rel-item { padding: 12px; border: 1px solid var(--line); background: var(--card-bg); margin-bottom: 10px; transition: background-color 0.8s, border-color 0.8s; }
-/* 恢复：可点击关系的鼠标手势 */
 .rel-item.has-link { cursor: pointer; }
 .rel-item.has-link:hover { border-color: var(--red); box-shadow: 0 4px 10px rgba(181,106,88,0.1); }
-
 .rel-name { font-weight: 900; color: var(--red); margin-bottom: 5px; }
 .rel-desc { font-size: 13px; color: var(--muted); }
-
 .stats-container { width: 100%; min-height: 280px; display: flex; justify-content: center; }
-
-/* 动效类 */
 .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .reveal.active { opacity: 1; transform: translateY(0); }
 .delay-item { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
 .delay-item.active { opacity: 1; transform: translateY(0); }
 .radar-text { opacity: 0; transition: opacity 0.5s ease; }
 .radar-text.show { opacity: 1; }
-
-.epilepsy-warning {
-  position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999;
-  background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red);
-  color: var(--red); font-size: 12px; letter-spacing: 0.1em; padding: 4px 15px;
-  display: none; text-align: center; pointer-events: none;
-}
-
+.epilepsy-warning { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255, 255, 255, 0.9); border: 1px solid var(--red); color: var(--red); font-size: 12px; letter-spacing: 0.1em; padding: 4px 15px; display: none; text-align: center; pointer-events: none; }
 html { overflow-y: scroll; }
-
-/* =========================================
-   【新增：婴红门票彩蛋】
-   ========================================= */
-.ticket-easter-egg {
-    position: fixed;
-    right: -320px; /* 初始隐藏大部分，假设宽度 350px */
-    top: 50%;
-    transform: translateY(-50%);
-    width: 340px;
-    height: 160px;
-    background: #fff;
-    box-shadow: -5px 5px 20px rgba(0,0,0,0.15);
-    border: 1px solid #ddd;
-    cursor: pointer;
-    z-index: 999;
-    transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    display: none; /* 默认隐藏，通过JS控制显示 */
-}
-
-/* 点击后拉出的状态 */
-.ticket-easter-egg.show {
-    right: 20px; /* 留一点边距 */
-}
-
-.ticket-easter-egg img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    pointer-events: none; /* 让点击事件穿透给外层 div */
-}
-
-/* 门票露出的副券标签 */
-.ticket-pull-tab {
-    position: absolute;
-    left: -30px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 60px;
-    background: var(--red);
-    color: #fff;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    letter-spacing: 2px;
-    border-radius: 4px 0 0 4px;
-    box-shadow: -2px 2px 5px rgba(0,0,0,0.1);
-}
-
-/* 如果没有图片的备用样式 */
+.ticket-easter-egg { position: fixed; right: -320px; top: 50%; transform: translateY(-50%); width: 340px; height: 160px; background: #fff; box-shadow: -5px 5px 20px rgba(0,0,0,0.15); border: 1px solid #ddd; cursor: pointer; z-index: 999; transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: none; }
+.ticket-easter-egg.show { right: 20px; }
+.ticket-easter-egg img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.ticket-pull-tab { position: absolute; left: -30px; top: 50%; transform: translateY(-50%); width: 30px; height: 60px; background: var(--red); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center; writing-mode: vertical-rl; letter-spacing: 2px; border-radius: 4px 0 0 4px; box-shadow: -2px 2px 5px rgba(0,0,0,0.1); }
 .ticket-easter-egg.no-img { background: #e8e3d7; }
-.ticket-easter-egg.no-img::after {
-    content: "武夷山风景区门票"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: #888; font-size: 14px;
-}
-
-/* 里世界适配 */
+.ticket-easter-egg.no-img::after { content: "武夷山风景区门票"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #888; font-size: 14px; }
 .glitch-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; align-items: center; justify-content: center; pointer-events: none; }
 body.glitch-mode .glitch-overlay { display: flex; }
 .glitch-text-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; font-size: 18px; color: #d1d1d1; text-shadow: 2px 0 red, -2px 0 lime; animation: harsh 0.2s infinite; }
 @keyframes harsh { 0%,100%{opacity:1;} 50%{opacity:0;} 51%{opacity:1;transform:translate(-49%,-50%);} }
-
-body.glitch-mode { 
-    --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,0.15); 
-    --card-bg: rgba(20, 10, 10, 0.6); 
-    background-color: var(--bg); background-image: none; 
-}
+body.glitch-mode { --bg: #090a0c; --paper: #e8e2d6; --muted: #6a7a73; --red: #ff0000; --green: #3c7a6b; --line: rgba(232,226,214,0.15); --card-bg: rgba(20, 10, 10, 0.6); background-color: var(--bg); background-image: none; }
 body.glitch-mode .epilepsy-warning { display: none !important; }
 body.glitch-mode .p-name { color: var(--paper); }
 body.glitch-mode .avatar-box { border-color: var(--line); box-shadow: 0 0 10px rgba(255,0,0,0.2); }
 body.glitch-mode .sec-title { border-bottom-color: var(--red); }
 body.glitch-mode .rel-item { box-shadow: inset 0 0 10px rgba(255,0,0,0.1); }
-
 body::before { content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9996; opacity: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 3px); pointer-events: none; transition: opacity 0.5s; }
 body.glitch-mode::before { opacity: 1; }
