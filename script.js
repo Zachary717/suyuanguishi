@@ -1,4 +1,4 @@
-/* 俗缘诡事 · 主逻辑（v2.4 完美生长动效） */
+/* 俗缘诡事 · 主逻辑（v2.5） */
 window.onload = function () {
   var inner = document.getElementById('cards-inner');
   var scrollBox = document.getElementById('cards-scroll');
@@ -69,6 +69,7 @@ function setupObserver() {
         if (entry.target.id === 'p-stats') {
           var radarData = entry.target.querySelector('.radar-anim-group');
           var radarText = entry.target.querySelector('.radar-text');
+          // 只有当雷达图真正滑入视口，且没播放过，才执行
           if (radarData && !radarData.dataset.done) {
             radarData.dataset.done = '1';
             animateRadarLines(radarData, radarText);
@@ -86,7 +87,18 @@ function switchView(viewId) {
   });
   var target = document.getElementById(viewId);
   if (target) { target.classList.add('active'); target.style.display = 'block'; }
+  
+  // 【核心修复】强制锁死滚动条，瞬间归零，防止从下往上弹
+  document.body.style.overflow = 'hidden';
   window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+  
+  // 下一帧恢复滚动
+  setTimeout(function() {
+    document.body.style.overflow = 'auto';
+  }, 10);
+
   if (viewId === 'view-main') exitGlitch();
 }
 
@@ -122,9 +134,9 @@ function showProfile(id, isToggle) {
   var btn = document.getElementById('glitch-btn');
   if (btn) btn.style.display = (id === 'yeyao') ? 'block' : 'none';
 
-  var avatarBox = document.getElementById('p-avatar-box');
+  var avatarBox = document.getElementById('p-avatar-box(');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
-  var firstChar = (oc.name || '?').replace(/\s/g, '').charAt(0);
+  var firstChar = (oc.name || '?').replace/\s/g, '').charAt(0);
 
   if (currentAvatar) {
     avatarBox.innerHTML = '<img src="' + currentAvatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
@@ -176,26 +188,37 @@ function showProfile(id, isToggle) {
   document.getElementById('p-top-id').textContent = isGlitchMode ? 'ERROR' : 'ID: ' + oc.id.toUpperCase();
   renderRadarChart(statsToRender || {});
 
-  if (isToggle !== true) switchView('view-profile');
-  else window.scrollTo(0, 0);
+  if (isToggle !== true) {
+    switchView('view-profile');
+  } else {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+  }
 
+  // 重置各项动效状态
   var radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   var delayItems = document.querySelectorAll('.delay-item');
   delayItems.forEach(function (el) { el.classList.remove('active'); });
+  
+  var radarGroup = radarContainer.querySelector('.radar-anim-group');
   var textGroup = radarContainer.querySelector('.radar-text');
   if (textGroup) textGroup.classList.remove('show');
+  
+  // 【关键修复】让雷达图初始为透明，等待滑动到视口内再出现
+  if (radarGroup) {
+    radarGroup.style.opacity = 0;
+    delete radarGroup.dataset.done; 
+  }
   void radarContainer.offsetWidth;
 
+  // 【关键修复】延迟观察，确保视图已经切完并稳定在顶部，防止移动端提前触发
   setTimeout(function () {
-    var radarGroup = radarContainer.querySelector('.radar-anim-group');
-    var radarText = radarContainer.querySelector('.radar-text');
-    if (radarGroup && !radarGroup.dataset.done) {
-      radarGroup.dataset.done = '1';
-      animateRadarLines(radarGroup, radarText);
+    if (observer) {
+      delayItems.forEach(function (el) { observer.observe(el); });
+      observer.observe(radarContainer); // 全权交由 observer 来触发，防止代码强行闪现
     }
-    if (observer) delayItems.forEach(function (el) { observer.observe(el); });
-  }, 120);
+  }, 250);
 }
 
 function animateRadarLines(group, textGroup) {
@@ -204,7 +227,6 @@ function animateRadarLines(group, textGroup) {
   var cx = 150, cy = 140;
   var targets = [];
   
-  // 【核心修复】一开始就让图形显现，这样你才能看到线条从中心长出来！
   group.style.opacity = 1;
   group.style.transition = 'none';
 
@@ -279,7 +301,8 @@ function renderRadarChart(stats) {
     circles += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y +
                '" r="2.5" fill="' + dotFill + '" stroke="' + stroke + '" stroke-width="1.5"/>';
   }
-  svg += '<g class="radar-anim-group">' +
+  // 注意这里的 style="opacity:0;"，等待观察器触发动画
+  svg += '<g class="radar-anim-group" style="opacity:0;">' +
          '<polygon points="' + dataPoints.join(' ') + '" fill="' + (dark ? 'rgba(255,42,42,0.15)' : 'rgba(181,106,88,0.1)') +
          '" stroke="' + stroke + '" stroke-width="1.5" stroke-linejoin="round"/>' + circles + '</g>';
 
