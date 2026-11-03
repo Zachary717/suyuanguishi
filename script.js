@@ -1,270 +1,241 @@
-window.onload = function() {
+/* 俗缘诡事 · 主逻辑（v2.4 完美生长动效） */
+window.onload = function () {
   var inner = document.getElementById('cards-inner');
   var scrollBox = document.getElementById('cards-scroll');
-  if (!inner || !scrollBox) return;
   if (typeof ocDatabase === 'undefined') return;
 
-  // 生成卡片
   var html = '';
   for (var i = 0; i < ocDatabase.length; i++) {
     var oc = ocDatabase[i];
+    var avatarTag = oc.avatar
+      ? '<img class="item-avatar" src="' + oc.avatar + '" alt="" onerror="this.remove()">'
+      : '';
     html += '<div class="list-item" data-id="' + oc.id + '" onclick="showProfile(\'' + oc.id + '\')">' +
-              '<div class="item-index">' + (i + 1) + '</div>' +
+              '<div class="item-index">No.' + String(i + 1).padStart(2, '0') + '</div>' +
+              avatarTag +
               '<div class="item-name">' + oc.name + '</div>' +
               '<div class="item-title">' + oc.title + '</div>' +
             '</div>';
   }
-  inner.innerHTML = html;
+  if (inner) inner.innerHTML = html;
 
-  // ================== 极简滑动展开与收缩 ==================
   var isExpanded = false;
-  scrollBox.addEventListener('scroll', function() {
-    var sl = scrollBox.scrollLeft;
-    var max = scrollBox.scrollWidth - scrollBox.clientWidth;
-    
-    if (sl <= 2 || sl >= max - 2) {
-      if (isExpanded) {
-        isExpanded = false;
-        inner.classList.remove('is-sliding');
+  if (scrollBox) {
+    scrollBox.addEventListener('scroll', function () {
+      var sl = scrollBox.scrollLeft;
+      var max = scrollBox.scrollWidth - scrollBox.clientWidth;
+      var expanded = !(sl <= 2 || sl >= max - 2);
+      if (expanded !== isExpanded) {
+        isExpanded = expanded;
+        inner.classList.toggle('is-sliding', expanded);
       }
-    } else {
-      if (!isExpanded) {
-        isExpanded = true;
-        inner.classList.add('is-sliding');
-      }
-    }
-  });
+    });
 
-  // 【PC端鼠标拖拽完美修复】
-  var isDown = false;
-  var startX, scrollLeft;
-
-  scrollBox.addEventListener('mousedown', function(e) {
-    isDown = true;
-    startX = e.pageX - scrollBox.offsetLeft;
-    scrollLeft = scrollBox.scrollLeft;
-  });
-  // 绑定在 window 上防止鼠标移出容器导致拖拽卡死
-  window.addEventListener('mousemove', function(e) {
-    if (!isDown) return;
-    e.preventDefault();
-    var x = e.pageX - scrollBox.offsetLeft;
-    var walk = (x - startX) * 1.5; 
-    scrollBox.scrollLeft = scrollLeft - walk;
-  });
-  window.addEventListener('mouseup', function() {
-    isDown = false;
-  });
+    var isDown = false, startX = 0, scrollLeft = 0;
+    scrollBox.addEventListener('mousedown', function (e) {
+      isDown = true; startX = e.pageX - scrollBox.offsetLeft; scrollLeft = scrollBox.scrollLeft;
+    });
+    window.addEventListener('mousemove', function (e) {
+      if (!isDown) return;
+      e.preventDefault();
+      var x = e.pageX - scrollBox.offsetLeft;
+      scrollBox.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+    window.addEventListener('mouseup', function () { isDown = false; });
+  }
 
   setupObserver();
+  setupReveal();
 };
 
-// ==========================================
-// 详情页动效与渲染
-// ==========================================
+function setupReveal() {
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+}
+
 var isGlitchMode = false;
 var currentActiveId = "";
 var observer;
 
 function setupObserver() {
-  var observerOptions = { root: null, rootMargin: '0px 0px -50px 0px', threshold: 0.1 };
-  observer = new IntersectionObserver(function(entries, obs) {
-    entries.forEach(function(entry) {
+  observer = new IntersectionObserver(function (entries, obs) {
+    entries.forEach(function (entry) {
       if (entry.isIntersecting) {
         entry.target.classList.add('active');
         if (entry.target.id === 'p-stats') {
           var radarData = entry.target.querySelector('.radar-anim-group');
           var radarText = entry.target.querySelector('.radar-text');
-          if (radarData) animateRadarLines(radarData, radarText);
+          if (radarData && !radarData.dataset.done) {
+            radarData.dataset.done = '1';
+            animateRadarLines(radarData, radarText);
+          }
         }
         obs.unobserve(entry.target);
       }
     });
-  }, observerOptions);
+  }, { rootMargin: '0px 0px -50px 0px', threshold: 0.1 });
 }
 
 function switchView(viewId) {
-  var views = document.querySelectorAll('.view');
-  for (var i = 0; i < views.length; i++) {
-    views[i].classList.remove('active');
-    views[i].style.display = 'none';
-  }
+  document.querySelectorAll('.view').forEach(function (v) {
+    v.classList.remove('active'); v.style.display = 'none';
+  });
   var target = document.getElementById(viewId);
-  if (target) {
-    target.classList.add('active');
-    target.style.display = 'block';
-  }
+  if (target) { target.classList.add('active'); target.style.display = 'block'; }
   window.scrollTo(0, 0);
-  if (viewId === 'view-main') {
-    document.body.classList.remove('glitch-mode');
-    isGlitchMode = false;
-    var matrix = document.getElementById('glitch-matrix');
-    if (matrix) matrix.innerHTML = '';
-  }
+  if (viewId === 'view-main') exitGlitch();
+}
+
+function exitGlitch() {
+  document.body.classList.remove('glitch-mode');
+  isGlitchMode = false;
+  var matrix = document.getElementById('glitch-matrix');
+  if (matrix) matrix.innerHTML = '';
 }
 
 function toggleGlitch() {
   isGlitchMode = !isGlitchMode;
-  if (isGlitchMode) { document.body.classList.add('glitch-mode'); } 
-  else { document.body.classList.remove('glitch-mode'); }
+  document.body.classList.toggle('glitch-mode', isGlitchMode);
   var matrix = document.getElementById('glitch-matrix');
   if (matrix) matrix.innerHTML = '';
-  if (isGlitchMode) {
-    showProfile(currentActiveId, true);
-    if (matrix) {
-      matrix.innerHTML = '<div class="glitch-text-box">Text Glitch</div>';
-      setTimeout(function() { matrix.innerHTML = ''; }, 1200);
-    }
-  } else { showProfile(currentActiveId, true); }
+  
+  if (isGlitchMode && matrix) {
+    var poem = "此恨何时已。滴空阶、寒更雨歇，葬花天气。三载悠悠魂梦杳，是梦久应醒矣。料也觉、人间无味。不及夜台尘土隔，清冷冷、一片埋愁地。钗钿约，竟抛弃。<br><br>重泉若有双鱼寄。好知他、年来苦乐，与谁相倚。我自中宵成转侧，忍听湘弦重理。待结个、他生知己。还怕两人俱薄命，再缘悭、剩月零风里。清泪尽，纸灰起。";
+    var flatPoem = poem.replace(/<br>/g, ' ');
+    
+    matrix.innerHTML = '<div class="glitch-text-box" data-text="' + flatPoem + '">' + poem + '</div>';
+    setTimeout(function () { matrix.innerHTML = ''; }, 1500);
+  }
+  showProfile(currentActiveId, true);
 }
 
 function showProfile(id, isToggle) {
-  if (isToggle !== true) {
-    currentActiveId = id;
-    document.body.classList.remove('glitch-mode');
-    isGlitchMode = false;
-  }
-  var oc = null;
-  for (var i = 0; i < ocDatabase.length; i++) {
-    if (ocDatabase[i].id === id) { oc = ocDatabase[i]; break; }
-  }
+  if (isToggle !== true) { currentActiveId = id; exitGlitch(); }
+
+  var oc = ocDatabase.find(function (o) { return o.id === id; });
   if (!oc) return;
 
   var btn = document.getElementById('glitch-btn');
-  if (btn) { btn.style.display = (id === 'yeyao') ? 'block' : 'none'; }
+  if (btn) btn.style.display = (id === 'yeyao') ? 'block' : 'none';
 
   var avatarBox = document.getElementById('p-avatar-box');
   var currentAvatar = (isGlitchMode && oc.mutated_avatar) ? oc.mutated_avatar : oc.avatar;
+  var firstChar = (oc.name || '?').replace(/\s/g, '').charAt(0);
+
   if (currentAvatar) {
-    avatarBox.innerHTML = '<img src="' + currentAvatar + '" onerror="this.parentNode.innerHTML=\'<div class=\\\'empty-text\\\'>图片未找到<br>\' + currentAvatar + \'</div>\'">';
+    avatarBox.innerHTML = '<img src="' + currentAvatar + '" alt="' + oc.name + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+                          '<div class="placeholder" style="display:none;">' + firstChar + '</div>';
   } else {
-    avatarBox.innerHTML = '<div class="empty-text">NO IMAGE</div>';
+    avatarBox.innerHTML = '<div class="placeholder">' + firstChar + '</div>';
   }
 
-  var statsToRender = oc.stats;
-  var pName = document.getElementById('p-name');
-  var pTitle = document.getElementById('p-title');
-  var infoList = document.getElementById('p-info-list');
-  var timelineBox = document.getElementById('p-timeline');
-  var relationsBox = document.getElementById('p-relations');
-  
-  var bHtml = '', tHtml = '', rHtml = '';
-
   var isMutated = (id === 'yeyao' && isGlitchMode);
+  var statsToRender = isMutated && oc.mutated_stats ? oc.mutated_stats : oc.stats;
   var basicData = isMutated ? oc.mutated_basic : oc.basic;
   var timelineData = isMutated ? oc.mutated_timeline : oc.timeline;
   var relationsData = isMutated ? oc.mutated_relations : oc.relations;
 
-  if (isMutated) {
-    if (oc.mutated_stats) statsToRender = oc.mutated_stats;
-    pName.textContent = "叶 瑶 ？";
-    pTitle.textContent = "是我做错了吗?";
-  } else {
-    pName.textContent = oc.name;
-    pTitle.textContent = oc.title;
-  }
+  document.getElementById('p-name').textContent = isMutated ? '叶 瑶 ？' : oc.name;
+  document.getElementById('p-title').textContent = isMutated ? '是我做错了吗?' : oc.title;
 
-  if (basicData) {
-    for (var b = 0; b < basicData.length; b++) {
-      bHtml += '<div class="info-item delay-item" style="transition-delay:' + (b*0.1) + 's"><div class="k">' + basicData[b].k + '</div><div class="v">' + basicData[b].v + '</div></div>';
-    }
-  }
-  infoList.innerHTML = bHtml;
+  var bHtml = '';
+  (basicData || []).forEach(function (b, i) {
+    bHtml += '<div class="info-item delay-item" style="transition-delay:' + (i * 0.1) + 's">' +
+             '<div class="k">' + b.k + '</div><div class="v">' + b.v + '</div></div>';
+  });
+  document.getElementById('p-info-list').innerHTML = bHtml;
 
-  if (timelineData) {
-    for (var t = 0; t < timelineData.length; t++) {
-      var timeColor = isMutated ? 'style="color:red;"' : '';
-      tHtml += '<div class="tl-item delay-item" style="transition-delay:' + (t*0.1) + 's"><div class="tl-time" ' + timeColor + '>' + timelineData[t].time + '</div><div class="tl-event">' + timelineData[t].event + '</div></div>';
-    }
-  }
-  timelineBox.innerHTML = tHtml;
+  var tHtml = '';
+  (timelineData || []).forEach(function (t, i) {
+    var color = isMutated ? 'style="color:#ff2a2a;"' : '';
+    tHtml += '<div class="tl-item delay-item" style="transition-delay:' + (i * 0.1) + 's">' +
+             '<div class="tl-time" ' + color + '>' + t.time + '</div>' +
+             '<div class="tl-event">' + t.event + '</div></div>';
+  });
+  document.getElementById('p-timeline').innerHTML = tHtml;
 
-  if (relationsData && relationsData.length > 0) {
-    for (var r = 0; r < relationsData.length; r++) {
-      var rel = relationsData[r];
-      var hasLink = false;
-      if (!isMutated) {
-        for (var x = 0; x < ocDatabase.length; x++) {
-          if (ocDatabase[x].id === rel.id && rel.id !== '') { hasLink = true; break; }
-        }
-      }
+  var rHtml = '';
+  if (relationsData && relationsData.length) {
+    relationsData.forEach(function (rel, i) {
+      var hasLink = !isMutated && ocDatabase.some(function (o) { return o.id === rel.id && rel.id; });
       var clickStr = hasLink ? 'onclick="showProfile(\'' + rel.id + '\')"' : '';
-      var linkClass = hasLink ? 'has-link' : '';
-      var descStyle = isMutated ? 'style="color:red;"' : '';
-      
-      rHtml += '<div class="rel-item delay-item ' + linkClass + '" style="transition-delay:' + (r*0.1) + 's" ' + clickStr + '>';
-      rHtml += '<div class="rel-name">' + rel.name + '</div>';
-      rHtml += '<div class="rel-desc" ' + descStyle + '>' + rel.desc + '</div>';
-      rHtml += '</div>';
-    }
+      var descStyle = isMutated ? 'style="color:#ff2a2a;"' : '';
+      rHtml += '<div class="rel-item delay-item ' + (hasLink ? 'has-link' : '') + '" style="transition-delay:' + (i * 0.1) + 's" ' + clickStr + '>' +
+               '<div class="rel-name">' + rel.name + '</div>' +
+               '<div class="rel-desc" ' + descStyle + '>' + rel.desc + '</div></div>';
+    });
   } else {
     rHtml = '<div style="color:var(--muted);font-size:14px;">暂无羁绊记录</div>';
   }
-  relationsBox.innerHTML = rHtml;
+  document.getElementById('p-relations').innerHTML = rHtml;
 
-  document.getElementById('p-top-id').textContent = isGlitchMode ? "ERROR" : "ID: " + oc.id.toUpperCase();
-  renderRadarChart(statsToRender);
+  document.getElementById('p-top-id').textContent = isGlitchMode ? 'ERROR' : 'ID: ' + oc.id.toUpperCase();
+  renderRadarChart(statsToRender || {});
 
-  if (isToggle !== true) { switchView('view-profile'); } 
-  else { window.scrollTo(0, 0); }
-  
+  if (isToggle !== true) switchView('view-profile');
+  else window.scrollTo(0, 0);
+
   var radarContainer = document.getElementById('p-stats');
   radarContainer.classList.remove('active');
   var delayItems = document.querySelectorAll('.delay-item');
-  for(var k=0; k<delayItems.length; k++) { delayItems[k].classList.remove('active'); }
+  delayItems.forEach(function (el) { el.classList.remove('active'); });
   var textGroup = radarContainer.querySelector('.radar-text');
   if (textGroup) textGroup.classList.remove('show');
-  void radarContainer.offsetWidth; 
+  void radarContainer.offsetWidth;
 
-  setTimeout(function() {
-    if (observer) {
-      observer.observe(radarContainer);
-      for(var m=0; m<delayItems.length; m++) { observer.observe(delayItems[m]); }
+  setTimeout(function () {
+    var radarGroup = radarContainer.querySelector('.radar-anim-group');
+    var radarText = radarContainer.querySelector('.radar-text');
+    if (radarGroup && !radarGroup.dataset.done) {
+      radarGroup.dataset.done = '1';
+      animateRadarLines(radarGroup, radarText);
     }
-  }, 100);
+    if (observer) delayItems.forEach(function (el) { observer.observe(el); });
+  }, 120);
 }
 
 function animateRadarLines(group, textGroup) {
   var circles = group.querySelectorAll('circle');
   var poly = group.querySelector('polygon');
-  var targets = [];
   var cx = 150, cy = 140;
-  group.style.opacity = 0;
+  var targets = [];
   
-  for(var i=0; i<circles.length; i++) {
-    var c = circles[i];
+  // 【核心修复】一开始就让图形显现，这样你才能看到线条从中心长出来！
+  group.style.opacity = 1;
+  group.style.transition = 'none';
+
+  circles.forEach(function (c) {
     var tx = parseFloat(c.getAttribute('data-tx'));
     var ty = parseFloat(c.getAttribute('data-ty'));
-    var distance = Math.hypot(tx - cx, ty - cy);
-    targets.push({ el: c, tx: tx, ty: ty, distance: distance });
-  }
-  var speed = Math.hypot(90, 0) / 800; 
+    targets.push({ el: c, tx: tx, ty: ty, distance: Math.hypot(tx - cx, ty - cy) });
+  });
+  var speed = 90 / 800;
   var startTime = performance.now();
-  
-  for(var j=0; j<circles.length; j++) {
-    circles[j].setAttribute('cx', cx);
-    circles[j].setAttribute('cy', cy);
-  }
-  poly.setAttribute('points', cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy + ' ' + cx + ',' + cy);
-  group.style.opacity = 1;
-  
+
+  circles.forEach(function (c) { c.setAttribute('cx', cx); c.setAttribute('cy', cy); });
+  poly.setAttribute('points', Array(circles.length + 1).join(cx + ',' + cy + ' ').trim());
+
   function update(now) {
     var elapsed = now - startTime;
-    var currentPoints = [];
-    var allFinished = true;
-    for(var k=0; k<targets.length; k++) {
-      var t = targets[k];
+    var currentPoints = [], allFinished = true;
+    targets.forEach(function (t) {
       var progress = Math.min(elapsed / (t.distance / speed), 1);
-      if (progress < 1) allFinished = false; 
-      var currentX = cx + (t.tx - cx) * progress;
-      var currentY = cy + (t.ty - cy) * progress;
-      t.el.setAttribute('cx', currentX);
-      t.el.setAttribute('cy', currentY);
-      currentPoints.push(currentX + ',' + currentY);
-    }
+      if (progress < 1) allFinished = false;
+      var x = cx + (t.tx - cx) * progress;
+      var y = cy + (t.ty - cy) * progress;
+      t.el.setAttribute('cx', x); t.el.setAttribute('cy', y);
+      currentPoints.push(x + ',' + y);
+    });
     poly.setAttribute('points', currentPoints.join(' '));
-    if (!allFinished) requestAnimationFrame(update);
-    else textGroup.classList.add('show');
+    if (!allFinished) {
+      requestAnimationFrame(update);
+    } else {
+      if (textGroup) textGroup.classList.add('show');
+    }
   }
   requestAnimationFrame(update);
 }
@@ -272,46 +243,55 @@ function animateRadarLines(group, textGroup) {
 function renderRadarChart(stats) {
   var cx = 150, cy = 140, r = 90, maxVal = 6;
   var keys = Object.keys(stats), n = keys.length;
+  if (!n) { document.getElementById('p-stats').innerHTML = ''; return; }
+
+  var dark = isGlitchMode;
+  var stroke = dark ? '#ff2a2a' : '#B56A58';
+  var dotFill = dark ? '#090a0c' : '#F1F0E8';
+  var labelFill = dark ? '#e8e2d6' : '#2E3A35';
+  var valFill = dark ? '#6a7a73' : '#5E8C87';
+
   var svg = '<svg viewBox="0 0 300 280" style="width:100%;max-width:300px;overflow:visible;">';
-  
+
   for (var level = 1; level <= maxVal; level++) {
-    var points = [];
+    var pts = [];
     for (var i = 0; i < n; i++) {
-      var angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      var a = (Math.PI * 2 / n) * i - Math.PI / 2;
       var cr = (r * level) / maxVal;
-      points.push((cx + cr * Math.cos(angle)) + ',' + (cy + cr * Math.sin(angle)));
+      pts.push((cx + cr * Math.cos(a)) + ',' + (cy + cr * Math.sin(a)));
     }
-    var strokeColor = level === maxVal ? "rgba(94,140,135,0.3)" : "rgba(94,140,135,0.1)";
-    svg += '<polygon points="' + points.join(' ') + '" fill="none" stroke="' + strokeColor + '" stroke-width="1" stroke-dasharray="' + (level === maxVal ? '0' : '2 2') + '" />';
+    svg += '<polygon points="' + pts.join(' ') + '" fill="none" stroke="' +
+           (level === maxVal ? 'rgba(94,140,135,0.3)' : 'rgba(94,140,135,0.1)') +
+           '" stroke-width="1" stroke-dasharray="' + (level === maxVal ? '0' : '2 2') + '"/>';
   }
-  for (var i2 = 0; i2 < n; i2++) {
-    var angle2 = (Math.PI * 2 / n) * i2 - Math.PI / 2;
-    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * Math.cos(angle2)) + '" y2="' + (cy + r * Math.sin(angle2)) + '" stroke="rgba(94,140,135,0.1)" stroke-width="1" />';
+  for (var j = 0; j < n; j++) {
+    var a2 = (Math.PI * 2 / n) * j - Math.PI / 2;
+    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + r * Math.cos(a2)) +
+           '" y2="' + (cy + r * Math.sin(a2)) + '" stroke="rgba(94,140,135,0.1)"/>';
   }
-  
-  var dataPoints = [];
-  var circleTags = '';
-  for (var i3 = 0; i3 < n; i3++) {
-    var cr2 = (r * stats[keys[i3]]) / maxVal;
-    var angle3 = (Math.PI * 2 / n) * i3 - Math.PI / 2;
-    var x = cx + cr2 * Math.cos(angle3), y = cy + cr2 * Math.sin(angle3);
+
+  var dataPoints = [], circles = '';
+  for (var k = 0; k < n; k++) {
+    var cr2 = (r * stats[keys[k]]) / maxVal;
+    var a3 = (Math.PI * 2 / n) * k - Math.PI / 2;
+    var x = cx + cr2 * Math.cos(a3), y = cy + cr2 * Math.sin(a3);
     dataPoints.push(x + ',' + y);
-    circleTags += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y + '" r="2.5" fill="' + (isGlitchMode ? '#090a0c' : '#F1F0E8') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" />';
+    circles += '<circle data-tx="' + x + '" data-ty="' + y + '" cx="' + x + '" cy="' + y +
+               '" r="2.5" fill="' + dotFill + '" stroke="' + stroke + '" stroke-width="1.5"/>';
   }
-  svg += '<g class="radar-anim-group" style="opacity: 0;">';
-  svg += '<polygon points="' + dataPoints.join(' ') + '" fill="' + (isGlitchMode ? 'rgba(204,51,68,0.15)' : 'rgba(181,106,88,0.1)') + '" stroke="' + (isGlitchMode ? '#cc3344' : '#B56A58') + '" stroke-width="1.5" stroke-linejoin="round" />';
-  svg += circleTags;
-  svg += '</g>';
-  
+  svg += '<g class="radar-anim-group">' +
+         '<polygon points="' + dataPoints.join(' ') + '" fill="' + (dark ? 'rgba(255,42,42,0.15)' : 'rgba(181,106,88,0.1)') +
+         '" stroke="' + stroke + '" stroke-width="1.5" stroke-linejoin="round"/>' + circles + '</g>';
+
   svg += '<g class="radar-text">';
-  for (var i4 = 0; i4 < n; i4++) {
-    var key = keys[i4];
-    var angle4 = (Math.PI * 2 / n) * i4 - Math.PI / 2;
-    var lx = cx + (r + 20) * Math.cos(angle4), ly = cy + (r + 20) * Math.sin(angle4);
-    var textAnchor = Math.cos(angle4) > 0.1 ? "start" : (Math.cos(angle4) < -0.1 ? "end" : "middle");
-    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + (isGlitchMode ? '#e8e2d6' : '#2E3A35') + '" font-size="12" font-family="Noto Serif SC" font-weight="600" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + key + '</text>';
-    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + (isGlitchMode ? '#6a7a73' : '#5E8C87') + '" font-size="11" font-family="Oswald" text-anchor="' + textAnchor + '" dominant-baseline="middle">' + stats[key] + ' / 6</text>';
+  for (var m = 0; m < n; m++) {
+    var a4 = (Math.PI * 2 / n) * m - Math.PI / 2;
+    var lx = cx + (r + 20) * Math.cos(a4), ly = cy + (r + 20) * Math.sin(a4);
+    var anchor = Math.cos(a4) > 0.1 ? 'start' : (Math.cos(a4) < -0.1 ? 'end' : 'middle');
+    svg += '<text x="' + lx + '" y="' + ly + '" fill="' + labelFill + '" font-size="12" font-family="Noto Serif SC" font-weight="600" text-anchor="' + anchor + '" dominant-baseline="middle">' + keys[m] + '</text>';
+    svg += '<text x="' + lx + '" y="' + (ly + 16) + '" fill="' + valFill + '" font-size="11" font-family="Oswald" text-anchor="' + anchor + '" dominant-baseline="middle">' + stats[keys[m]] + ' / 6</text>';
   }
-  svg += '</g>';
-  document.getElementById('p-stats').innerHTML = svg + '</svg>';
+  svg += '</g></svg>';
+
+  document.getElementById('p-stats').innerHTML = svg;
 }
