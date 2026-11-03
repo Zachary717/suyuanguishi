@@ -3,88 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>俗缘诡事</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=162">
+<title>角色档案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;900&family=Oswald:wght@200;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2.3">
 </head>
 <body>
-<div class="glitch-overlay">
-    <div class="matrix-container" id="glitch-matrix"></div>
-</div>
+<div class="grain"></div>
+<div class="glitch-overlay"><div class="matrix-container" id="glitch-matrix"></div></div>
 
-<div id="view-main" class="view active" style="display: block; opacity: 1;">
-    
-    <!-- 极简纯文字头图 -->
-    <header class="text-banner">
-        <h1 class="main-title">
-            <span class="line-1">俗 缘</span>
-            <span class="line-2">诡 事</span>
-        </h1>
-    </header>
+<!-- ============ 主视图 ============ -->
+<div id="view-main" class="view active">
 
-    <!-- 导航栏 -->
-    <nav class="top-nav" id="top-nav">
-        <div class="nav-container">
-            <a href="#section-home" class="nav-item">首页</a>
-            <a href="#section-characters" class="nav-item">角色档案</a>
-            <a href="#section-events" class="nav-item">事件索引</a>
-        </div>
-    </nav>
-
-    <!-- 角色卡片区 -->
-    <div class="content-wrapper">
-        <section id="section-characters" class="content-section">
-            <div class="physics-stage">
-                <!-- 红线（直接使用绝对定位的实线） -->
-                <div class="red-thread-line"></div>
-                
-                <!-- 横向滑动容器 -->
-                <div class="cards-scroll-container" id="cards-scroll">
-                    <div class="cards-inner" id="cards-inner">
-                        <!-- JS 动态生成卡片 -->
-                    </div>
-                </div>
-            </div>
-        </section>
+  <!-- 头图 -->
+  <header class="hero" id="section-home">
+    <div class="hero-inner reveal">
+      <p class="hero-kicker">FOLKLORE &nbsp;·&nbsp; 异闻录</p>
+      <img class="hero-title-img" src="title.png" alt="俗缘诡事">
+      <p class="hero-sub">俗缘千劫不尽</p>
+      <div class="hero-line"><span></span><i>✦</i><span></span></div>
+      <a class="hero-cta" href="#section-characters">回 首 落 红 尘</a>
     </div>
+  </header>
+
+  <nav class="top-nav" id="top-nav">
+    <div class="nav-container">
+      <a href="#section-home" class="nav-item">首页</a>
+      <a href="#section-characters" class="nav-item">角色档案</a>
+      <a href="#section-events" class="nav-item">异闻索引</a>
+    </div>
+  </nav>
+
+  <!-- 角色档案 -->
+  <div class="content-wrapper">
+    <section id="section-characters" class="content-section">
+      <h2 class="sec-heading reveal"><em>壹</em>角色档案 <span>CHARACTERS</span></h2>
+      <p class="sec-note reveal">左右滑动展开角色</p>
+
+      <div class="physics-stage">
+        <div class="red-thread-line"></div>
+        <div class="cards-scroll-container" id="cards-scroll">
+          <div class="cards-inner" id="cards-inner"></div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- 异闻索引 -->
+    <section id="section-events" class="content-section">
+      <h2 class="sec-heading reveal"><em>贰</em>异闻索引 <span>ANECDOTES</span></h2>
+      <p class="sec-note reveal">凭票入山</p>
+      <div class="ticket-stage reveal">
+        <figure class="ticket">
+          <img src="ticket.png" alt="邬夷山风景区门票">
+          <figcaption>
+            <h3>邬夷山</h3>
+            <p>九曲碧波绕丹霞，千年悬棺藏云崖。<br>
+            山下李甜堪醉客，食罢何须慕仙家。</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>民间异闻档案</p>
+    </footer>
+  </div>
 </div>
 
-<!-- 详情页 -->
+<!-- ============ 详情页 ============ -->
 <div id="view-profile" class="view">
-    <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()"></div>
-    <div class="nav-top">
-        <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
-        <div class="id-tag" id="p-top-id">ID: UNKNOWN</div>
+  <div class="glitch-trigger" id="glitch-btn" onclick="toggleGlitch()">？</div>
+  <div class="nav-top">
+    <div class="back-btn" onclick="switchView('view-main')">← BACK</div>
+    <div class="id-tag" id="p-top-id">ID: UNKNOWN</div>
+  </div>
+
+  <div class="profile-wrap">
+    <div class="hero-section">
+      <div class="avatar-box" id="p-avatar-box"></div>
+      <div class="hero-text">
+        <h1 class="p-name" id="p-name">名字</h1>
+        <div class="p-title" id="p-title">身份</div>
+      </div>
     </div>
-    
-    <div class="profile-wrap">
-        <div class="hero-section">
-            <div class="avatar-box" id="p-avatar-box"></div>
-            <div class="hero-text">
-                <h1 class="p-name" id="p-name">名字</h1>
-                <div class="p-title" id="p-title">身份</div>
-            </div>
-        </div>
-        
-        <div class="content-grid">
-            <div class="col-left">
-                <div class="sec-title"><span>基础卷宗</span></div>
-                <div class="info-list" id="p-info-list"></div>
-                <div class="sec-title"><span>命理六维</span></div>
-                <div class="stats-container" id="p-stats"></div>
-            </div>
-            
-            <div class="col-right">
-                <div class="sec-title"><span>生平轨迹</span></div>
-                <div class="timeline" id="p-timeline"></div>
-                <div class="sec-title"><span>人际羁绊</span></div>
-                <div class="relations-list" id="p-relations"></div>
-            </div>
-        </div>
+
+    <div class="content-grid">
+      <div class="col-left">
+        <div class="sec-title"><span>基础卷宗</span></div>
+        <div class="info-list" id="p-info-list"></div>
+        <div class="sec-title"><span>命理六维</span></div>
+        <div class="stats-container" id="p-stats"></div>
+      </div>
+      <div class="col-right">
+        <div class="sec-title"><span>生平轨迹</span></div>
+        <div class="timeline" id="p-timeline"></div>
+        <div class="sec-title"><span>人际羁绊</span></div>
+        <div class="relations-list" id="p-relations"></div>
+      </div>
     </div>
+  </div>
 </div>
 
-<script src="data.js?v=162"></script>
-<script src="script.js?v=162"></script>
+<script src="data.js?v=2.3"></script>
+<script src="script.js?v=2.3"></script>
 </body>
 </html>
